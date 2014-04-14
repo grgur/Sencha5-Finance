@@ -6,9 +6,7 @@
 Ext.application({
     name: 'Finance',
 
-    extend: 'Finance.Application',
-    
-    autoCreateViewport: 'Finance.view.main.Main'
+    extend: 'Finance.Application'
 	
     //-------------------------------------------------------------------------
     // Most customizations should be made to Finance.Application. If you need to

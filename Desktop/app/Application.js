@@ -5,7 +5,7 @@
  */
 Ext.define('Finance.Application', {
     extend: 'Ext.app.Application',
-    
+
     name: 'Finance',
 
     views: [
@@ -18,9 +18,11 @@ Ext.define('Finance.Application', {
     ],
 
     stores: [
-        // TODO: add stores here
+        'Stocks'
     ],
-    
+
+    autoCreateViewport: 'Finance.view.main.Main',
+
     launch: function () {
         // TODO - Launch the application
     }

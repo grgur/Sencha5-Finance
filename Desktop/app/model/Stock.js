@@ -1,8 +1,13 @@
 Ext.define('Finance.model.Stock', {
     extend: 'Ext.data.Model',
+
+    requires: [
+        'Ext.data.field.Number',
+        'Ext.data.field.String'
+    ],
+
     fields: [
         'AverageDailyVolume',
-        'Change',
         'DaysLow',
         'DaysHigh',
         'YearLow',
@@ -11,8 +16,18 @@ Ext.define('Finance.model.Stock', {
         'LastTradePriceOnly',
         'DaysRange',
         'Name',
-        'Symbol',
         'Volume',
-        'StockExchange'
+        'StockExchange',
+        'History',
+        {
+            name: 'Change',
+            type: 'float'
+        },
+        {
+            name: 'Symbol',
+            type: 'string',
+            sortDir: 'ASC'
+        },
+
     ]
 });

@@ -43,9 +43,13 @@ Ext.define('Finance.view.overview.StocksPreview', {
                 }
             }
         }, {
+            text: 'Change',
+            width: 100,
+            dataIndex: 'Change'
+        }, {
             text: 'Line',
             width: 100,
-            dataIndex: 'Change',
+            dataIndex: 'History',
             xtype: 'widgetcolumn',
             widget: {
                 xtype: 'sparklineline',

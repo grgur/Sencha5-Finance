@@ -9,10 +9,10 @@ Ext.define('Finance.view.overview.StocksPreview', {
         'Ext.sparkline.Line'
     ],
 
-    xtype    : 'stockspreviewgrid',
+    xtype : 'stockspreviewgrid',
 
-    controller: 'stockspreview',
-    viewModel: 'stocksprview',
+    controller : 'stockspreview',
+    viewModel  : 'stocksprview',
     
     store            : 'Stocks',
     collapsible      : true,
@@ -21,42 +21,40 @@ Ext.define('Finance.view.overview.StocksPreview', {
     disableSelection : true,
 
     viewConfig: {
-        stripeRows: true,
-        enableTextSelection: false
+        stripeRows          : true,
+        enableTextSelection : false
     },
 
     initComponent: function () {
         var me = this;
 
         me.columns = [{
-            text: 'Button',
-            width: 105,
-            xtype: 'widgetcolumn',
-            dataIndex: 'Symbol',
-            widget: {
-                width: 90,
-                xtype: 'button',
-                ui: 'cell',
-                handler: function (btn) {
+            text      : 'Button',
+            width     : 105,
+            xtype     : 'widgetcolumn',
+            dataIndex : 'Symbol',
+            widget    : {
+                width   : 90,
+                xtype   : 'button',
+                ui      : 'cell',
+                handler : function (btn) {
                     var rec = btn.getWidgetRecord();
                     Ext.Msg.alert("Button clicked", "Hey! " + rec.get('Name'));
                 }
             }
         }, {
-            text: 'Change',
-            width: 100,
-            dataIndex: 'Change'
+            text      : 'Change',
+            width     : 100,
+            dataIndex : 'Change'
         }, {
-            text: 'Trend',
-            width: 100,
-            dataIndex: 'History',
-            xtype: 'widgetcolumn',
-            widget: {
-                xtype: 'sparklineline',
-                tipTpl: 'Value: {y:number("0.00")}'
+            text      : 'Trend',
+            width     : 100,
+            dataIndex : 'History',
+            xtype     : 'widgetcolumn',
+            widget    : {
+                xtype : 'sparklineline'
             }
-        }
-        ];
+        }];
 
         me.callParent();
         window.store = this.store;

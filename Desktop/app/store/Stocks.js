@@ -1,31 +1,37 @@
 Ext.define('Finance.store.Stocks', {
     extend: 'Ext.data.ArrayStore',
-    model: 'Finance.model.Stock',
-    data: (function() {
-        var result = [],
-            i,
-            generateSequence = function(count, min, max) {
-                var j,
-                    sequence = [];
 
-                if (count == null) {
-                    count = 20;
-                }
-                if (min == null) {
-                    min = -10;
-                }
-                if (max == null) {
-                    max = 10;
-                }
-                for (j = 0; j < count; j++) {
-                    sequence.push(Ext.Number.randomInt(min, max));
-                }
-                return sequence;
-            };
-
-        for (i = 0; i < 8; i++) {
-            result.push(['Record ' + (i + 1), Ext.Number.randomInt(0, 100) / 100, generateSequence(), generateSequence(), generateSequence(), generateSequence(20, 1, 10), generateSequence(4, 10, 20), generateSequence(), generateSequence(20, -1, 1)]);
+    model    : 'Finance.model.Stock',
+    autoLoad : true,
+    sorters  : 'Symbol',
+    
+    proxy: {
+        type: 'jsonp',
+        url: 'https://query.yahooapis.com/v1/public/yql',
+        extraParams: {
+            format       : 'json',
+            diagonostics : false,
+            q            : 'select * from yahoo.finance.quote where symbol in ("YHOO","AAPL","GOOG","MSFT")',
+            env          : 'store://datatables.org/alltableswithkeys'
+        },
+        reader: {
+            type            : 'json',
+            rootProperty    : 'query.results.quote',
+            messageProperty : 'error.description'
         }
-        return result;
-    })()
+    },
+
+    data: [{
+        Name: 'Apple',
+        Symbol: 'AAPL'
+    }, {
+        Name: 'Google',
+        Symbol: 'GOOG'
+    }, {
+        Name: 'Microsoft',
+        Symbol: 'MSFT'
+    }, {
+        Name: 'Yahoo',
+        Symbol: 'YHOO'
+    }]
 });

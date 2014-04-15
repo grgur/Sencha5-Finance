@@ -32,35 +32,38 @@ Ext.define('Finance.view.overview.StocksPreview', {
             text: 'Button',
             width: 105,
             xtype: 'widgetcolumn',
-            dataIndex: 'progress',
+            dataIndex: 'Symbol',
             widget: {
                 width: 90,
                 xtype: 'button',
                 ui: 'cell',
                 handler: function (btn) {
                     var rec = btn.getWidgetRecord();
-                    Ext.Msg.alert("Button clicked", "Hey! " + rec.get('name'));
+                    Ext.Msg.alert("Button clicked", "Hey! " + rec.get('Name'));
                 }
             }
         }, {
             text: 'Line',
             width: 100,
-            dataIndex: 'sequence1',
+            dataIndex: 'Change',
             xtype: 'widgetcolumn',
             widget: {
                 xtype: 'sparklineline',
                 tipTpl: 'Value: {y:number("0.00")}'
             }
-        }, {
-            text: 'Bar',
-            width: 100,
-            dataIndex: 'sequence2',
-            xtype: 'widgetcolumn',
-            widget: {
-                xtype: 'sparklinebar'
-            }
-        }];
+        }, 
+        // {
+        //     text: 'Bar',
+        //     width: 100,
+        //     dataIndex: 'change',
+        //     xtype: 'widgetcolumn',
+        //     widget: {
+        //         xtype: 'sparklinebar'
+        //     }
+        // }
+        ];
 
         me.callParent();
+        window.store = this.store;
     }
 });

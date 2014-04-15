@@ -5,7 +5,7 @@ Ext.define('Finance.store.Stocks', {
     autoLoad : true,
     sorters  : 'Symbol',
 
-    historyInterval: null,
+    historyCache: [],
     
     proxy: {
         type: 'jsonp',
@@ -67,6 +67,9 @@ Ext.define('Finance.store.Stocks', {
             failure: me.onHistoryFailure,
             scope: me
         });
+
+        // reset cache
+        me.historyCache.length = 0;
     },
 
     onHistorySuccess: function (res) {
@@ -77,31 +80,30 @@ Ext.define('Finance.store.Stocks', {
         if (Ext.isObject(res) && Ext.isObject(res.query) && Ext.isObject(res.query.results)) {
             results = res.query.results.quote;
         } else {
-            return this.onHistoryFailure(res.error ? res.error.description : 'Something happend on the way to haven.');
+            return me.onHistoryFailure(res.error ? res.error.description : 'Something happened on the way to haven.');
         }
 
         // go through data and add them to the History field for each
-        me.each(function (rec) {
-            var history = [],
-                symbol = rec.get('Symbol'),
-                lastClose;
+        me.each(me.parseHistory.bind(me, results, me));
+    },
 
-            while (Ext.isObject(results[0]) && results[0].Symbol === symbol) {
-                lastClose = results[0].Close;
-                history.push(lastClose);
-                results.splice(0, 1);
-            }
+    parseHistory: function (results, store, rec) {
+        var history = [],
+            symbol = rec.get('Symbol'),
+            lastClose;
 
-            // account for the most current change
-            history.push(parseFloat(lastClose) + rec.get('Change'));
+        while (Ext.isObject(results[0]) && results[0].Symbol === symbol) {
+            lastClose = results[0].Close;
+            history.push(lastClose);
+            results.splice(0, 1);
+        }
 
-            // 'this' should point to Model
-            // save it in case store is reloaded
-            this.defaultValue = history;
+        // account for the most current change
+        history.push(parseFloat(lastClose) + rec.get('Change'));
 
-            rec.set('History', history);
-        });
+        rec.set('History', history);
 
+        store.historyCache.push(rec);
     },
 
     onHistoryFailure: function (error) {

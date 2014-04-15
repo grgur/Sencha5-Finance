@@ -4,6 +4,8 @@ Ext.define('Finance.store.Stocks', {
     model    : 'Finance.model.Stock',
     autoLoad : true,
     sorters  : 'Symbol',
+
+    historyInterval: null,
     
     proxy: {
         type: 'jsonp',
@@ -39,7 +41,7 @@ Ext.define('Finance.store.Stocks', {
         var me = this;
 
         me.callParent(arguments);
-        me.on('load', me.loadHistory, me);
+        me.on('load', me.loadHistory, me, {single: true});
     },
 
     /**
@@ -47,16 +49,9 @@ Ext.define('Finance.store.Stocks', {
      * @return {[type]} [description]
      */
     loadHistory: function () {
-        // get all names 
-        // send jsonp
-        // parse received data
-        // iterate through data store and apply array values to each record
-        // 
-        
-
         var me = this,
             proxy = me.getProxy(),
-            params = proxy.getExtraParams()
+            params = Ext.clone(proxy.getExtraParams()),
             symbols = [];
 
         me.each(function (rec) {
@@ -88,12 +83,21 @@ Ext.define('Finance.store.Stocks', {
         // go through data and add them to the History field for each
         me.each(function (rec) {
             var history = [],
-                symbol = rec.get('Symbol');
+                symbol = rec.get('Symbol'),
+                lastClose;
 
             while (Ext.isObject(results[0]) && results[0].Symbol === symbol) {
-                history.push(results[0].Close);
+                lastClose = results[0].Close;
+                history.push(lastClose);
                 results.splice(0, 1);
             }
+
+            // account for the most current change
+            history.push(parseFloat(lastClose) + rec.get('Change'));
+
+            // 'this' should point to Model
+            // save it in case store is reloaded
+            this.defaultValue = history;
 
             rec.set('History', history);
         });

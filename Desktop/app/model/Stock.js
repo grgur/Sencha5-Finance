@@ -18,7 +18,10 @@ Ext.define('Finance.model.Stock', {
         'Name',
         'Volume',
         'StockExchange',
-        'History',
+        {
+            name: 'History',
+            defaultValue: 'AAAAAAA'
+        },
         {
             name: 'Change',
             type: 'float'

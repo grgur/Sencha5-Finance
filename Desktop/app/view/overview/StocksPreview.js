@@ -47,7 +47,7 @@ Ext.define('Finance.view.overview.StocksPreview', {
             width: 100,
             dataIndex: 'Change'
         }, {
-            text: 'Line',
+            text: 'Trend',
             width: 100,
             dataIndex: 'History',
             xtype: 'widgetcolumn',
@@ -55,16 +55,7 @@ Ext.define('Finance.view.overview.StocksPreview', {
                 xtype: 'sparklineline',
                 tipTpl: 'Value: {y:number("0.00")}'
             }
-        }, 
-        // {
-        //     text: 'Bar',
-        //     width: 100,
-        //     dataIndex: 'change',
-        //     xtype: 'widgetcolumn',
-        //     widget: {
-        //         xtype: 'sparklinebar'
-        //     }
-        // }
+        }
         ];
 
         me.callParent();

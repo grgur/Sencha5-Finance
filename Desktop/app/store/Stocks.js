@@ -13,7 +13,7 @@ Ext.define('Finance.store.Stocks', {
         extraParams: {
             format       : 'json',
             diagonostics : false,
-            q            : 'select * from yahoo.finance.quote where symbol in ("YHOO","AAPL","GOOG","MSFT")',
+            q            : 'select Symbol, Name, Change from yahoo.finance.quote where symbol in ("YHOO","AAPL","GOOG","MSFT")',
             env          : 'store://datatables.org/alltableswithkeys'
         },
         reader: {
@@ -41,7 +41,7 @@ Ext.define('Finance.store.Stocks', {
         var me = this;
 
         me.callParent(arguments);
-        me.on('load', me.loadHistory, me, {single: true});
+        me.on('load', me.loadHistoryCache, me);
     },
 
     /**
@@ -104,6 +104,25 @@ Ext.define('Finance.store.Stocks', {
         rec.set('History', history);
 
         store.historyCache.push(rec);
+    },
+
+    loadHistoryCache: function (store) {
+        var history = store.historyCache,
+            len = history.length,
+            i = 0,
+            historyRec, loadedRec;
+
+        if (!len) {
+            return store.loadHistory();
+        }
+
+        for (; i < len; i++) {
+            historyRec = history[i];
+            loadedRec = store.findRecord('Symbol', historyRec.get('Symbol'));
+            if (Ext.isObject(loadedRec)) {
+                loadedRec.set('History', historyRec.get('History'));
+            }
+        }
     },
 
     onHistoryFailure: function (error) {

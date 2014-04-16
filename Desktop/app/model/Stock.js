@@ -7,16 +7,7 @@ Ext.define('Finance.model.Stock', {
     ],
 
     fields: [
-        'AverageDailyVolume',
-        'DaysLow',
-        'DaysHigh',
-        'YearLow',
-        'YearHigh',
-        'MarketCapitalization',
-        'LastTradePriceOnly',
-        'DaysRange',
         'Name',
-        'Volume',
         'StockExchange',
         {
             name: 'History',

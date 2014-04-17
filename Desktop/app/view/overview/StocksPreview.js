@@ -17,8 +17,6 @@ Ext.define('Finance.view.overview.StocksPreview', {
     bind             : '{stocks}',
     collapsible      : true,
     title            : 'Stocks',
-    trackMouseOver   : false,
-    disableSelection : true,
 
     viewConfig: {
         stripeRows          : true,

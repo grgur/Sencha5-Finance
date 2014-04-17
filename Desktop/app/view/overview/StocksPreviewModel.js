@@ -18,22 +18,22 @@ Ext.define('Finance.view.overview.StocksPreviewModel', {
             sorters  : 'Symbol',
 
             data: [{
-		        Name: 'Apple',
-		        Symbol: 'AAPL'
+		        Name   : 'Apple',
+		        Symbol : 'AAPL'
 		    }, {
-		        Name: 'Google',
-		        Symbol: 'GOOG'
+		        Name   : 'Google',
+		        Symbol : 'GOOG'
 		    }, {
-		        Name: 'Microsoft',
-		        Symbol: 'MSFT'
+		        Name   : 'Microsoft',
+		        Symbol : 'MSFT'
 		    }, {
-		        Name: 'Yahoo',
-		        Symbol: 'YHOO'
+		        Name   : 'Yahoo',
+		        Symbol : 'YHOO'
 		    }],
 
 		    listeners: {
-		    	load: 'loadHistoryCache',
-		    	datachanged: 'onDataChanged'
+		    	load        : 'loadHistoryCache',
+		    	beforeLoad : 'cacheAll'
 		    }
         }
     }

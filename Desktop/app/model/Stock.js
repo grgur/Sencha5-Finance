@@ -10,16 +10,16 @@ Ext.define('Finance.model.Stock', {
         'Name',
         'StockExchange',
         {
-            name: 'History'
+            name    : 'History'
         },
         {
-            name: 'Change',
-            type: 'float'
+            name    : 'Change',
+            type    : 'float'
         },
         {
-            name: 'Symbol',
-            type: 'string',
-            sortDir: 'ASC'
+            name    : 'Symbol',
+            type    : 'string',
+            sortDir : 'ASC'
         },
 
     ],

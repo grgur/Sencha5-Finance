@@ -43,6 +43,9 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
         // <debug>
         window.store = store;
         // </debug>
+        
+        // kick this out of the loop for now
+        Ext.defer(this.compareWithCache, 1, this, [store]);
 
         if (!len) {
             return this.loadHistory(store);
@@ -154,16 +157,48 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
 
     },
 
-    cached: [],
+    cached: null,
 
     cacheAll: function (store) {
+    	var data = {};
+    	
+    	store.each(function (rec) {
+    		data[rec.get('Symbol')] = rec.get('Change');
+    	});
 
+    	this.cached = data;
     },
 
-    compareWithCache: function () {
+    compareWithCache: function (store) {
+    	var cache = this.cached,
+    		grid = this.getView(),
+    		selModel = grid.getSelectionModel(),
+    		select = [];
 
+    	if (!cache) {
+    		return;
+    	}
+
+    	store.each(function (rec) {
+    		if (rec.get('Change') !== cache[rec.get('Symbol')]) {
+    			select.push(rec);
+    		}
+    	});
+
+    	// <debug>
+		if (select.length === 0) {
+			var random = store.getAt( Math.round(Math.random() * (store.getCount() - 1)) );
+			console.log('simulating entry', random.get('Symbol'));
+			select.push(random);
+		}
+		// </debug>
+
+    	selModel.select(select);
+
+    	Ext.defer(this.deselectAll, 600, this, [selModel]);
+    },
+
+    deselectAll: function (selModel) {
+    	selModel.deselectAll();
     }
-
-
-
 });

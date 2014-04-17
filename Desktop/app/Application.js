@@ -18,7 +18,7 @@ Ext.define('Finance.Application', {
     ],
 
     stores: [
-        'Stocks'
+        
     ],
 
     autoCreateViewport: 'Finance.view.main.Main',

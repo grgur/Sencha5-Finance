@@ -23,6 +23,11 @@ Ext.define('Finance.view.overview.StocksPreview', {
         enableTextSelection : false
     },
 
+    listeners: {
+        // select: 'onCustomEvent',
+        scope: 'controller'
+    },
+
     initComponent: function () {
         var me = this;
 

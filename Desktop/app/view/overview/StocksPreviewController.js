@@ -11,6 +11,14 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
 
     refreshInterval: 2000,
 
+    listen: {
+    	component: {
+    		stockspreviewgrid: {
+    			//select: 'onCustomEvent',
+    		}
+    	}
+    },
+
     init: function () {
     	var store = this.getView().getStore();
 
@@ -200,5 +208,9 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
 
     deselectAll: function (selModel) {
     	selModel.deselectAll();
+    },
+
+    onCustomEvent: function () {
+    	alert('yeah')
     }
 });

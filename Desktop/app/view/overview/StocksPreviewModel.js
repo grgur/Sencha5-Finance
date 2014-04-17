@@ -11,7 +11,7 @@ Ext.define('Finance.view.overview.StocksPreviewModel', {
 
     stores: {
         stocks: {
-            model: 'Stock',
+            model: 'Finance.model.Stock',
 
             autoLoad: true,
 

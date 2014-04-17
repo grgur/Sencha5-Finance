@@ -28,37 +28,39 @@ Ext.define('Finance.view.overview.StocksPreview', {
         scope: 'controller'
     },
 
-    initComponent: function () {
-        var me = this;
-
-        me.columns = [{
-            text      : 'Button',
-            width     : 105,
-            xtype     : 'widgetcolumn',
-            dataIndex : 'Symbol',
-            widget    : {
-                width   : 90,
-                xtype   : 'button',
-                ui      : 'cell',
-                handler : function (btn) {
-                    var rec = btn.getWidgetRecord();
-                    Ext.Msg.alert("Button clicked", "Hey! " + rec.get('Name'));
-                }
-            }
-        }, {
-            text      : 'Change',
-            width     : 100,
-            dataIndex : 'Change'
-        }, {
-            text      : 'Trend',
-            width     : 100,
-            dataIndex : 'History',
-            xtype     : 'widgetcolumn',
-            widget    : {
-                xtype : 'sparklineline'
-            }
-        }];
-
-        me.callParent();
-    }
+    columns : [{
+        text      : 'Button',
+        width     : 105,
+        xtype     : 'widgetcolumn',
+        dataIndex : 'Symbol',
+        widget    : {
+            width   : 90,
+            xtype   : 'button',
+            itemId  : 'smybolclicker',
+            ui      : 'cell',
+            // listeners: {
+            //     click: 'onSymbolClick',
+            //     scope: 'controller'
+            // }
+            // handler: 'onSymbolClick',
+            // scope : 'controller'
+            // handler : function (btn) {
+            //     debugger;
+            //     var rec = btn.getWidgetRecord();
+            //     Ext.Msg.alert("Button clicked", "Hey! " + rec.get('Name'));
+            // }
+        }
+    }, {
+        text      : 'Change',
+        width     : 100,
+        dataIndex : 'Change'
+    }, {
+        text      : 'Trend',
+        width     : 100,
+        dataIndex : 'History',
+        xtype     : 'widgetcolumn',
+        widget    : {
+            xtype : 'sparklineline'
+        }
+    }]
 });

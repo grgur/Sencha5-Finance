@@ -7,7 +7,8 @@ Ext.define('Finance.view.main.Main', {
     xtype: 'mainviewport',
 
     requires: [
-        'Finance.view.overview.StocksPreview'
+        'Finance.view.overview.StocksPreview',
+        'Finance.view.stock.Stats'
     ],
 
     layout: {
@@ -25,7 +26,7 @@ Ext.define('Finance.view.main.Main', {
         xtype: 'tabpanel',
         items:[{
             title: 'Tab 1',
-            xtype: 'component'
+            xtype: 'stats'
         }]
     }]
 });

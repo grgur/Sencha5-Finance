@@ -346,10 +346,10 @@ Ext.define('Ext.Template', {
     /**
      * Applies the supplied values to the template and inserts the new node(s) as the first child of el.
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.dom.Element} el The context element
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
      * @param {Boolean} returnElement (optional) true to return a Ext.Element.
-     * @return {HTMLElement/Ext.Element} The new node or Element
+     * @return {HTMLElement/Ext.dom.Element} The new node or Element
      */
     insertFirst: function(el, values, returnElement) {
         return this.doInsert('afterBegin', el, values, returnElement);
@@ -358,10 +358,10 @@ Ext.define('Ext.Template', {
     /**
      * Applies the supplied values to the template and inserts the new node(s) before el.
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.dom.Element} el The context element
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
      * @param {Boolean} returnElement (optional) true to return a Ext.Element.
-     * @return {HTMLElement/Ext.Element} The new node or Element
+     * @return {HTMLElement/Ext.dom.Element} The new node or Element
      */
     insertBefore: function(el, values, returnElement) {
         return this.doInsert('beforeBegin', el, values, returnElement);
@@ -370,10 +370,10 @@ Ext.define('Ext.Template', {
     /**
      * Applies the supplied values to the template and inserts the new node(s) after el.
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.dom.Element} el The context element
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
      * @param {Boolean} returnElement (optional) true to return a Ext.Element.
-     * @return {HTMLElement/Ext.Element} The new node or Element
+     * @return {HTMLElement/Ext.dom.Element} The new node or Element
      */
     insertAfter: function(el, values, returnElement) {
         return this.doInsert('afterEnd', el, values, returnElement);
@@ -384,10 +384,10 @@ Ext.define('Ext.Template', {
      *
      * For example usage see {@link Ext.Template Ext.Template class docs}.
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.dom.Element} el The context element
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
      * @param {Boolean} returnElement (optional) true to return an Ext.Element.
-     * @return {HTMLElement/Ext.Element} The new node or Element
+     * @return {HTMLElement/Ext.dom.Element} The new node or Element
      */
     append: function(el, values, returnElement) {
         return this.doInsert('beforeEnd', el, values, returnElement);
@@ -401,10 +401,10 @@ Ext.define('Ext.Template', {
     /**
      * Applies the supplied values to the template and overwrites the content of el with the new node(s).
      *
-     * @param {String/HTMLElement/Ext.Element} el The context element
+     * @param {String/HTMLElement/Ext.dom.Element} el The context element
      * @param {Object/Array} values The template values. See {@link #applyTemplate} for details.
      * @param {Boolean} returnElement (optional) true to return a Ext.Element.
-     * @return {HTMLElement/Ext.Element} The new node or Element
+     * @return {HTMLElement/Ext.dom.Element} The new node or Element
      */
     overwrite: function(el, values, returnElement) {
         var newNode = Ext.DomHelper.overwrite(Ext.getDom(el), this.apply(values));

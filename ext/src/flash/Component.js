@@ -118,7 +118,7 @@ Ext.define('Ext.flash.Component', {
     expressInstall: false,
 
     /**
-     * @property {Ext.Element} swf
+     * @property {Ext.dom.Element} swf
      * A reference to the object or embed element into which the SWF file is loaded. Only
      * populated after the component is rendered and the SWF has been successfully embedded.
      */
@@ -237,7 +237,7 @@ Ext.define('Ext.flash.Component', {
         /**
          * @property {String}
          * The url for installing flash if it doesn't exist. This should be set to a local resource.
-         * See http://www.adobe.com/devnet/flashplayer/articles/express_install.html for details.
+         * See [http://get.adobe.com/flashplayer/](http://get.adobe.com/flashplayer/) for details.
          * @static
          */
         EXPRESS_INSTALL_URL: 'http:/' + '/swfobject.googlecode.com/svn/trunk/swfobject/expressInstall.swf'

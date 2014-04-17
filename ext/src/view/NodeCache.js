@@ -4,6 +4,7 @@
  * 
  * This implements the methods of {Ext.dom.CompositeElement} which are used by {@link Ext.view.AbstractView}
  * to privide a map of record nodes and methods to manipulate the nodes.
+ * @class Ext.view.NodeCache
  */
 Ext.define('Ext.view.NodeCache', {
     statics: {
@@ -160,9 +161,9 @@ Ext.define('Ext.view.NodeCache', {
 
     /**
     * Replaces the specified element with the passed element.
-    * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, the Element itself, the index of the
+    * @param {String/HTMLElement/Ext.dom.Element/Number} el The id of an element, the Element itself, the index of the
     * element in this composite to replace.
-    * @param {String/Ext.Element} replacement The id of an element or the Element itself.
+    * @param {String/Ext.dom.Element} replacement The id of an element or the Element itself.
     * @param {Boolean} [domReplace] True to remove and replace the element in the document too.
     */
     replaceElement: function(el, replacement, domReplace) {
@@ -184,7 +185,7 @@ Ext.define('Ext.view.NodeCache', {
 
     /**
     * Find the index of the passed element within the composite collection.
-    * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, or an Ext.dom.Element, or an HtmlElement
+    * @param {String/HTMLElement/Ext.dom.Element/Number} el The id of an element, or an Ext.dom.Element, or an HTMLElement
     * to find within the composite collection.
     * @return {Number} The index of the passed Ext.dom.Element in the composite collection, or -1 if not found.
     */
@@ -237,7 +238,7 @@ Ext.define('Ext.view.NodeCache', {
 
     /**
     * Removes the specified element(s).
-    * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, the Element itself, the index of the
+    * @param {String/HTMLElement/Ext.dom.Element/Number} el The id of an element, the Element itself, the index of the
     * element in this composite or an array of any of those.
     * @param {Boolean} [removeDom] True to also remove the element from the document
     */

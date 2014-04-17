@@ -144,7 +144,7 @@ Ext.define('Ext.util.XTemplateParser', {
             topRe = me.topRe,
             actionsRe = me.actionsRe,
             index, stack, s, m, t, prev, frame, subMatch, begin, end, actions,
-            prop;
+            prop, expectTplNext;
 
         me.level = 0;
         me.stack = stack = [];
@@ -162,8 +162,16 @@ Ext.define('Ext.util.XTemplateParser', {
             end = topRe.lastIndex;
 
             if (index < begin) {
-                me.doText(str.substring(index, begin));
+                // In the case of a switch statement, we expect a tpl for each case.
+                // However, if we have spaces they will get matched as plaintext, so
+                // we want to skip over them here.
+                s = str.substring(index, begin);
+                if (!(expectTplNext && Ext.String.trim(s) === '')) {
+                    me.doText(s);
+                }
             }
+
+            expectTplNext = false;
 
             if (m[1]) {
                 end = str.indexOf('%}', begin+2);
@@ -213,6 +221,7 @@ Ext.define('Ext.util.XTemplateParser', {
                 else if (actions['switch']) {
                     me.doSwitch(actions['switch'], actions);
                     stack.push({ type: 'switch' });
+                    expectTplNext = true;
                 }
                 else if (actions['case']) {
                     me.doCase(actions['case'], actions);

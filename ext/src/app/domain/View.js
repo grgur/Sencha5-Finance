@@ -1,3 +1,6 @@
+/**
+ * @class Ext.app.domain.View
+ */
 Ext.define('Ext.app.domain.View', {
     extend: 'Ext.app.EventDomain',
     

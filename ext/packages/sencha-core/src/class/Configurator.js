@@ -19,7 +19,7 @@ Ext.Configurator = function (cls) {
         zuper = cls.superclass ? cls.superclass.self.$config : null;
 
     /**
-     * @property {Class} cls The class to which this instance is associated.
+     * @property {Ext.Class} cls The class to which this instance is associated.
      * @private
      * @readonly
      */

@@ -297,6 +297,10 @@ Ext.define('Ext.util.LocalStorage', {
         }
     },
 
+    /**
+     * @static
+     * @private
+     */
     save: Ext.emptyFn,
 
     /**

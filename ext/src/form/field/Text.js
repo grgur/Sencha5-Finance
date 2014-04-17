@@ -356,12 +356,17 @@ Ext.define('Ext.form.field.Text', {
 
     childEls: [
         /**
-         * @property {Ext.Element} triggerWrap
+         * @property {Ext.dom.Element} triggerWrap
          * A reference to the element which encapsulates the input field and all
          * trigger button(s). Only set after the field has been rendered.
          */
         'triggerWrap',
 
+        /**
+         * @property {Ext.dom.Element} inputWrap
+         * A reference to the element that wraps the input element. Only set after the
+         * field has been rendered.
+         */
         'inputWrap'
     ],
 
@@ -566,7 +571,7 @@ Ext.define('Ext.form.field.Text', {
         }
 
         /**
-         * @property {Ext.Element} inputCell
+         * @property {Ext.dom.Element} inputCell
          * A reference to the element that wraps the input element. Only set after the
          * field has been rendered.
          * @deprecated 5.0 use {@link #inputWrap} instead
@@ -582,7 +587,7 @@ Ext.define('Ext.form.field.Text', {
         this.invokeTriggers('afterFieldRender');
     },
 
-    onMouseDown: function(e){
+    onMouseDown: function(){
         var me = this;
         if(!me.hasFocus){
             me.mon(me.inputEl, 'mouseup', Ext.emptyFn, me, { single: true, preventDefault: true });
@@ -675,6 +680,14 @@ Ext.define('Ext.form.field.Text', {
                 }
             }
         }
+    },
+
+    /**
+     * @private
+     * @override
+     */
+    getTdType: function() {
+        return 'textfield';
     },
 
     /**

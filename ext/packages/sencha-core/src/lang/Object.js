@@ -39,11 +39,9 @@ var TemplateClass = function(){},
      * @return {Object} The given object.
      */
     clear: function (object) {
-        var keys = ExtObject.getKeys(object),
-            n = keys.length;
-
-        while (n--) {
-            delete object[keys[n]];
+        // Safe to delete during iteration
+        for (var key in object) {
+            delete object[key];
         }
 
         return object;

@@ -48,7 +48,7 @@ Ext.define('Ext.util.TextMetrics', {
     
     /**
      * Creates new TextMetrics.
-     * @param {String/HTMLElement/Ext.Element} bindTo The element or its ID to bind to.
+     * @param {String/HTMLElement/Ext.dom.Element} bindTo The element or its ID to bind to.
      * @param {Number} [fixedWidth] A fixed width to apply to the measuring element.
      */
     constructor: function(bindTo, fixedWidth){
@@ -93,7 +93,7 @@ Ext.define('Ext.util.TextMetrics', {
     
     /**
      * Binds this TextMetrics instance to a new element
-     * @param {String/HTMLElement/Ext.Element} el The element or its ID.
+     * @param {String/HTMLElement/Ext.dom.Element} el The element or its ID.
      */
     bind: function(el){
         var me = this;

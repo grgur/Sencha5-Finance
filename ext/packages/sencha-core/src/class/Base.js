@@ -900,7 +900,9 @@ var noArgs = [],
         },
 
         addCachedConfig: function(config, isMixin) {
-            var cached = {};
+            var cached = {},
+                key;
+                
             for (key in config) {
                 cached[key] = {
                     cached: true,

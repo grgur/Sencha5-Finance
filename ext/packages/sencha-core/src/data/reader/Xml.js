@@ -52,11 +52,11 @@
  *         </user>
  *     </users>
  *
- * First off there's {@link #root} option to define the root node `<users>` (there should be only one in a well-formed
+ * First off there's {@link #rootProperty} option to define the root node `<users>` (there should be only one in a well-formed
  * XML document). Then the XML Reader uses the configured {@link #record} option to pull out the data for each record -
  * in this case we set record to 'user', so each `<user>` above will be converted into a User model.
  *
- * Note that XmlReader doesn't care whether your {@link #root} and {@link #record} elements are nested deep inside a
+ * Note that XmlReader doesn't care whether your {@link #rootProperty} and {@link #record} elements are nested deep inside a
  * larger structure, so a response like this will still work:
  *
  *     <?xml version="1.0" encoding="UTF-8"?>

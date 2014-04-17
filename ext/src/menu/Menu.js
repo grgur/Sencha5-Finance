@@ -142,7 +142,7 @@ Ext.define('Ext.menu.Menu', {
 
     /**
      * @cfg {String} [defaultAlign="tl-bl?"]
-     * The default {@link Ext.util.Positionable#getAlignToXY Ext.Element#getAlignToXY} anchor position value for this menu
+     * The default {@link Ext.util.Positionable#getAlignToXY Ext.dom.Element#getAlignToXY} anchor position value for this menu
      * relative to its owner. Used in conjunction with {@link #showBy}.
      */
     defaultAlign: 'tl-bl?',
@@ -292,10 +292,10 @@ Ext.define('Ext.menu.Menu', {
     },
 
     getRefOwner: function() {
-        // If a submenu, this will have a parentMenu property
+        // ownerItem === owning menuItem
         // If a menu of a Button, it will have an ownerButton property
         // Else use the default method.
-        return this.parentMenu || this.ownerButton || this.callParent(arguments);
+        return this.ownerItem || this.ownerButton || this.callParent(arguments);
     },
 
     /**
@@ -489,11 +489,11 @@ Ext.define('Ext.menu.Menu', {
             mouseEnter = !me.el.contains(fromEl),
             item = me.getItemFromEvent(e),
             parentMenu = me.parentMenu,
-            parentItem = me.parentItem;
+            ownerItem = me.ownerItem;
 
         if (mouseEnter && parentMenu) {
-            parentMenu.setActiveItem(parentItem);
-            parentItem.cancelDeferHide();
+            parentMenu.setActiveItem(ownerItem);
+            ownerItem.cancelDeferHide();
             parentMenu.mouseMonitor.mouseenter();
         }
 

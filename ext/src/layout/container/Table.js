@@ -78,7 +78,7 @@ Ext.define('Ext.layout.container.Table', {
 
     /**
      * @cfg {Object} tableAttrs
-     * An object containing properties which are added to the {@link Ext.DomHelper DomHelper} specification used to
+     * An object containing properties which are added to the {@link Ext.dom.Helper DomHelper} specification used to
      * create the layout's `<table>` element. Example:
      *
      *     {
@@ -98,13 +98,13 @@ Ext.define('Ext.layout.container.Table', {
 
     /**
      * @cfg {Object} trAttrs
-     * An object containing properties which are added to the {@link Ext.DomHelper DomHelper} specification used to
+     * An object containing properties which are added to the {@link Ext.dom.Helper DomHelper} specification used to
      * create the layout's `<tr>` elements.
      */
 
     /**
      * @cfg {Object} tdAttrs
-     * An object containing properties which are added to the {@link Ext.DomHelper DomHelper} specification used to
+     * An object containing properties which are added to the {@link Ext.dom.Helper DomHelper} specification used to
      * create the layout's `<td>` elements.
      */
 

@@ -51,9 +51,9 @@ Ext.define('Ext.data.schema.Namer', {
     fieldRole: function (name) {
         var match = name.match(this.endsWithIdRe, '');
         if (match) {
-            return name.substr(0, name.length - (match[1] || match[2]).length);
+            name = name.substr(0, name.length - (match[1] || match[2]).length);
         }
-        return name;
+        return this.apply('uncapitalize', name);
     },
 
     idField: function (name) {

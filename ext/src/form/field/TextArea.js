@@ -176,7 +176,7 @@ Ext.define('Ext.form.field.TextArea', {
         return value;
     },
 
-    onPaste: function(e){
+    onPaste: function(){
         var me = this;
         if (!me.pasteTask) {
             me.pasteTask = new Ext.util.DelayedTask(me.pasteCheck, me);

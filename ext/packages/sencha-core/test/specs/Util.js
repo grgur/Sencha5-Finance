@@ -78,6 +78,28 @@ describe("Ext.Util", function() {
                     });
                 });
 
+                describe("scope 'controller'", function() {
+                    it("should resolve the scope to the defaultScope", function() {
+                        Ext.callback(spy, 'controller', undefined, undefined, undefined, fakeScope);
+                        expect(spy.mostRecentCall.object).toBe(fakeScope);
+                    });
+
+                    it("should resolve the scope to the caller", function() {
+                        Ext.callback(spy, 'controller', undefined, undefined, fakeScope);
+                        expect(spy.mostRecentCall.object).toBe(fakeScope);
+                    });
+
+                    it("should prefer the defaultScope to the caller", function() {
+                        Ext.callback(spy, 'controller', undefined, undefined, {}, fakeScope);
+                        expect(spy.mostRecentCall.object).toBe(fakeScope);
+                    });
+
+                    it("should fallback to global scope if no caller is passed", function() {
+                        Ext.callback(spy, 'controller');
+                        expect(spy.mostRecentCall.object).toBe(Ext.global);
+                    });
+                });
+
                 it("should execute the passed function in the specified scope", function() {
                     Ext.callback(spy, fakeScope);
                     expect(spy.mostRecentCall.object).toBe(fakeScope);
@@ -118,6 +140,12 @@ describe("Ext.Util", function() {
                     it("should throw if passed 'this' as scope", function() {
                         expect(function() {
                             Ext.callback('foo', 'this');
+                        }).toThrow();
+                    });
+
+                    it("should throw if passed 'controller' as scope", function() {
+                        expect(function() {
+                            Ext.callback('foo', 'controller');
                         }).toThrow();
                     });
                     
@@ -211,6 +239,36 @@ describe("Ext.Util", function() {
                         it("should retain scope on defer", function() {
                             runs(function() {
                                 Ext.callback('foo', 'this', undefined, 1, caller);
+                                expect(theScope.foo).not.toHaveBeenCalled();
+                            });
+                            waitsFor(function() {
+                                return theScope.foo.callCount > 0;
+                            }, "deferred callback never called");
+                            runs(function() {
+                                expect(theScope.foo).toHaveBeenCalled();
+                                expect(theScope.foo.mostRecentCall.object).toBe(theScope);
+                            });
+                        });
+                    });
+
+                    describe("scope: 'controller'", function() {
+                        it("should call resolveListenerScope on the caller", function() {
+                            spyOn(caller, 'resolveListenerScope').andCallThrough();
+                            Ext.callback('foo', 'controller', undefined, undefined, caller);
+                            expect(caller.resolveListenerScope).toHaveBeenCalledWith('controller');
+                            expect(theScope.foo).toHaveBeenCalled();
+                            expect(theScope.foo.mostRecentCall.object).toBe(theScope);
+                        });
+
+                        it("should throw if the method cannot be found on the passed caller", function() {
+                            expect(function() {
+                                Ext.callback('fake', 'controller', undefined, undefined, caller);
+                            }).toThrow();
+                        });
+
+                        it("should retain scope on defer", function() {
+                            runs(function() {
+                                Ext.callback('foo', 'controller', undefined, 1, caller);
                                 expect(theScope.foo).not.toHaveBeenCalled();
                             });
                             waitsFor(function() {

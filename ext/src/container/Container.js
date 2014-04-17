@@ -1200,7 +1200,7 @@ Ext.define('Ext.container.Container', {
 
     /**
      * Return the immediate child Component in which the passed element is located.
-     * @param {Ext.Element/HTMLElement/String} el The element to test (or ID of element).
+     * @param {Ext.dom.Element/HTMLElement/String} el The element to test (or ID of element).
      * @param {Boolean} deep If `true`, returns the deepest descendant Component which contains the passed element.
      * @return {Ext.Component} The child item which contains the passed element.
      */
@@ -1284,7 +1284,7 @@ Ext.define('Ext.container.Container', {
      * Returns the focus holder element associated with this Container. By default, this is the Container's target
      * element. Subclasses which use embedded focusable elements (such as Window and Button) should override this for use
      * by the {@link #method-focus} method.
-     * @returns {Ext.Element} the focus holding element.
+     * @returns {Ext.dom.Element} the focus holding element.
      */
     getFocusEl: function() {
         return this.getTargetEl();
@@ -1352,7 +1352,6 @@ Ext.define('Ext.container.Container', {
     initComponent: function(){
         var me = this,
             reference = me.reference,
-            controller,
             len;
 
         me.callParent();
@@ -1560,15 +1559,15 @@ Ext.define('Ext.container.Container', {
      *
      * @since 2.3.0
      */
-    insert: function(index, comp) {
+    insert: function(index, component) {
         var compIdx;
-        if (comp && comp.isComponent) {
-            compIdx = this.items.indexOf(comp);
+        if (component && component.isComponent) {
+            compIdx = this.items.indexOf(component);
             if (compIdx !== -1) {
                 return this.move(compIdx, index);
             }
         }
-        return this.add(index, comp);
+        return this.add(index, component);
     },
 
     /**
@@ -1831,9 +1830,9 @@ Ext.define('Ext.container.Container', {
      * @return {Ext.Component} component The Component that was removed.
      * @since 2.3.0
      */
-    remove: function(comp, autoDestroy) {
+    remove: function(component, autoDestroy) {
         var me = this,
-            c = me.getComponent(comp);
+            c = me.getComponent(component);
         //<debug>
             if (Ext.isDefined(Ext.global.console) && !c) {
                 Ext.global.console.warn("Attempted to remove a component that does not exist. Ext.container.Container: remove takes an argument of the component to remove. cmp.remove() is incorrect usage.");

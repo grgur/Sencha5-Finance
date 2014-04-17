@@ -212,7 +212,7 @@ Ext.define('Ext.data.session.Binding', {
                 this.callParent();
             }
         },
-
+        
         sort: function () {
             var stub = this.stub;
 

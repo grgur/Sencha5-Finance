@@ -63,8 +63,59 @@ Ext.define('Ext.app.bind.Template', {
 
     formatRe: /^([a-z_]+)(?:\(([^\)]*?)?\))?$/i,
 
+    /**
+     * @property {String[]} buffer
+     * Initially this is just the array of string fragments with `null` between each
+     * to hold the place of a substitution token. On first use these slots are filled
+     * with the token's value and this array is joined to form the output.
+     * @private
+     */
     buffer: null,
+
+    /**
+     * @property {Object[]} slots
+     * The elements of this array line up with those of `buffer`. This array holds
+     * the parsed information for the substitution token that fills a given slot in
+     * the generated string. Indices that correspond to literal text are `null`.
+     *
+     * Consider the following substitution token:
+     *
+     *      {foo:this.fmt(2,4)}
+     *
+     * The object in this array has the following properties to describe this token:
+     *
+     *   * `fmt` The name of the formatting function ("fmt") or `null` if none.
+     *   * `index` The numeric index if this is not a named substitution or `null`.
+     *   * `not` True if the token has a logical not ("!") at the front.
+     *   * `token` The name of the token ("foo") if not an `index`.
+     *   * `pos` The position of this token in the `tokens` array.
+     *   * `scope` A reference to the object on which the `fmt` method exists. This
+     *    will be `Ext.util.Format` if no "this." is present or `null` if it is (or
+     *    if there is no `fmt`). In the above example, this is `null` to indicate the
+     *    scope is unknown.
+     *   * `args` An array of arguments to `fmt` if the arguments are simple enough
+     *    to parse directly. Otherwise this is `null` and `fn` is used.
+     *   * `fn` A generated function to use to evaluate the arguments to the `fmt`. In
+     *    rare cases these arguments can reference global variables so the expression
+     *    must be evaluated on each call.
+     *   * `format` The method to call to perform the format. This method accepts the
+     *    scope (in case `scope` is unknown) and the value. This function is `null` if
+     *    there is no `fmt`.
+     *
+     * @private
+     */
     slots: null,
+
+    /**
+     * @property {String[]} tokens
+     * The distinct set of tokens used in the template excluding formatting. This is
+     * used to ensure that only one bind is performed per unique token. This array is
+     * passed to {@link Ext.app.ViewModel#bind} to perform a "multi-bind". The result
+     * is an array of values corresponding these tokens. Each entry in `slots` then
+     * knows its `pos` in this array from which to pick up its value, apply formats
+     * and place in `buffer`.
+     * @private
+     */
     tokens: null,
 
     /**
@@ -159,70 +210,19 @@ Ext.define('Ext.app.bind.Template', {
             tokens = [],
             tokenMap = {},
             last = 0,
-            numberRe = me.numberRe,
             tokenRe = me.tokenRe,
-            stringRe = me.stringRe,
             pos = 0,
-            arg, args, fmt, i, length, match, s, slot, token;
+            fmt, i, length, match, s, slot, token;
 
         // Remove the initters so that we don't get called here again.
         for (i in me._initters) {
             delete me[i];
         }
 
-        /**
-         * @property {String[]} buffer
-         * Initially this is just the array of string fragments with `null` between each
-         * to hold the place of a substitution token. On first use these slots are filled
-         * with the token's value and this array is joined to form the output.
-         * @private
-         */
         me.buffer = buffer;
 
-        /**
-         * @property {Object[]} slots
-         * The elements of this array line up with those of `buffer`. This array holds
-         * the parsed information for the substitution token that fills a given slot in
-         * the generated string. Indices that correspond to literal text are `null`.
-         *
-         * Consider the following substitution token:
-         *
-         *      {foo:this.fmt(2,4)}
-         *
-         * The object in this array has the following properties to describe this token:
-         *
-         *   * `fmt` The name of the formatting function ("fmt") or `null` if none.
-         *   * `index` The numeric index if this is not a named substitution or `null`.
-         *   * `not` True if the token has a logical not ("!") at the front.
-         *   * `token` The name of the token ("foo") if not an `index`.
-         *   * `pos` The position of this token in the `tokens` array.
-         *   * `scope` A reference to the object on which the `fmt` method exists. This
-         *    will be `Ext.util.Format` if no "this." is present or `null` if it is (or
-         *    if there is no `fmt`). In the above example, this is `null` to indicate the
-         *    scope is unknown.
-         *   * `args` An array of arguments to `fmt` if the arguments are simple enough
-         *    to parse directly. Otherwise this is `null` and `fn` is used.
-         *   * `fn` A generated function to use to evaluate the arguments to the `fmt`. In
-         *    rare cases these arguments can reference global variables so the expression
-         *    must be evaluated on each call.
-         *   * `format` The method to call to perform the format. This method accepts the
-         *    scope (in case `scope` is unknown) and the value. This function is `null` if
-         *    there is no `fmt`.
-         *
-         * @private
-         */
         me.slots = slots;
 
-        /**
-         * @property {String[]} tokens
-         * The distinct set of tokens used in the template excluding formatting. This is
-         * used to ensure that only one bind is performed per unique token. This array is
-         * passed to {@link Ext.app.ViewModel#bind} to perform a "multi-bind". The result
-         * is an array of values corresponding these tokens. Each entry in `slots` then
-         * knows its `pos` in this array from which to pick up its value, apply formats
-         * and place in `buffer`.
-         * @private
-         */
         me.tokens = tokens;
 
         // text = 'Hello {foo:this.fmt(2,4)} World {bar} - {1}'

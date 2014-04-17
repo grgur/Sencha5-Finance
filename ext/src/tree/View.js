@@ -74,7 +74,6 @@ Ext.define('Ext.tree.View', {
                 var record = rowValues.record,
                     view = rowValues.view;
 
-                rowValues.rowAttr = {};
                 // We always need to set the qtip/qtitle, because they may have been
                 // emptied, which means we still need to flush that change to the DOM
                 // so the old values are overwritten
@@ -317,7 +316,7 @@ Ext.define('Ext.tree.View', {
      * If the passed parent has no wrap (or there is no valid ancestor wrap after bubbling), this function
      * will return null and the calling code should then call {@link #createAnimWrap} if needed.
      *
-     * @return {Ext.Element} The wrapping element as created in {@link #createAnimWrap}, or null
+     * @return {Ext.dom.Element} The wrapping element as created in {@link #createAnimWrap}, or null
      */
     getAnimWrap: function(parent, bubble) {
         if (!this.animate) {

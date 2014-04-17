@@ -38,6 +38,7 @@ Ext.define('Ext.util.Observable', function(Observable) {
         emptyArray = [],
         arrayProto = Array.prototype,
         arraySlice = arrayProto.slice,
+        eventNameMap = Ext.$eventNameMap,
         // Private Destroyable class which removes listeners
         ListenerRemover = function(observable) {
 
@@ -275,7 +276,7 @@ Ext.define('Ext.util.Observable', function(Observable) {
         * Adds listeners to any Observable object (or Ext.Element) which are automatically removed when this Component is
         * destroyed.
         *
-        * @param {Ext.util.Observable/Ext.Element} item The item to which to add a listener/listeners.
+        * @param {Ext.util.Observable/Ext.dom.Element} item The item to which to add a listener/listeners.
         * @param {Object/String} ename The event name, or an object containing event name properties.
         * @param {Function} fn (optional) If the `ename` parameter was an event name, this is the handler function.
         * @param {Object} scope (optional) If the `ename` parameter was an event name, this is the scope (`this` reference)
@@ -362,7 +363,7 @@ Ext.define('Ext.util.Observable', function(Observable) {
         /**
         * Removes listeners that were added by the {@link #mon} method.
         *
-        * @param {Ext.util.Observable/Ext.Element} item The item from which to remove a listener/listeners.
+        * @param {Ext.util.Observable/Ext.dom.Element} item The item from which to remove a listener/listeners.
         * @param {Object/String} ename The event name, or an object containing event name properties.
         * @param {Function} fn (optional) If the `ename` parameter was an event name, this is the handler function.
         * @param {Object} scope (optional) If the `ename` parameter was an event name, this is the scope (`this` reference)
@@ -393,7 +394,7 @@ Ext.define('Ext.util.Observable', function(Observable) {
                 // Only call it below so we can get an error in debug mode when the method is not present.
                 // We do nothing with the result.
                 //<debug>
-                if (typeof fn === 'string' && scope && scope !== 'this' && !managedListeners.length) {
+                if (typeof fn === 'string' && scope && scope !== 'this' && scope !== 'controller' && !managedListeners.length) {
                     me.resolveMethod(fn, scope);
                 }
                 //</debug>
@@ -427,6 +428,12 @@ Ext.define('Ext.util.Observable', function(Observable) {
          * @protected
          */
         resolveListenerScope: function (defaultScope) {
+            //<debug>
+            if (defaultScope === 'controller') {
+                Ext.Error.raise('scope: "controller" can only be specified on components that derive from component');
+            }
+            //</debug>
+            
             if (defaultScope === 'this') {
                 defaultScope = null;
             }
@@ -444,7 +451,8 @@ Ext.define('Ext.util.Observable', function(Observable) {
         * @return {Boolean} returns false if any of the handlers return false otherwise it returns true.
         */
         fireEventArgs: function(eventName, args) {
-            eventName = eventName.toLowerCase();
+            // This is inlined for performance
+            eventName = eventNameMap[eventName] || (eventNameMap[eventName] = eventName.toLowerCase());
             var me = this,
                 // no need to make events since we need an Event with listeners
                 events = me.events,
@@ -666,7 +674,8 @@ Ext.define('Ext.util.Observable', function(Observable) {
             }
             // String, function passed
             else {
-                ename = ename.toLowerCase();
+                // This is inlined for performance
+                ename = eventNameMap[ename] || (eventNameMap[ename] = ename.toLowerCase());
                 // need events now...
                 event = (me.events || (me.events = {}))[ename];
                 if (event && event.isEvent) {
@@ -678,14 +687,14 @@ Ext.define('Ext.util.Observable', function(Observable) {
                 // Allow listeners: { click: 'onClick', scope: myObject }
                 // If we get passed with a scope, go and resolve it directly,
                 // otherwise we need to defer it til when the event fires.
-                if (typeof fn === 'string' && scope && scope !== 'this') {
+                if (typeof fn === 'string' && scope && scope !== 'this' && scope !== 'controller') {
                     fn = me.resolveMethod(fn, scope);
                 }
                 //<debug>
                 else {
                     // If we have a string and no scope we won't have a function yet,
                     // so don't throw any exception.
-                    if (!(typeof fn === 'string' && (!scope || scope === 'this'))) {
+                    if (!(typeof fn === 'string' && (!scope || scope === 'this' || scope === 'controller'))) {
                         Ext.Assert.isFunction(fn,
                             'No function passed for event ' + me.$className + '.' + ename);
                     }
@@ -734,10 +743,11 @@ Ext.define('Ext.util.Observable', function(Observable) {
                     }
                 }
             } else {
-                ename = ename.toLowerCase();
+                // This is inlined for performance
+                ename = eventNameMap[ename] || (eventNameMap[ename] = ename.toLowerCase());
                 event = events && events[ename];
                 if (event && event.isEvent) {
-                    if (typeof fn === 'string' && scope && scope !== 'this') {
+                    if (typeof fn === 'string' && scope && scope !== 'this' && scope !== 'controller') {
                         fn = me.resolveMethod(fn, scope);
                     }
                     
@@ -849,7 +859,9 @@ Ext.define('Ext.util.Observable', function(Observable) {
         * @return {Boolean} `true` if the event is being listened for or bubbles, else `false`
         */
         hasListener: function(ename) {
-            return !!this.hasListeners[ename.toLowerCase()];
+            // This is inlined for performance
+            ename = eventNameMap[ename] || (eventNameMap[ename] = ename.toLowerCase());
+            return !!this.hasListeners[ename];
         },
         
         /**
@@ -897,13 +909,16 @@ Ext.define('Ext.util.Observable', function(Observable) {
             var me = this,
                 events = me.events || (me.events = {}),
                 len = arguments.length,
-                i, event, name;
+                i, event, ename;
 
             for (i = 0; i < len; i++) {
-                event = events[name = arguments[i]];
+                ename = arguments[i];
+                // This is inlined for performance
+                ename = eventNameMap[ename] || (eventNameMap[ename] = ename.toLowerCase());
+                event = events[ename];
                 // we need to spin up the Event instance so it can hold the suspend count
                 if (!event || !event.isEvent) {
-                    events[name] = event = new Ext.util.Event(me, name);
+                    events[ename] = event = new Ext.util.Event(me, ename);
                 }
                 event.suspend();
             }
@@ -1073,7 +1088,9 @@ Ext.define('Ext.util.Observable', function(Observable) {
                     ename, event, i;
 
                 for (i = 0; i < length; ++i) {
-                    ename = names[i].toLowerCase();
+                    ename = names[i];
+                    // This is inlined for performance
+                    ename = eventNameMap[ename] || (eventNameMap[ename] = ename.toLowerCase());
                     event = events[ename];
 
                     if (!event || !event.isEvent) {

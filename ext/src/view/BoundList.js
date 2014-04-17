@@ -14,8 +14,8 @@ Ext.define('Ext.view.BoundList', {
     /**
      * @cfg {Number} [pageSize=0]
      * If greater than `0`, a {@link Ext.toolbar.Paging} is displayed at the bottom of the list and store
-     * queries will execute with page {@link Ext.data.Operation#start start} and
-     * {@link Ext.data.Operation#limit limit} parameters.
+     * queries will execute with page {@link Ext.data.operation.Read#start start} and
+     * {@link Ext.data.operation.Read#limit limit} parameters.
      */
     pageSize: 0,
 

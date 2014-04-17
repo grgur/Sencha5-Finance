@@ -219,7 +219,7 @@ Ext.define('Ext.state.Stateful', {
         if (id) {
             state = me.getState() || {};    //pass along for custom interactions
 
-            /**
+            /*
              * Gather state from those plugins that implement a getState method
              */
             plugins = me.getPlugins() || [];

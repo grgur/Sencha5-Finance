@@ -244,7 +244,7 @@ Ext.define('Ext.tip.QuickTipManager', {
 
     /**
      * Removes any registered quick tip from the target element and destroys it.
-     * @param {String/HTMLElement/Ext.Element} el The element from which the quick tip
+     * @param {String/HTMLElement/Ext.dom.Element} el The element from which the quick tip
      * is to be removed or ID of the element.
      */
     unregister : function(){

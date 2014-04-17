@@ -1027,6 +1027,87 @@ describe("Ext.mixin.Observable", function() {
         makeSuite(false);
     });
 
+    describe("event name normalization", function() {
+        var spy, o;
+
+        beforeEach(function() {
+            spy = jasmine.createSpy();
+            o = new Ext.mixin.Observable();
+        });
+
+        describe("firing", function() {
+            it("should match when firing with lower case", function() {
+                o.on('FOO', spy);
+                o.fireEvent('foo');
+                expect(spy).toHaveBeenCalled();
+            });
+
+            it("should match when firing with mixed case", function() {
+                o.on('foo', spy);
+                o.fireEvent('FOO');
+                expect(spy).toHaveBeenCalled();
+            });
+        });
+
+        describe("removing", function() {
+            it("should match when removing with lower case", function() {
+                o.on('FOO', spy);
+                o.un('foo', spy);
+                o.fireEvent('foo');
+                expect(spy).not.toHaveBeenCalled();
+            });
+
+            it("should match when removing with mixed case", function() {
+                o.on('foo', spy);
+                o.un('FOO', spy);
+                o.fireEvent('FOO');
+                expect(spy).not.toHaveBeenCalled();
+            });
+        });
+
+        describe("hasListener(s)", function() {
+            it("should use lower case for hasListeners", function() {
+                o.on('FOO', spy);
+                expect(o.hasListeners.foo).toBe(1);
+            });
+
+            it("should use lower case for hasListener", function() {
+                o.on('FOO', spy);
+                expect(o.hasListener('foo')).toBe(true);
+            });
+        });
+
+        describe("suspend/resume", function() {
+            it("should ignore case when asking if an event is suspended", function() {
+                o.suspendEvent('FOO');
+                expect(o.isSuspended('foo')).toBe(true);
+            });
+
+            it("should ignore case when resuming events", function() {
+                o.on('foo', spy);
+                o.suspendEvent('FOO');
+                o.fireEvent('foo');
+                expect(spy).not.toHaveBeenCalled();
+                o.resumeEvent('foo');
+                o.fireEvent('foo');
+                expect(spy).toHaveBeenCalled();
+            });
+        });
+
+        describe("bubbling", function() {
+            it("should ignore case when bubbling events", function() {
+                var other = new Ext.mixin.Observable();
+                other.on('foo', spy);
+                o.enableBubble('FOO');
+                o.getBubbleTarget = function() {
+                    return other;
+                }
+                o.fireEvent('foo');
+                expect(spy).toHaveBeenCalled();
+            });
+        });
+    });
+
     describe("hasListeners", function() {
         var dispatcher;
 
@@ -1200,6 +1281,33 @@ describe("Ext.mixin.Observable", function() {
             o.un('custom', 'method1', 'this');
             o.fireEvent('custom');
             expect(o.method1).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("scope: controller", function() {
+        var Cls;
+
+        beforeEach(function() {
+            Cls = Ext.define(null, {
+                mixins: ['Ext.mixin.Observable'],
+
+                constructor: function() {
+                    this.mixins.observable.constructor.call(this);
+                },
+
+                method1: function() {},
+                method2: function() {}
+            });
+        });
+
+        it("should not resolve the scope", function() {
+            // Observables can't have controllers
+            var o = new Cls();
+            spyOn(o, 'method1');
+            o.on('custom', 'method1', 'controller');
+            expect(function() {
+                o.fireEvent('custom');
+            }).toThrow();
         });
     });
 

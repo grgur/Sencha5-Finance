@@ -442,6 +442,7 @@ Ext.define('Ext.grid.RowEditor', {
 
         // Insert the column's field into the editor panel.
         fieldContainer.insert(grid.getColumnManager().getHeaderIndex(column), column.getEditor());
+        me.needsSyncFieldWidths = true;
     },
 
     destroyColumnEditor: function(column) {

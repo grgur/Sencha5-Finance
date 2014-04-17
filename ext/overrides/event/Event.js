@@ -36,6 +36,8 @@ Ext.define('Ext.overrides.event.Event', {
     },
 
     /**
+     * @method injectEvent
+     * @member Ext.event.Event
      * Injects a DOM event using the data in this object and (optionally) a new target.
      * This is a low-level technique and not likely to be used by application code. The
      * currently supported event types are:
@@ -294,8 +296,10 @@ Ext.define('Ext.overrides.event.Event', {
         '5.0': {
             methods: {
                 /**
+                 * @method clone
+                 * @member Ext.event.Event
                  * Clones this event.
-                 * @return {Ext.EventObject} The cloned copy
+                 * @return {Ext.event.Event} The cloned copy
                  * @deprecated 5.0.0
                  */
                 clone: function() {

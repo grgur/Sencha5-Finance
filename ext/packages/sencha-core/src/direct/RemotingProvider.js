@@ -359,7 +359,7 @@ Ext.define('Ext.direct.RemotingProvider', {
         }
         else {
             handler = function(form, callback, scope) {
-                me.configureFormRequest(action, method, form, callback, scope);
+                me.configureFormRequest(action, method, slice.call(arguments, 0));
             };
         }
 
@@ -675,8 +675,11 @@ Ext.define('Ext.direct.RemotingProvider', {
      *
      * @private
      */
-    configureFormRequest: function(action, method, form, callback, scope) {
+    configureFormRequest: function(action, method, args) {
         var me = this,
+            form = args[0],
+            callback = args[1],
+            scope = args[2],
             transaction, isUpload, params;
             
         transaction = new Ext.direct.Transaction({

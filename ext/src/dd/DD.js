@@ -97,8 +97,8 @@ Ext.define('Ext.dd.DD', {
         if (!this.deltaSetXY) {
             vpSize = this.cachedViewportSize = { width: EL.getDocumentWidth(), height: EL.getDocumentHeight() };
             aCoord = [
-                this.constrainX ? Math.max(0, Math.min(oCoord.x, vpSize.width - elSize.width)) : oCoord.x,
-                this.constrainY ? Math.max(0, Math.min(oCoord.y, vpSize.height - elSize.height)) : oCoord.y
+                Math.max(0, Math.min(oCoord.x, vpSize.width - elSize.width)),
+                Math.max(0, Math.min(oCoord.y, vpSize.height - elSize.height))
             ];
             fly.setXY(aCoord);
             newLeft = this.getLocalX(fly);
@@ -108,8 +108,8 @@ Ext.define('Ext.dd.DD', {
             vpSize = this.cachedViewportSize;
             this.setLocalXY(
                 fly,
-                this.constrainX ? Math.max(0, Math.min(oCoord.x + this.deltaSetXY[0], vpSize.width - elSize.width)) : oCoord.x + this.deltaSetXY[0],
-                this.constrainY ? Math.max(0, Math.min(oCoord.y + this.deltaSetXY[1], vpSize.height - elSize.height)) : oCoord.y + this.deltaSetXY[1]
+                Math.max(0, Math.min(oCoord.x + this.deltaSetXY[0], vpSize.width - elSize.width)),
+                Math.max(0, Math.min(oCoord.y + this.deltaSetXY[1], vpSize.height - elSize.height))
             );
         }
 

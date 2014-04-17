@@ -170,7 +170,7 @@ Ext.define('Ext.data.session.Session', {
     /**
      * Creates a new record and tracks it in this session.
      *
-     * @param {String/Class} type The `entityName` or the actual class of record to create.
+     * @param {String/Ext.Class} type The `entityName` or the actual class of record to create.
      * @param {Object} [data] The new record's data.
      * conversions.
      * @return {Ext.data.Model} The new record.
@@ -448,6 +448,9 @@ Ext.define('Ext.data.session.Session', {
 
     //-------------------------------------------------------------------------
     privates: {
+        /**
+         * @private
+         */
         add: function (record) {
             var data = this.data,
                 entityName = record.entityName,

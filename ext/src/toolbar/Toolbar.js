@@ -208,6 +208,14 @@ Ext.define('Ext.toolbar.Toolbar', {
     ariaRole : 'toolbar',
 
     defaultType: 'button',
+
+    /**
+     * @cfg {Ext.enums.Layout/Object} layout
+     * This class assigns a default layout (`layout: 'hbox'` or `layout: 'vbox'` depending upon orientation).
+     *
+     * Developers _may_ override this configuration option if another layout is required.
+     * See {@link Ext.container.Container#layout} for additional information.
+     */
     layout: undefined,
 
     /**
@@ -215,15 +223,6 @@ Ext.define('Ext.toolbar.Toolbar', {
      * Set to `true` to make the toolbar vertical. The layout will become a `vbox`.
      */
     vertical: false,
-
-    /**
-     * @cfg {Ext.enums.Layout/Object} layout
-     * This class assigns a default layout (`layout: 'hbox'`).
-     * Developers _may_ override this configuration option if another layout
-     * is required (the constructor must be passed a configuration object in this
-     * case instead of an array).
-     * See {@link Ext.container.Container#layout} for additional information.
-     */
 
     /**
      * @cfg {Boolean} enableOverflow
@@ -375,7 +374,7 @@ Ext.define('Ext.toolbar.Toolbar', {
      * @param {Ext.Component.../Object.../String.../HTMLElement...} args The following types of arguments are all valid:
      *
      *  - `{@link Ext.button.Button config}`: A valid button config object
-     *  - `HtmlElement`: Any standard HTML element
+     *  - `HTMLElement`: Any standard HTML element
      *  - `Field`: Any form field
      *  - `Item`: Any subclass of {@link Ext.toolbar.Item}
      *  - `String`: Any generic string (gets wrapped in a {@link Ext.toolbar.TextItem}).

@@ -9,7 +9,7 @@ describe("Ext.data.schema.ManyToMany", function() {
             extend: 'Ext.data.Model',
 
             schema: {
-                //
+                namespace: 'spec.many2many'
             }
         });
 
@@ -134,8 +134,7 @@ describe("Ext.data.schema.ManyToMany", function() {
     });
     
     afterEach(function() {
-        Ext.data.Model.schema.setNamespace(null);
-        Ext.data.Model.schema.clear();
+        Ext.data.Model.schema.clear(true);
     });
 
     //-------------------------------------------------------------------------

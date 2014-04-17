@@ -21,12 +21,12 @@
  *
  *  - ContainerA's initComponent calls #render passing the `renderTo` property as the
  *    container argument.
- *  - `render` calls the `getRenderTree` method to get a complete {@link Ext.DomHelper} spec.
+ *  - `render` calls the `getRenderTree` method to get a complete {@link Ext.dom.Helper} spec.
  *  - `getRenderTree` fires the "beforerender" event and calls the #beforeRender
  *    method. Its result is obtained by calling #getElConfig.
  *  - The #getElConfig method uses the `renderTpl` and its render data as the content
  *    of the `autoEl` described element.
- *  - The result of `getRenderTree` is passed to {@link Ext.DomHelper#append}.
+ *  - The result of `getRenderTree` is passed to {@link Ext.dom.Helper#append}.
  *  - The `renderTpl` contains calls to render things like docked items, container items
  *    and raw markup (such as the `html` or `tpl` config properties). These calls are to
  *    methods added to the {@link Ext.XTemplate} instance by #setupRenderTpl.
@@ -812,7 +812,7 @@ Ext.define('Ext.util.Renderable', {
      * Subclasses which override this to gain access to the structure at render time should
      * call the parent class's method before attempting to access any child elements of the Component.
      *
-     * @param {Ext.core.Element} parentNode The parent Element in which this Component's encapsulating element is contained.
+     * @param {Ext.dom.Element} parentNode The parent Element in which this Component's encapsulating element is contained.
      * @param {Number} containerIdx The index within the parent Container's child collection of this Component.
      *
      * @template
@@ -896,7 +896,7 @@ Ext.define('Ext.util.Renderable', {
      * layout manager is used which does nothing but render child components sequentially into the
      * Container. No sizing or positioning will be performed in this situation.**
      *
-     * @param {Ext.Element/HTMLElement/String} [container] The element this Component should be
+     * @param {Ext.dom.Element/HTMLElement/String} [container] The element this Component should be
      * rendered into. If it is being created from existing markup, this should be omitted.
      * @param {String/Number} [position] The element ID or DOM node index within the container **before**
      * which this component will be inserted (defaults to appending to the end of the container)

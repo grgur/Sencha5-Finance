@@ -15,6 +15,7 @@ describe("Ext.ComponentQuery", function() {
         child9,
         child10,
         child11,
+        child12,
         setup = function(o, parent) {
             if (o.items) {
                 for (var i = 0; i < o.items.length; i++) {
@@ -24,7 +25,7 @@ describe("Ext.ComponentQuery", function() {
             
             Ext.apply(o, {
                 getItemId: function() {
-                    return this.id;
+                    return this.itemId !== undefined ? this.itemId : this.id;
                 },
 
                 getId: function() {
@@ -70,6 +71,22 @@ describe("Ext.ComponentQuery", function() {
             
             cm.register(o);
         };
+        
+    function expectChildren() {
+        var args = Array.prototype.slice.apply(arguments),
+            result = args.shift(),
+            len = args.length,
+            i, expected, actual;
+        
+        expect(result.length).toBe(len);
+        
+        for (i = 0, len = args.length; i < len; i++) {
+            expected = args[i];
+            actual   = result[i];
+            
+            expect(actual.id).toBe(expected.id);
+        }
+    };
 
     beforeEach(function() {
         cq = Ext.ComponentQuery;
@@ -84,12 +101,14 @@ describe("Ext.ComponentQuery", function() {
                 $className: 'Foo',
                 id: 'child1',
                 cls: 'child1-cls',
-                type: 'B/G/Z'
+                type: 'B/G/Z',
+                foo: 'bar,baz'
             }, child2 = {
-                $className: 'Bar',
+                $className: 'Bar.Baz.Qux',
                 id: 'child2',
                 cls: 'child2-cls',
-                type: 'B/G/Z'
+                type: 'B/G/Z',
+                bar: 'foo,bar,baz'
             }, child3 = {
                 $className: 'Foo',
                 id: 'child3',
@@ -128,9 +147,16 @@ describe("Ext.ComponentQuery", function() {
                         cls  : 'child10-cls my-foo-cls',
                         type : 'B'
                     }, child11 = {
-                        id   : 'child11',
+                        id   : 'child.11',
                         cls  : 'child11-cls my-foo-cls-test',
                         type : 'B'
+                    }, child12 = {
+                        id: 'child.12',
+                        itemId: 'bobby.brown.goes.down',
+                        type: 'E.2-E.4',
+                        foo: '[foo(bar)!baz#qux\\fred*]',
+                        sq: "'single' 'quotes'",
+                        dq: '"double" "quotes"'
                     }]
                 }]
             }]
@@ -140,6 +166,68 @@ describe("Ext.ComponentQuery", function() {
     
     afterEach(function() {
         cm.all = {};
+    });
+    
+    describe("parser", function() {
+        it("should blow up if the intra-selector comma is escaped", function() {
+            expect(function() {
+                cq.query('#child3\\,F', root);
+            }).toThrow('Invalid ComponentQuery selector: ",F"');
+        });
+        
+        it("should blow up if a selector ends with unescaped comma", function() {
+            expect(function() {
+                cq.query('#child3,', root);
+            }).toThrow('Invalid ComponentQuery selector: ""');
+        });
+        
+        it("should blow up if a selector ends with an escaped comma", function() {
+            expect(function() {
+                cq.query('#child3\\,', root);
+            }).toThrow('Invalid ComponentQuery selector: ","');
+        });
+        
+        describe("missing quotes", function() {
+            var warning;
+            
+            beforeEach(function() {
+                spyOn(Ext.log, 'warn').andCallFake(function(msg) {
+                    warning = msg;
+                });
+                
+                warning = null;
+            });
+            
+            it("should warn on missing opening double quote", function() {
+                cq.query('[foo=bar"]');
+                expect(warning).toMatch(/^ComponentQuery selector.*?unescaped \("\).*?end/);
+            });
+            
+            it("should warn on missing closing double quote", function() {
+                cq.query('[foo="bar]');
+                expect(warning).toMatch(/^ComponentQuery selector.*?unescaped \("\).*?beginning/);
+            });
+            
+            it("should warn on missing opening single quote", function() {
+                cq.query("[foo=bar']");
+                expect(warning).toMatch(/^ComponentQuery selector.*?unescaped \('\).*end/);
+            });
+            
+            it("should warn on missing closing single quote", function() {
+                cq.query("[foo='bar]");
+                expect(warning).toMatch(/^ComponentQuery selector.*?unescaped \('\).*beginning/);
+            });
+        });
+    });
+    
+    describe("Query object", function() {
+        describe("is", function() {
+            it("should return true if the selector is empty", function() {
+                var q = cq.parse('');
+                
+                expect(q.is(root)).toBe(true);
+            });
+        });
     });
     
     describe("is", function(){
@@ -210,6 +298,12 @@ describe("Ext.ComponentQuery", function() {
             expect(result.length).toEqual(6);
             expect(result[2].id).toEqual(child6.id);
         });
+        
+        it("should allow escaped dots in xtype selector", function() {
+            result = cq.query('E\\.2-E\\.4', root);
+            expect(result.length).toBe(1);
+            expect(result[0].id).toBe(child12.id);
+        });
     });
     
     describe("simple query by xtype prefixed with dot", function() {
@@ -217,6 +311,12 @@ describe("Ext.ComponentQuery", function() {
             result = cq.query('.G', root);
             expect(result.length).toEqual(6);
             expect(result[2].id).toEqual(child6.id);
+        });
+
+        it("should allow escaped dots in xtype selector", function() {
+            result = cq.query('.E\\.2-E\\.4', root);
+            expect(result.length).toBe(1);
+            expect(result[0].id).toBe(child12.id);
         });
     });
     
@@ -227,6 +327,11 @@ describe("Ext.ComponentQuery", function() {
             expect(result[0].id).toBe('child1');
             expect(result[1].id).toBe('child3');
         });  
+
+        it("should allow dots in attribute values", function() {
+            result = cq.query('[$className=Bar.Baz.Qux]', root);
+            expectChildren(result, child2);
+        });
     });
     
     describe("query by id", function() {
@@ -240,6 +345,16 @@ describe("Ext.ComponentQuery", function() {
             result = cq.query('#child5', root);
             expect(result.length).toEqual(1);
             expect(result[0].id).toEqual(child5.id);
+        });
+        
+        it("should allow escaped dots in query-by-id selectors", function() {
+            result = cq.query('#child\\.11', root);
+            expectChildren(result, child11);
+        });
+        
+        it("should allow multiple escaped commas in #itemId selectors", function() {
+            result = cq.query('#bobby\\.brown\\.goes\\.down', root);
+            expectChildren(result, child12);
         });
     });
     
@@ -256,6 +371,28 @@ describe("Ext.ComponentQuery", function() {
             expect(result[0].id).toEqual(child6.id);
         });
         
+        describe("property value quotes", function() {
+            it("should allow single quoted value", function() {
+                result = cq.query("[id='child.12']", root);
+                expectChildren(result, child12);
+            });
+            
+            it("should allow double quoted value", function() {
+                result = cq.query('[id="child.12"]', root);
+                expectChildren(result, child12);
+            });
+            
+            it("should allow double quotes in single quoted value", function() {
+                result = cq.query('[dq=\'"double" "quotes"\']', root);
+                expectChildren(result, child12);
+            });
+            
+            it("should allow single quotes in double quoted value", function() {
+                result = cq.query("[sq=\"'single' 'quotes'\"]", root);
+                expectChildren(result, child12);
+            });
+        });
+        
         describe("matchers", function(){
             it("should select the tenth child", function () {
                 result = cq.query('[cls~=my-foo-cls]', root);
@@ -265,16 +402,65 @@ describe("Ext.ComponentQuery", function() {
             
             it("should select items where id starts with child1", function(){
                 result = cq.query('[id^=child1]', root);
-                expect(result.length).toBe(3);
-                expect(result[0].id).toBe('child1');
-                expect(result[1].id).toBe('child10'); 
-                expect(result[2].id).toBe('child11');                 
+                expectChildren(result, child1, child10);
             });
             
             it("should select items where cls ends with 9-cls", function(){
                 result = cq.query('[cls$=9-cls]', root);
                 expect(result.length).toBe(1);
                 expect(result[0].cls).toBe('child9-cls');                
+            });
+
+            it("should select items with commas in properties", function() {
+                result = cq.query('[foo=bar\\,baz]');
+                expect(result.length).toEqual(1);
+                expect(result[0].id).toEqual(child1.id);
+            });
+        
+            it("should allow multiple escaped commas", function() {
+                result = cq.query('[bar=foo\\,bar\\,baz]', root);
+                expectChildren(result, child2);
+            });
+        
+            it("should allow escaped metacharacters", function() {
+                result = cq.query('[foo=\\[foo\\(bar\\)\\!baz\\#qux\\\\fred\\*\\]]', root);
+                expectChildren(result, child12);
+            });
+            
+            describe("regexen", function() {
+                it("should match everything with an empty regex", function() {
+                    result = cq.query('[cls/=]');
+                    expect(result.length).toBe(12);
+                });
+                
+                describe("simple regexen", function() {
+                    it("should match regexen with text as pattern", function() {
+                         result = cq.query('[cls/=my-foo]');
+                         expectChildren(result, child10, child11);
+                    });
+                    
+                    it("should match regexen with simple alternation", function() {
+                        result = cq.query('[cls/=child3-cls|child4-cls|child5-cls]');
+                        expectChildren(result, child5, child4, child3);
+                    });
+                });
+                
+                describe("complex regexen", function() {
+                    it("should match regexen with pattern quantifiers", function() {
+                        result = cq.query('[cls/="child.{2}-cls"]');
+                        expectChildren(result, child10, child11);
+                    });
+                
+                    it("should match regexen with grouping and alternating", function() {
+                        result = cq.query('[cls/="child(?:7|8)-cls"]');
+                        expectChildren(result, child7, child8);
+                    });
+                
+                    it("should match regexen with character classes", function() {
+                        result = cq.query('[cls/="child\\[5-7\\]-cls"]');
+                        expectChildren(result, child7, child5, child6);
+                    });
+                });
             });
         });
     });
@@ -346,11 +532,12 @@ describe("Ext.ComponentQuery", function() {
         
         it("should accept back-to-back pseudo-class selectors with cumulative results", function(){
             result = cq.query(':not(G):not(F)', root);
-            expect(result.length).toEqual(4);
+            expect(result.length).toEqual(5);
             expect(result[0].id).toEqual(child3.id);
             expect(result[1].id).toEqual(child4.id);
             expect(result[2].id).toEqual(child10.id);
             expect(result[3].id).toEqual(child11.id);
+            expect(result[4].id).toEqual(child12.id);
         });
         
         it("should accept member expression selectors", function() {
@@ -611,90 +798,173 @@ describe("Ext.ComponentQuery", function() {
         });
 
         describe('single space', function () {
-            it('should trim leading space in attribute matching expressions', function () {
-                result = cq.query('[action =selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+            describe("attribute matching expressions", function() {
+                it('should trim leading space', function () {
+                    result = cq.query('[action =selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
 
-                result = cq.query('[action ^=selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+                    result = cq.query('[action ^=selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
 
-                result = cq.query('[action $=selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
-            });
+                    result = cq.query('[action $=selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+                });
 
-            it('should trim trailing space in attribute matching expressions', function () {
-                result = cq.query('[action= selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+                it('should trim trailing space', function () {
+                    result = cq.query('[action= selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
 
-                result = cq.query('[action*= selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+                    result = cq.query('[action*= selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
 
-                result = cq.query('[action~= selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
-            });
+                    result = cq.query('[action~= selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+                });
 
-            it('should trim both spaces in attribute matching expressions', function () {
-                result = cq.query('[action = selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+                it('should trim both spaces', function () {
+                    result = cq.query('[action = selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
 
-                result = cq.query('[action *= selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+                    result = cq.query('[action *= selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
 
-                result = cq.query('[action ~= selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+                    result = cq.query('[action ~= selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+                });
             });
         });
 
         describe('multiple spaces', function () {
-            it('should trim multiple leading space in attribute matching expressions', function () {
-                result = cq.query('[action     =selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+            describe("attribute matching expressions", function() {
+                it('should trim multiple leading spaces', function () {
+                    result = cq.query('[action     =selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
 
-                result = cq.query('[action     ^=selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+                    result = cq.query('[action     ^=selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
 
-                result = cq.query('[action     $=selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+                    result = cq.query('[action     $=selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+                });
+
+                it('should trim multiple trailing spaces', function () {
+                    result = cq.query('[action=      selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+
+                    result = cq.query('[action*=      selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+
+                    result = cq.query('[action~=      selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+                });
+
+                it('should trim multiple spaces on both sides', function () {
+                    result = cq.query('[action      =      selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+
+                    result = cq.query('[action      *=      selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+
+                    result = cq.query('[action      ~=      selectVendors]', c);
+                    expect(result.length).toBe(1);
+                    expect(result[0].action).toBe('selectVendors');
+                });
             });
-
-            it('should trim multiple trailing space in attribute matching expressions', function () {
-                result = cq.query('[action=      selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
-
-                result = cq.query('[action*=      selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
-
-                result = cq.query('[action~=      selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+            
+            describe("id matching expressions", function() {
+                it("should trim leading spaces", function() {
+                    result = cq.query(' #child9', root);
+                
+                    expect(result.length).toBe(1);
+                    expect(result[0].id).toBe(child9.id);
+                });
+                
+                it("should trim trailing spaces", function() {
+                    result = cq.query('#child9 ', root);
+                    
+                    expect(result.length).toBe(1);
+                    expect(result[0].id).toBe(child9.id);
+                });
+                
+                it("should trim spaces on both sides", function() {
+                    result = cq.query('   #child9       ', root);
+                    
+                    expect(result.length).toBe(1);
+                    expect(result[0].id).toBe(child9.id);
+                });
             });
+            
+            describe("descendancy expressions", function() {
+                it("should trim leading spaces", function() {
+                    result = cq.query(' [layout=card]    [type=B/G/H]', root);
+                    
+                    expect(result.length).toBe(1);
+                    expect(result[0].id).toBe(child7.id);
+                });
+                
+                it("should trim trailing spaces", function() {
+                    result = cq.query('[type=B/G/J]   ^ [layout=hbox]   ', root);
+                    
+                    expect(result.length).toBe(1);
+                    expect(result[0].id).toBe(child4.id);
+                });
+                
+                it("should trim spaces on both sides", function() {
+                    result = cq.query('     #child4      >       [type=B/C/F]        ', root);
+                    
+                    expect(result.length).toBe(1);
+                    expect(result[0].id).toBe(child5.id);
+                });
+            });
+        });
+    });
 
-            it('should trim multiple spaces in both attribute matching expressions', function () {
-                result = cq.query('[action      =      selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+    describe('pre- and postOrder', function () {
+        var foo = false;
 
-                result = cq.query('[action      *=      selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+        afterEach(function () {
+            foo = false;
+            cq.cache.clear();
+        });
 
-                result = cq.query('[action      ~=      selectVendors]', c);
-                expect(result.length).toBe(1);
-                expect(result[0].action).toBe('selectVendors');
+        describe('preOrder', function () {
+            it('should call the fn regardless of whether the selector has been cached', function () {
+                expect(cq.cache.get('')).toBeUndefined();
+
+                cq.visitPreOrder('', this, function () {
+                    foo = true;
+                });
+
+                expect(foo).toBe(true);
+            });
+        });
+
+        describe('postOrder', function () {
+            it('should call the fn regardless of whether the selector has been cached', function () {
+                expect(cq.cache.get('')).toBeUndefined();
+
+                cq.visitPostOrder('', this, function () {
+                    foo = true;
+                });
+
+                expect(foo).toBe(true);
             });
         });
     });

@@ -108,13 +108,15 @@ Ext.define('Ext.data.session.ValidationStub', {
 
         me.callParent(); // schedules bindings
     },
+    
+    privates: {
+        sort: function () {
+            this.callParent();
 
-    sort: function () {
-        this.callParent();
-
-        var binding = this.entityBinding;
-        if (binding) {
-            this.scheduler.sortItem(binding);
+            var binding = this.entityBinding;
+            if (binding) {
+                this.scheduler.sortItem(binding);
+            }
         }
     }
 });

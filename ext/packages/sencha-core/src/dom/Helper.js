@@ -1,4 +1,6 @@
 /**
+ * @alternateClassName Ext.DomHelper
+ *
  * The DomHelper class provides a layer of abstraction from DOM and transparently supports creating elements via DOM or
  * using HTML fragments. It also has the ability to create HTML fragment templates from your DOM building code.
  *
@@ -446,10 +448,10 @@ Ext.define('Ext.dom.Helper', function() {
 
         /**
          * Creates new DOM element(s) and inserts them before el.
-         * @param {String/HTMLElement/Ext.Element} el The context element
+         * @param {String/HTMLElement/Ext.dom.Element} el The context element
          * @param {Object/String} o The DOM object spec (and children) or raw HTML blob
          * @param {Boolean} [returnElement] true to return a Ext.Element
-         * @return {HTMLElement/Ext.Element} The new node
+         * @return {HTMLElement/Ext.dom.Element} The new node
          */
         insertBefore: function(el, o, returnElement) {
             return this.doInsert(el, o, returnElement, beforebegin);
@@ -457,10 +459,10 @@ Ext.define('Ext.dom.Helper', function() {
 
         /**
          * Creates new DOM element(s) and inserts them after el.
-         * @param {String/HTMLElement/Ext.Element} el The context element
+         * @param {String/HTMLElement/Ext.dom.Element} el The context element
          * @param {Object} o The DOM object spec (and children)
          * @param {Boolean} [returnElement] true to return a Ext.Element
-         * @return {HTMLElement/Ext.Element} The new node
+         * @return {HTMLElement/Ext.dom.Element} The new node
          */
         insertAfter: function(el, o, returnElement) {
             return this.doInsert(el, o, returnElement, afterend);
@@ -468,10 +470,10 @@ Ext.define('Ext.dom.Helper', function() {
 
         /**
          * Creates new DOM element(s) and inserts them as the first child of el.
-         * @param {String/HTMLElement/Ext.Element} el The context element
+         * @param {String/HTMLElement/Ext.dom.Element} el The context element
          * @param {Object/String} o The DOM object spec (and children) or raw HTML blob
          * @param {Boolean} [returnElement] true to return a Ext.Element
-         * @return {HTMLElement/Ext.Element} The new node
+         * @return {HTMLElement/Ext.dom.Element} The new node
          */
         insertFirst: function(el, o, returnElement) {
             return this.doInsert(el, o, returnElement, afterbegin);
@@ -479,10 +481,10 @@ Ext.define('Ext.dom.Helper', function() {
 
         /**
          * Creates new DOM element(s) and appends them to el.
-         * @param {String/HTMLElement/Ext.Element} el The context element
+         * @param {String/HTMLElement/Ext.dom.Element} el The context element
          * @param {Object/String} o The DOM object spec (and children) or raw HTML blob
          * @param {Boolean} [returnElement] true to return a Ext.Element
-         * @return {HTMLElement/Ext.Element} The new node
+         * @return {HTMLElement/Ext.dom.Element} The new node
          */
         append: function(el, o, returnElement) {
             return this.doInsert(el, o, returnElement, beforeend);
@@ -490,10 +492,10 @@ Ext.define('Ext.dom.Helper', function() {
 
         /**
          * Creates new DOM element(s) and overwrites the contents of el with them.
-         * @param {String/HTMLElement/Ext.Element} el The context element
+         * @param {String/HTMLElement/Ext.dom.Element} el The context element
          * @param {Object/String} o The DOM object spec (and children) or raw HTML blob
          * @param {Boolean} [returnElement=false] true to return an Ext.Element
-         * @return {HTMLElement/Ext.Element} The new node
+         * @return {HTMLElement/Ext.dom.Element} The new node
          */
         overwrite: function(el, html, returnElement) {
             var me = this,

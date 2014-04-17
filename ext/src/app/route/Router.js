@@ -127,7 +127,7 @@ Ext.define('Ext.app.route.Router', {
     
     /**
      * Disconnects all routes for a controller.
-     * @param {Ext.app.Controller} The controller
+     * @param {Ext.app.Controller} controller The controller to disconnect routes from.
      */
     disconnectAll: function(controller) {
         var routes = this.routes,

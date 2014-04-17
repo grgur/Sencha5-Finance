@@ -466,7 +466,7 @@ Ext.define('Ext.dd.DragDrop', {
      *         this.constrainTo("parent-id");
      *     };
      *
-     * Or you can initalize it using the {@link Ext.Element} object:
+     * Or you can initalize it using the {@link Ext.dom.Element} object:
      *
      *     Ext.get("dragDiv1").initDDProxy("proxytest", {dragElId: "existingProxyDiv"}, {
      *         startDrag : function(){
@@ -474,7 +474,7 @@ Ext.define('Ext.dd.DragDrop', {
      *         }
      *     });
      *
-     * @param {String/HTMLElement/Ext.Element} constrainTo The element or element ID to constrain to.
+     * @param {String/HTMLElement/Ext.dom.Element} constrainTo The element or element ID to constrain to.
      * @param {Object/Number} pad (optional) Pad provides a way to specify "padding" of the constraints,
      * and can be either a number for symmetrical padding (4 would be equal to `{left:4, right:4, top:4, bottom:4}`) or
      * an object containing the sides to pad. For example: `{right:10, bottom:10}`

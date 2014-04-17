@@ -241,6 +241,10 @@ Ext.define('Ext.grid.ColumnLayout', {
         // This is the maingrid's HeaderContainer
         else {
             result = me.callParent(arguments);
+            if (!result.gotAll) {
+                me.done = false;
+                return result;
+            }
 
             // If scrollbars take up a width and our grid is not configured to ALWAYS leave space for a scrollbar
             // and we've collected a viewContext and we're not shrinkwrapping the height, and there is vertical scrolling

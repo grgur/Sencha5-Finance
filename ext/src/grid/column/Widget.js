@@ -1,12 +1,162 @@
 /**
- * Manages a collection of widgets or components and binds them to grid cells.
+ * A widget column is configured with a {@link #widget} config object which specifies an
+ * {@link Ext.Component#cfg-xtype xtype} to indicate which type of Widget or Component belongs
+ * in the cells of this column.
+ *
+ * When a widget cell is rendered, a {@link Ext.Widget Widget} or {@link Ext.Component Component} of the specified type
+ * is rendered into that cell. Its {@link Ext.Component#defaultBindProperty defaultBindProperty} is set using this
+ * column's {@link #dataIndex} field from the associated record.
+ *
+ * In the example below we are monitoring the throughput of electricity substations. The capacity being
+ * used as a proportion of the maximum rated capacity is displayed as a progress bar. As new data arrives and the
+ * instananeous usage value is updated, the `capacityUsed` field updates itself, and that is used as the {@link #dataIndex}
+ * for the `WidgetColumn` which contains the progress bar. The progess Bar's
+ * {@link Ext.ProgressBarWidget#defaultBindProperty defaultBindProperty} (which is "value") is set to the calculated `capacityUsed`.
+ *
+ *     @example
+ *     var grid = new Ext.grid.Panel({
+ *         title: 'Substation power monitor',
+ *         width: 600,
+ *         columns: [{
+ *             text: 'Id',
+ *             dataIndex: 'id',
+ *             width: 120
+ *         }, {
+ *             text: 'Rating',
+ *             dataIndex: 'maxCapacity',
+ *             width: 80
+ *         }, {
+ *             text: 'Avg.',
+ *             dataIndex: 'avg',
+ *             width: 85,
+ *             formatter: 'number("0.00")'
+ *         }, {
+ *             text: 'Max',
+ *             dataIndex: 'max',
+ *             width: 80
+ *         }, {
+ *             text: 'Instant',
+ *             dataIndex: 'instant',
+ *             width: 80
+ *         }, {
+ *             text: '%Capacity',
+ *             width: 150,
+ *
+ *             // This is our Widget column
+ *             xtype: 'widgetcolumn',
+ *             dataIndex: 'capacityUsed',
+ *
+ *             // This is the widget definition for each cell.
+ *             // Its "value" setting is taken from the column's dataIndex
+ *             widget: {
+ *             xtype: 'progressbarwidget',
+ *                 textTpl: [
+ *                     '{percent:number("0")}% capacity'
+ *                 ]
+ *             }
+ *         }],
+ *         renderTo: document.body,
+ *         disableSelection: true,
+ *         store: {
+ *            fields: [{
+ *                name: 'id',
+ *                type: 'string'
+ *            }, {
+ *                name: 'maxCapacity',
+ *                type: 'int'
+ *            }, {
+ *                name: 'avg',
+ *                type: 'int',
+ *                calculate: function(data) {
+ *                    // Make this depend upon the instant field being set which sets the sampleCount and total.
+ *                    // Use subscript format to access the other psuedo fields which are set by the instant field's converter
+ *                    return data.instant && data['total'] / data['sampleCount'];
+ *                }
+ *            }, {
+ *                name: 'max',
+ *                type: 'int',
+ *                calculate: function(data) {
+ *                    // This will be seen to depend on the "instant" field.
+ *                    // Use subscript format to access this field's current value to avoid circular dependency error.
+ *                    return (data['max'] || 0) < data.instant ? data.instant : data['max'];
+ *                }
+ *            }, {
+ *                name: 'instant',
+ *                type: 'int',
+ *
+ *                // Upon every update of instananeous power throughput,
+ *                // update the sample count and total so that the max field can calculate itself
+ *                convert: function(value, rec) {
+ *                    rec.data.sampleCount = (rec.data.sampleCount || 0) + 1;
+ *                    rec.data.total = (rec.data.total || 0) + value;
+ *                    return value;
+ *                },
+ *               depends: []
+ *            }, {
+ *                name: 'capacityUsed',
+ *                calculate: function(data) {
+ *                    return data.instant / data.maxCapacity;
+ *                }
+ *            }],
+ *            data: [{
+ *                id: 'Substation A',
+ *                maxCapacity: 1000,
+ *                avg: 770,
+ *                max: 950,
+ *                instant: 685
+ *            }, {
+ *                id: 'Substation B',
+ *                maxCapacity: 1000,
+ *                avg: 819,
+ *                max: 992,
+ *                instant: 749
+ *            }, {
+ *                id: 'Substation C',
+ *                maxCapacity: 1000,
+ *                avg: 588,
+ *                  max: 936,
+ *                instant: 833
+ *            }, {
+ *                id: 'Substation D',
+ *                maxCapacity: 1000,
+ *                avg: 639,
+ *                max: 917,
+ *                instant: 825
+ *            }]
+ *        }
+ *     });
+ *
+ *     // Fake data updating...
+ *     // Change one record per second to a random power value
+ *     setInterval(function() {
+ *         var recIdx = Ext.Number.randomInt(0, 3),
+ *             newPowerReading = Ext.Number.randomInt(500, 1000);
+ 
+ *         grid.store.getAt(recIdx).set('instant', newPowerReading);
+ *     }, 1000);  
+ *  
  * @since 5.0.0
  */
 Ext.define('Ext.grid.column.Widget', {
     extend: 'Ext.grid.column.Column',
     alias: 'widget.widgetcolumn',
 
-    sortable: false,
+    config: {
+        /**
+         * @cfg defaultCellUI {Object}
+         * A map of xtype to {@link Ext.Component#ui} names to use when using Components in this column.
+         *
+         * Currently {@link Ext.Button Button} and all subclasses of {@link Ext.form.field.Text TextField} default
+         * to using `ui: "default"` when in a WidgetColumn except for in the "classic" theme, when they use ui "grid-cell".
+         */
+        defaultWidgetUI: {
+        }
+    },
+
+    /**
+     * @inheritdoc
+     */
+     sortable: false,
 
     /**
      * @cfg {Object} renderer
@@ -17,6 +167,15 @@ Ext.define('Ext.grid.column.Widget', {
      * @cfg {Object} scope
      * @hide
      */
+
+    /**
+     * @cfg {Object} widget
+     * A config object containing an {@link Ext.Component#cfg-xtype xtype}.
+     *
+     * This is used to create the widgets or components which are rendered into the cells of this column.
+     *
+     * This column's {@link #dataIndex} is used to update the widget/component's {@link Ext.Component#defaultBindProperty defaultBindProperty}.
+     */
     
     /**
      * @cfg {Boolean} [stopSelection=true]
@@ -25,6 +184,15 @@ Ext.define('Ext.grid.column.Widget', {
      stopSelection: true,
      
      preventUpdate: true,
+
+     initComponent: function() {
+         this.callParent(arguments);
+
+         // Apply the default UI for the xtype which is going to feature in this column.
+         if (!this.widget.ui) {
+             this.widget.ui = this.getDefaultWidgetUI()[this.widget.xtype] || 'default';
+         }
+     },
 
      processEvent : function(type, view, cell, recordIndex, cellIndex, e, record, row) {
          var selector = view.innerSelector,
@@ -235,7 +403,7 @@ Ext.define('Ext.grid.column.Widget', {
                 if (record.isNonData) {
                     continue;
                 }
-                
+
                 row = view.getRowFromItem(items[i]);
 
                 // May be a placeholder with no data row
@@ -317,7 +485,10 @@ Ext.define('Ext.grid.column.Widget', {
 
         if (!result) {
             result = Ext.widget(me.widget);
-            result.resolveListenerScope = me.listenerScopeFn;
+            
+            if (!result.resolveListenerScope) {
+                result.resolveListenerScope = me.listenerScopeFn;
+            }
             result.getWidgetRecord = me.widgetRecordDecorator;
             result.getWidgetColumn = me.widgetColumnDecorator;
             result.dataIndex = me.dataIndex;

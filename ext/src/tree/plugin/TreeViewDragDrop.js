@@ -14,11 +14,11 @@
  *
  *     The source TreeView from which the drag originated.
  *
- *   - ddel : HtmlElement
+ *   - ddel : HTMLElement
  *
  *     The drag proxy element which moves with the mouse
  *
- *   - item : HtmlElement
+ *   - item : HTMLElement
  *
  *     The TreeView node upon which the mousedown event was registered.
  *

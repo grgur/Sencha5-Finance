@@ -86,8 +86,8 @@ Ext.define('Ext.resizer.ResizeTracker', {
 
     /**
      * Create a proxy for this resizer
-     * @param {Ext.Component/Ext.Element} target The target
-     * @return {Ext.Element} A proxy element
+     * @param {Ext.Component/Ext.dom.Element} target The target
+     * @return {Ext.dom.Element} A proxy element
      */
     createProxy: function(target){
         var proxy,

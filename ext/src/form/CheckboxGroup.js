@@ -145,18 +145,18 @@ Ext.define('Ext.form.CheckboxGroup', {
 
     /**
      * When a checkbox is added to the group, monitor it for changes
-     * @param {Object} field
+     * @param {Object} field The field being added
      * @protected
      */
-    onAdd: function(item) {
+    onAdd: function(field) {
         var me = this,
             items,
             len, i;
 
-        if (item.isCheckbox) {
-            me.mon(item, 'change', me.checkChange, me);
-        } else if (item.isContainer) {
-            items = item.items.items;
+        if (field.isCheckbox) {
+            me.mon(field, 'change', me.checkChange, me);
+        } else if (field.isContainer) {
+            items = field.items.items;
             for (i = 0, len = items.length; i < len; i++) {
                 me.onAdd(items[i]);
             }

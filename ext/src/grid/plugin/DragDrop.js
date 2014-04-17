@@ -14,11 +14,11 @@
  *
  *   The source GridView from which the drag originated.
  *
- * - `ddel` : HtmlElement
+ * - `ddel` : HTMLElement
  *
  *   The drag proxy element which moves with the mouse
  *
- * - `item` : HtmlElement
+ * - `item` : HTMLElement
  *
  *   The GridView node upon which the mousedown event was registered.
  *
@@ -143,11 +143,11 @@ Ext.define('Ext.grid.plugin.DragDrop', {
      *
      *   The source GridView from which the drag originated.
      *
-     * - `ddel` : HtmlElement
+     * - `ddel` : HTMLElement
      *
      *   The drag proxy element which moves with the mouse
      *
-     * - `item` : HtmlElement
+     * - `item` : HTMLElement
      *
      *   The {@link Ext.grid.View GridView}{@link Ext.grid.View GridView} node upon which the mousedown event was registered.
      *

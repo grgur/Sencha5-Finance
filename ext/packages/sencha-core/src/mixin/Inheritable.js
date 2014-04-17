@@ -195,19 +195,24 @@ Ext.define('Ext.mixin.Inheritable', {
      * Gets the Controller or Component that is used as the event root for this view.
      *
      * @param {Object} [defaultScope=this] The default scope to return if none is found.
-     * @return {Ext.controller.ViewController/Ext.container.Container} The default listener scope.
+     * @return {Ext.app.ViewController/Ext.container.Container} The default listener scope.
      *
      * @protected
      * @since 5.0.0
      */
     resolveListenerScope: function (defaultScope) {
-        var ret;
+        var ret,
+            isThis = defaultScope === 'this',
+            preventClimb = isThis || defaultScope === 'controller';
 
-        // If defaultScope is 'this', we only ever want to resolve to our own defaultListenerScope
-        // or ourselves, we never want to climb up
-        if (defaultScope === 'this') {
-            ret = this.getInherited();
-            ret = ret.hasOwnProperty('defaultListenerScope') ? ret.defaultListenerScope : this;
+        // If defaultScope is 'this' or 'controller', we only ever want to resolve to our own defaultListenerScope
+        // on ourselves, we never want to climb up
+        if (preventClimb) {
+            if (isThis) {
+                ret = this;
+            } else {
+                ret = this.getController();
+            }
         } else {
             ret = this.getInheritedConfig('defaultListenerScope', true) || defaultScope;
         }
@@ -223,7 +228,7 @@ Ext.define('Ext.mixin.Inheritable', {
      * owner of a component that is also a `referenceHolder` itself. In this case, the
      * `reference` connects not to this component but to the parent referenceHolder.
      *
-     * @return {Ext.controller.ViewController/Ext.container.Container} The reference holder.
+     * @return {Ext.app.ViewController/Ext.container.Container} The reference holder.
      *
      * @private
      * @since 5.0.0

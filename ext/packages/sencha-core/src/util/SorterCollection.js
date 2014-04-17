@@ -11,7 +11,7 @@ Ext.define('Ext.util.SorterCollection', {
     isSorterCollection: true,
 
     /**
-     * @property {Ext.mixin.Sortable} sortable
+     * @property {Ext.util.Sortable} sortable
      * The owning sortable instance. The sortable's configuration governs this
      * collection.
      * @private

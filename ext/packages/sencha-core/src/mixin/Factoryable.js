@@ -82,7 +82,7 @@ Ext.Factory.prototype = {
      */
 
     /**
-     * @property {Class} [defaultClass=null]
+     * @property {Ext.Class} [defaultClass=null]
      * The Class reference of the type of instance to create when none is provided to the
      * factory. This property is set from `xclass` when the factory instance is created.
      * @private

@@ -453,6 +453,66 @@ Ext.define('Ext.view.Table', {
       * @param {Ext.event.Event} e
       */
 
+     /**
+      * @event rowclick
+      * Fired when table cell is clicked.
+      * @param {Ext.view.Table} this
+      * @param {Ext.data.Model} record
+      * @param {HTMLElement} tr The TR element for the cell.
+      * @param {Number} rowIndex
+      * @param {Ext.event.Event} e
+      */
+
+     /**
+      * @event rowdblclick
+      * Fired when table cell is double clicked.
+      * @param {Ext.view.Table} this
+      * @param {Ext.data.Model} record
+      * @param {HTMLElement} tr The TR element for the cell.
+      * @param {Number} rowIndex
+      * @param {Ext.event.Event} e
+      */
+
+     /**
+      * @event rowcontextmenu
+      * Fired when table cell is right clicked.
+      * @param {Ext.view.Table} this
+      * @param {Ext.data.Model} record
+      * @param {HTMLElement} tr The TR element for the cell.
+      * @param {Number} rowIndex
+      * @param {Ext.event.Event} e
+      */
+
+     /**
+      * @event rowmousedown
+      * Fired when the mousedown event is captured on the cell.
+      * @param {Ext.view.Table} this
+      * @param {Ext.data.Model} record
+      * @param {HTMLElement} tr The TR element for the cell.
+      * @param {Number} rowIndex
+      * @param {Ext.event.Event} e
+      */
+
+     /**
+      * @event rowmouseup
+      * Fired when the mouseup event is captured on the cell.
+      * @param {Ext.view.Table} this
+      * @param {Ext.data.Model} record
+      * @param {HTMLElement} tr The TR element for the cell.
+      * @param {Number} rowIndex
+      * @param {Ext.event.Event} e
+      */
+
+     /**
+      * @event rowkeydown
+      * Fired when the keydown event is captured on the cell.
+      * @param {Ext.view.Table} this
+      * @param {Ext.data.Model} record
+      * @param {HTMLElement} tr The TR element for the cell.
+      * @param {Number} rowIndex
+      * @param {Ext.event.Event} e
+      */
+
     constructor: function(config) {
         // Adjust our base class if we are inside a TreePanel
         if (config.grid.isTree) {
@@ -1122,6 +1182,17 @@ Ext.define('Ext.view.Table', {
             rowClasses = rowValues.rowClasses,
             cls,
             rowTpl = me.rowTpl;
+
+        // Define the rowAttr object now. We don't want to do it in the treeview treeRowTpl because anything
+        // this is processed in a deferred callback (such as deferring initial view refresh in gridview) could
+        // poke rowAttr that are then shared in tableview.rowTpl. See EXTJSIV-9341.
+        //
+        // For example, the following shows the shared ref between a treeview's rowTpl nextTpl and the superclass
+        // tableview.rowTpl:
+        //
+        //      tree.view.rowTpl.nextTpl === grid.view.rowTpl
+        //
+        rowValues.rowAttr = {};
 
         // Set up mandatory properties on rowValues
         rowValues.record = record;

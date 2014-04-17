@@ -1,22 +1,12 @@
+/**
+ * @private 
+ * @class Ext.app.Util
+ */
 Ext.define('Ext.app.Util', {
 }, function() {
     Ext.apply(Ext.app, {
         namespaces: {
             Ext: {}
-        },
-        
-        /**
-        * @private
-        */
-        collectNamespaces: function(paths) {
-            var namespaces = Ext.app.namespaces,
-                path;
-            
-            for (path in paths) {
-                if (paths.hasOwnProperty(path)) {
-                    namespaces[path] = true;
-                }
-            }
         },
 
         /**
@@ -25,16 +15,16 @@ Ext.define('Ext.app.Util', {
         *
         * @param {String/String[]} namespace
         */
-        addNamespaces: function(ns) {
+        addNamespaces: function(namespace) {
             var namespaces = Ext.app.namespaces,
                 i, l;
 
-            if (!Ext.isArray(ns)) {
-                ns = [ns];
+            if (!Ext.isArray(namespace)) {
+                namespace = [namespace];
             }
 
-            for (i = 0, l = ns.length; i < l; i++) {
-                namespaces[ns[i]] = true;
+            for (i = 0, l = namespace.length; i < l; i++) {
+                namespaces[namespace[i]] = true;
             }
         },
 
@@ -54,7 +44,7 @@ Ext.define('Ext.app.Util', {
         * @return {String} Namespace prefix if it's known, otherwise undefined
         */
         getNamespace: function(className) {
-            var namespaces    = Ext.app.namespaces,
+            var namespaces    = Ext.apply({}, Ext.ClassManager.paths, Ext.app.namespaces),
                 deepestPrefix = '',
                 prefix;
 

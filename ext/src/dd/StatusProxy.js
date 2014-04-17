@@ -102,7 +102,7 @@ Ext.define('Ext.dd.StatusProxy', {
 
     /**
      * Returns the ghost element
-     * @return {Ext.Element} el
+     * @return {Ext.dom.Element} el
      */
     getGhost : function(){
         return this.ghost;

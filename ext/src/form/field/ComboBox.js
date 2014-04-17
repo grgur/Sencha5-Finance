@@ -133,7 +133,7 @@ Ext.define('Ext.form.field.ComboBox', {
 
     /**
      * @cfg {String} [triggerCls='x-form-arrow-trigger']
-     * An additional CSS class used to style the trigger button. The trigger will always get the {@link #triggerBaseCls}
+     * An additional CSS class used to style the trigger button. The trigger will always get the {@link Ext.form.trigger.Trigger#baseCls}
      * by default and `triggerCls` will be **appended** if specified.
      */
     triggerCls: Ext.baseCSSPrefix + 'form-arrow-trigger',
@@ -147,7 +147,7 @@ Ext.define('Ext.form.field.ComboBox', {
     hiddenName: '',
 
     /**
-     * @property {Ext.Element} hiddenDataEl
+     * @property {Ext.dom.Element} hiddenDataEl
      * @private
      */
 
@@ -467,8 +467,8 @@ Ext.define('Ext.form.field.ComboBox', {
     },
 
     /**
-     * @cfg {String/HTMLElement/Ext.Element} transform
-     * The id, DOM node or {@link Ext.Element} of an existing HTML `<select>` element to convert into a ComboBox. The
+     * @cfg {String/HTMLElement/Ext.dom.Element} transform
+     * The id, DOM node or {@link Ext.dom.Element} of an existing HTML `<select>` element to convert into a ComboBox. The
      * target select's options will be used to build the options in the ComboBox dropdown; a configured {@link #store}
      * will take precedence over this.
      */
@@ -828,7 +828,7 @@ Ext.define('Ext.form.field.ComboBox', {
         }
     },
 
-    onUnbindStore: function(store) {
+    onUnbindStore: function() {
         var me = this,
             picker = me.picker,
             filter = me.queryFilter;
@@ -1080,8 +1080,8 @@ Ext.define('Ext.form.field.ComboBox', {
         }
         filters.endUpdate();
 
-        // Expand after adjusting the filter unless there are no matches
-        if (me.store.getCount()) {
+        // Expand after adjusting the filter if there are records or if emptyText is configured.
+        if (me.store.getCount() || me.getPicker().emptyText) {
             me.expand();
         } else {
             me.collapse();

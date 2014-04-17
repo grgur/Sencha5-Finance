@@ -162,7 +162,7 @@
  * set of records that are needed (perhaps in the URL).
  *
  * If these records either need to be fetched from the server or their data has already
- * been added to the `session` (using `{@link Ext.data.session.Session#update}`), links
+ * been added to the `session` (using `{@link Ext.data.session.Session#add}`), links
  * can be used to give these records meaningful names in the `ViewModel`. This essentially
  * automates the process of loading records and adding them as data to the `ViewModel`
  * manually.
@@ -228,7 +228,7 @@ Ext.define('Ext.app.ViewModel', {
          * For example:
          *
          *      formulas: {
-         *          xy: function (data) { return data.x * data.y; }
+         *          xy: function (get) { return get('x') * get('y'); }
          *      }
          *
          * For more details about defining a formula, see `{@link Ext.app.bind.Formula}`.
@@ -357,13 +357,16 @@ Ext.define('Ext.app.ViewModel', {
             scheduler = me._scheduler,
             stores = me.storeInfo,
             parent = me.getParent(),
-            key;
+            key, store;
 
         me.destroy = Ext.emptyFn;
 
         if (stores) {
             for (key in stores) {
-                stores[key].destroyStore();
+                store = stores[key];
+                if (store.autoDestroy) {
+                    store.destroyStore();
+                }
             }
         }
 
@@ -379,7 +382,7 @@ Ext.define('Ext.app.ViewModel', {
         }
 
         me.children = me.storeInfo = me._session = me._view = me._scheduler =
-                      me._root = me._parent = null;
+                      me._root = me._parent = me.formulaFn = me.$formulaData = null;
     },
 
     /**
@@ -425,6 +428,10 @@ Ext.define('Ext.app.ViewModel', {
         return binding;
     },
 
+    /**
+     * Gets the session attached to this (or a parent) ViewModel. See the {@link #session} configuration.
+     * @return {Ext.data.session.Session} The session. `null` if no session exists.
+     */
     getSession: function () {
         var me = this,
             session = me._session,
@@ -434,9 +441,14 @@ Ext.define('Ext.app.ViewModel', {
             me.setSession(session = parent.getSession());
         }
 
-        return session;
+        return session || null;
     },
     
+    /**
+     * Gets a store configured via the {@link #stores} configuration.
+     * @param {String} key The name of the store.
+     * @return {Ext.data.Store} The store. `null` if no store exists.
+     */
     getStore: function(key) {
         var storeInfo = this.storeInfo,
             store;
@@ -447,6 +459,11 @@ Ext.define('Ext.app.ViewModel', {
         return store || null;
     },
 
+    /**
+     * Create a link to a reference. See the {@link #links} configuration.
+     * @param {String} key The name for the link.
+     * @param {Object}} reference The reference descriptor.
+     */
     linkTo: function (key, reference, target) {
         var stub = this.getStub(key),
             linkStub;
@@ -471,6 +488,32 @@ Ext.define('Ext.app.ViewModel', {
         this.getScheduler().notify();
     },
 
+    /**
+     * Get a value from the data for this viewmodel.
+     * @param {String} path The path of the data to retrieve.
+     *
+     *    var value = vm.get('theUser.address.city');
+     *
+     * @return {Object} The data stored at the passed path.
+     */
+    get: function(path) {
+        return this.getStub(path).getValue();
+    },
+
+    /*
+     * Set  a value in the data for this viewmodel.
+     * @param {Object/String} path The path of the value to set, or an object literal to set
+     * at the root of the viewmodel.
+     * @param {Object} The data to set at the value. If the value is an object literal,
+     * any required paths will be created.
+     *
+     *    viewModel.set('expiry', Ext.Date.add(new Date(), Ext.Date.DAY, 7));
+     *    console.log(viewModel.get('expiry'));
+     *    viewModel.set('user', {firstName: 'Foo', lastName: 'Bar'});
+     *    console.log(viewModel.get('user.firstName'));
+     *    viewModel.set({rootKey: 1});
+     *    console.log(viewModel.get('rootKey'));
+     */
     set: function (path, value) {
         var obj, stub;
 
@@ -569,7 +612,7 @@ Ext.define('Ext.app.ViewModel', {
         /**
          * This method looks up the `Stub` for a single bind descriptor.
          * @param {String/Object} bindDescr The bind descriptor.
-         * @return {Ext.data.session.Stub} The `Stub` associated to the bind descriptor.
+         * @return {Ext.data.session.AbstractStub} The `Stub` associated to the bind descriptor.
          * @private
          */
         getStub: function (bindDescr) {
@@ -650,14 +693,17 @@ Ext.define('Ext.app.ViewModel', {
             };
             for (key in stores) {
                 cfg = stores[key];
-                if (Ext.isString(cfg)) {
+                if (cfg.isStore) {
+                    me.setupStore(cfg, key);
+                    continue;
+                } else if (Ext.isString(cfg)) {
                     cfg = {
                         source: cfg
                     };
                 } else {
                     cfg = Ext.apply({}, cfg);
                 }
-                // Get rid of listeners o they don't get considered as a bind
+                // Get rid of listeners so they don't get considered as a bind
                 listeners = cfg.listeners;
                 delete cfg.listeners;
                 storeBind = me.bind(cfg, me.onStoreBind, me);
@@ -686,12 +732,14 @@ Ext.define('Ext.app.ViewModel', {
                         type: 'chained'
                     }, cfg);
                 }
+                // If we weren't configured not to autoDestroy, do it
+                if (cfg.autoDestroy !== false) {
+                    cfg.autoDestroy = true;
+                }
                 // Restore the listeners from applyStores here
                 cfg.listeners = listeners;
                 store = Ext.Factory.store(cfg);
-                store.resolveListenerScope = me.listenerScopeFn;
-                info[key] = store;
-                this.set(key, store);
+                me.setupStore(store, key);
             } else {
                 cfg = Ext.merge({}, cfg);
                 proxy = cfg.proxy;
@@ -710,6 +758,12 @@ Ext.define('Ext.app.ViewModel', {
                 }
                 store.setConfig(cfg);
             }
+        },
+
+        setupStore: function(store, key) {
+            store.resolveListenerScope = this.listenerScopeFn;
+            this.storeInfo[key] = store;
+            this.set(key, store);
         },
 
         applyFormulas: function (formulas) {
@@ -752,6 +806,21 @@ Ext.define('Ext.app.ViewModel', {
             }
 
             return root;
+        },
+
+        getFormulaFn: function(data) {
+            var me = this,
+                fn = me.formulaFn;
+
+            if (!fn) {
+                fn = me.formulaFn = function(name) {
+                    // Note that the `this` pointer here is the view model because
+                    // the VM calls it in the VM scope.
+                    return me.$formulaData[name];
+                };
+            }
+            me.$formulaData = data;
+            return fn;
         }
 
         // </editor-fold>

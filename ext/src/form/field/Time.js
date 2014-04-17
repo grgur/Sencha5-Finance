@@ -44,7 +44,7 @@ Ext.define('Ext.form.field.Time', {
 
     /**
      * @cfg {String} [triggerCls='x-form-time-trigger']
-     * An additional CSS class used to style the trigger button. The trigger will always get the {@link #triggerBaseCls}
+     * An additional CSS class used to style the trigger button. The trigger will always get the {@link Ext.form.trigger.Trigger#baseCls}
      * by default and triggerCls will be **appended** if specified.
      */
     triggerCls: Ext.baseCSSPrefix + 'form-time-trigger',
@@ -264,9 +264,10 @@ Ext.define('Ext.form.field.Time', {
         me[isMin ? 'minValue' : 'maxValue'] = val;
     },
     
-    getInitDate: function(hours, minutes) {
+    getInitDate: function (hours, minutes, seconds) {
         var parts = this.initDateParts;
-        return new Date(parts[0], parts[1], parts[2], hours || 0, minutes || 0, 0, 0);    
+
+        return new Date(parts[0], parts[1], parts[2], hours || 0, minutes || 0, seconds || 0, 0);    
     },
 
     valueToRaw: function(value) {
@@ -522,11 +523,12 @@ Ext.define('Ext.form.field.Time', {
         return me.parseDate(item);
     },
 
-    setValue: function(v) {
-        // Store MUST be created for parent setValue to function
+    setValue: function (v) {
+        // Store MUST be created for parent setValue to function.
         this.getPicker();
+
         if (Ext.isDate(v)) {
-            v = this.getInitDate(v.getHours(), v.getMinutes());
+            v = this.getInitDate(v.getHours(), v.getMinutes(), v.getSeconds());
         }
 
         return this.callParent([v]);

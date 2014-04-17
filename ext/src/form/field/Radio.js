@@ -206,7 +206,7 @@ Ext.define('Ext.form.field.Radio', {
     /**
      * @private Handle click on the radio button
      */
-    onBoxClick: function(e) {
+    onBoxClick: function() {
         var me = this;
         if (!me.disabled && !me.readOnly) {
             this.setValue(true);
@@ -224,14 +224,14 @@ Ext.define('Ext.form.field.Radio', {
      * @param {String/Boolean} value Checked value, or the value of the sibling radio button to check.
      * @return {Ext.form.field.Radio} this
      */
-    setValue: function(v) {
+    setValue: function(value) {
         var me = this,
             active;
 
-        if (Ext.isBoolean(v)) {
+        if (Ext.isBoolean(value)) {
             me.callParent(arguments);
         } else {
-            active = me.getManager().getWithValue(me.name, v, me.getFormId()).getAt(0);
+            active = me.getManager().getWithValue(me.name, value, me.getFormId()).getAt(0);
             if (active) {
                 active.setValue(true);
             }

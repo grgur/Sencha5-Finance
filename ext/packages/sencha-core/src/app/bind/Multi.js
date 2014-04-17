@@ -164,11 +164,13 @@ Ext.define('Ext.app.bind.Multi', {
     refresh: function () {
         // @TODO
     },
+    
+    privates: {
+        sort: function () {
+            this.scheduler.sortItems(this.bindings);
 
-    sort: function () {
-        this.scheduler.sortItems(this.bindings);
-
-        // Schedulable#sort === emptyFn
-        //me.callParent();
+            // Schedulable#sort === emptyFn
+            //me.callParent();
+        }
     }
 });

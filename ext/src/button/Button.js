@@ -149,6 +149,10 @@ Ext.define('Ext.button.Button', {
     alternateClassName: 'Ext.Button',
 
     config: {
+        /**
+         * @cfg {String} text
+         * The button text to be used as innerHTML (html tags are accepted).
+         */
         text: null
     },
 
@@ -181,11 +185,6 @@ Ext.define('Ext.button.Button', {
      * @readonly
      */
     pressed: false,
-
-    /**
-     * @cfg {String} text
-     * The button text to be used as innerHTML (html tags are accepted).
-     */
 
     /**
      * @cfg {String} icon
@@ -747,6 +746,14 @@ Ext.define('Ext.button.Button', {
     },
 
     /**
+     * Get the {@link #menu} for this button.
+     * @return {Ext.menu.Menu} The menu. `null` if no menu is configured.
+     */
+    getMenu: function() {
+        return this.menu || null;
+    },
+
+    /**
      * Sets a new menu for this button. Pass a falsy value to unset the current menu.
      * To destroy the previous menu for this button, explicitly pass `false` as the second argument. If this is not set, the destroy will depend on the
      * value of {@link #cfg-destroyMenu}.
@@ -880,10 +887,12 @@ Ext.define('Ext.button.Button', {
 
     /**
      * @private
+     * @override
      * Needed for when widget is rendered into a grid cell. The class to add to the cell element.
+     * Override needed to add scale to the mix which is poart of the ui name in the mixin and the CSS rule
      */
     getTdCls: function() {
-        return this.baseCls + '-' + this.ui + '-' + this.scale + '-cell';
+        return Ext.baseCSSPrefix + 'button-' + this.ui + '-' + this.scale + '-cell';
     },
 
     /**
@@ -1648,7 +1657,7 @@ Ext.define('Ext.button.Button', {
         }
     },
     // @private
-    onMenuShow: function(e) {
+    onMenuShow: function() {
         var me = this;
         me.ignoreNextClick = 0;
         me.addClsWithUI(me.menuActiveCls);
@@ -1656,7 +1665,7 @@ Ext.define('Ext.button.Button', {
     },
 
     // @private
-    onMenuHide: function(e) {
+    onMenuHide: function() {
         var me = this;
         me.removeClsWithUI(me.menuActiveCls);
         me.ignoreNextClick = Ext.defer(me.restoreClick, 250, me);

@@ -75,8 +75,8 @@ Ext.define('Ext.grid.plugin.BufferedRendererTableView', {
 
         // If there is a BufferedRenderer, we must refresh the scroller using BufferedRenderer methods
         // which take account of the full virtual scroll range.
-        if (bufferedRenderer && me.touchScroll) {
-            bufferedRenderer.stretchView(me, bufferedRenderer.scrollHeight);
+        if (bufferedRenderer) {
+            bufferedRenderer.stretchView(me, bufferedRenderer.getScrollHeight(true));
         } else {
             me.callParent();
         }

@@ -36,6 +36,7 @@ describe("Ext.app.ViewModel", function() {
     }
     
     beforeEach(function() {
+        Ext.data.Model.schema.setNamespace('spec');
         MockAjaxManager.addMethods();
 
         session = new Ext.data.session.Session({
@@ -60,7 +61,65 @@ describe("Ext.app.ViewModel", function() {
         session = scheduler = spy = viewModel = null;
 
         MockAjaxManager.removeMethods();
-        Ext.data.Model.schema.clear();
+        Ext.data.Model.schema.clear(true);
+    });
+
+    describe("getting/setting values", function() {
+        describe("set", function() {
+            it("should set a root value if the param is an object", function() {
+                viewModel.set({
+                    foo: {
+                        bar: 1
+                    },
+                    baz: 2
+                });
+                expect(viewModel.getData().foo.bar).toBe(1);
+                expect(viewModel.getData().baz).toBe(2);
+            });
+
+            it("should set an object at a path", function() {
+                viewModel.set('foo.bar', {
+                    baz: 1
+                });
+                expect(viewModel.getData().foo.bar.baz).toBe(1);
+            });
+
+            it("should set a path + primitive", function() {
+                viewModel.set('foo.bar', 100);
+                expect(viewModel.getData().foo.bar).toBe(100);
+            });
+
+            it("should be able to set object instances and not descend into them", function() {
+                var Cls = Ext.define(null, {
+                    foo: 1
+                });
+                var o = new Cls();
+                viewModel.set('obj', o);
+                expect(viewModel.getData().obj).toBe(o);
+            });
+        });
+
+        describe("get", function() {
+            it("should be able to retrieve a value at the root", function() {
+                viewModel.set('foo', 1);
+                expect(viewModel.get('foo')).toBe(1);
+            }); 
+
+            it("should descend into a path", function() {
+                viewModel.set({
+                    foo: {
+                        bar: {
+                            baz: 100
+                        }
+                    }
+                });
+                expect(viewModel.get('foo.bar.baz')).toBe(100);
+            }); 
+
+            it("should return null if the value has not presented", function() {
+                expect(viewModel.get('something')).toBeNull();
+            });
+        });
     });
 
     describe("bind/set for non records/stores", function() {
@@ -604,11 +663,10 @@ describe("Ext.app.ViewModel", function() {
 
         function getExpressions (name) {
             var formula = getFormula(name),
-                expressions = formula.get.$expressions;
+                expressions = Ext.apply({}, formula.get.$expressions);
 
-            // We have to slice here because the Formula parser adds other properties
-            // to the array and toEqual hates that.
-            return expressions && expressions.slice();
+            delete expressions.$literal;
+            return Ext.Object.getKeys(expressions);
         }
 
         afterEach(function () {
@@ -620,8 +678,8 @@ describe("Ext.app.ViewModel", function() {
             it('should recognize property access', function () {
                 vm = new Ext.app.ViewModel({
                     formulas: {
-                        foo: function (data) {
-                            return data.x.y + data.z;
+                        foo: function (get) {
+                            return get('x.y') + get('z');
                         }
                     }
                 });
@@ -633,8 +691,8 @@ describe("Ext.app.ViewModel", function() {
             it('should ignore method calls', function () {
                 vm = new Ext.app.ViewModel({
                     formulas: {
-                        foo: function (data) {
-                            return data.x.y.substring(1) + data.z.toLowerCase();
+                        foo: function (get) {
+                            return get('x.y').substring(1) + get('z').toLowerCase();
                         }
                     }
                 });
@@ -646,8 +704,8 @@ describe("Ext.app.ViewModel", function() {
             it('should recognize data as method parameters', function () {
                 vm = new Ext.app.ViewModel({
                     formulas: {
-                        foo: function (data) {
-                            return this.foo(data.x+data.y.z);
+                        foo: function (get) {
+                            return this.foo(get('x')+get('y.z'));
                         }
                     }
                 });
@@ -659,8 +717,8 @@ describe("Ext.app.ViewModel", function() {
             it('should ignore data used in suffix expression', function () {
                 vm = new Ext.app.ViewModel({
                     formulas: {
-                        foo: function (data) {
-                            return this.data.foo(data.x + data.y.z);
+                        foo: function (get) {
+                            return this.get.foo(get('x') + get('y.z'));
                         }
                     }
                 });
@@ -670,55 +728,13 @@ describe("Ext.app.ViewModel", function() {
             });
         });
 
-        describe('formulas with untracked rferences', function () {
-            it('should recognize property access only using "data"', function () {
-                vm = new Ext.app.ViewModel({
-                    formulas: {
-                        foo: function (data, untracked) {
-                            return data.x.y + data.z + untracked.abc;
-                        }
-                    }
-                });
-
-                var expressions = getExpressions('foo');
-                expect(expressions).toEqual(['x.y', 'z']);
-            });
-
-            it('should ignore method calls', function () {
-                vm = new Ext.app.ViewModel({
-                    data: {
-                        def: '!?',
-                        x: {
-                           y: 'ABC'
-                        },
-                        z: 'XYZ'
-                    },
-                    formulas: {
-                        foo: function (data, untracked) {
-                            return data.x.y.substring(1) + data.z.toLowerCase() +
-                                untracked.def;
-                        }
-                    }
-                });
-
-                var expressions = getExpressions('foo');
-                expect(expressions).toEqual(['x.y', 'z']);
-
-                scheduler = vm.getScheduler();
-                vm.notify();
-                expect(scheduler.passes).toBe(1);
-                var data = vm.getData();
-                expect(data.foo).toBe('BCxyz!?');
-            });
-        });
-
         describe('formula config objects', function () {
             it('should recognize property access', function () {
                 vm = new Ext.app.ViewModel({
                     formulas: {
                         foo: {
-                            get: function (data) {
-                                return data.x.y + data.z;
+                            get: function (get) {
+                                return get('x.y') + get('z');
                             }
                         }
                     }
@@ -732,8 +748,8 @@ describe("Ext.app.ViewModel", function() {
                 vm = new Ext.app.ViewModel({
                     formulas: {
                         foo: {
-                            get: function (data) {
-                                return data.x.y.substring(1) + data.z.toLowerCase();
+                            get: function (get) {
+                                return get('x.y').substring(1) + get('z').toLowerCase();
                             }
                         }
                     }
@@ -762,7 +778,7 @@ describe("Ext.app.ViewModel", function() {
                 });
 
                 var expressions = getExpressions('foo');
-                expect(expressions).toBe(undefined);
+                expect(expressions).toEqual([]);
 
                 scheduler = vm.getScheduler();
                 vm.notify();
@@ -795,7 +811,7 @@ describe("Ext.app.ViewModel", function() {
                 });
 
                 var expressions = getExpressions('foo');
-                expect(expressions).toBe(undefined);
+                expect(expressions).toEqual([]);
 
                 scheduler = vm.getScheduler();
                 vm.notify();
@@ -1024,12 +1040,12 @@ describe("Ext.app.ViewModel", function() {
                     });
                     viewModel.setFormulas({
                         // simple function form
-                        foo: function (data) {
-                            return data.abc.v + data.xyz;
+                        foo: function (get) {
+                            return get('abc.v') + get('xyz');
                         },
                         fullName: {
-                            get: function (data) {
-                                return data.firstName + ' ' + data.lastName;
+                            get: function (get) {
+                                return get('firstName') + ' ' + get('lastName');
                             },
                             set: function (name) {
                                 var a = name.split(' ');
@@ -1048,8 +1064,8 @@ describe("Ext.app.ViewModel", function() {
                     subViewModel.setFormulas({
                         // object w/get (no bind)
                         bar: {
-                            get: function (data) {
-                                return data.abc.v + data.xyz;
+                            get: function (get) {
+                                return get('abc.v') + get('xyz');
                             }
                         },
                         // object w/get and bind
@@ -1072,11 +1088,11 @@ describe("Ext.app.ViewModel", function() {
                         }
                     });
                     grandSubViewModel.setFormulas({
-                        baz: function (data) {
-                            return data.abc.v + data.xyz;
+                        baz: function (get) {
+                            return get('abc.v') + get('xyz');
                         },
-                        welcome: function (data) {
-                            return 'Hello ' + data.fullName + '!';
+                        welcome: function (get) {
+                            return 'Hello ' + get('fullName') + '!';
                         }
                     });
 
@@ -1151,10 +1167,10 @@ describe("Ext.app.ViewModel", function() {
                     expect(welcome).toBe('Hello Evan Trimboli!');
                 });
 
-                it('should work with get() calls on records', function () {
+                it('should work with fields on records', function () {
                     subViewModel.setFormulas({
-                        fromRecord: function (data) {
-                            return data.rec.get('fld');
+                        fromRecord: function (get) {
+                            return get('rec.fld');
                         }
                     });
 
@@ -1181,10 +1197,10 @@ describe("Ext.app.ViewModel", function() {
                     expect(value).toBe('The answer is 42');
                 });
 
-                it('should track field changes based on get() calls', function () {
+                it('should track field changes based on record fields', function () {
                     subViewModel.setFormulas({
-                        fromRecord: function (data) {
-                            return data.rec.get('name');
+                        fromRecord: function (get) {
+                            return get('rec.name');
                         }
                     });
 
@@ -2820,14 +2836,14 @@ describe("Ext.app.ViewModel", function() {
         describe("with formulas", function() {
             it("should not deliver until formulas is processed", function() {
                 viewModel.setFormulas({
-                    b: function(data) {
-                        return data.a + 'b';
+                    b: function(get) {
+                        return get('a') + 'b';
                     },
-                    c: function(data) {
-                        return data.b + 'c';
+                    c: function(get) {
+                        return get('b') + 'c';
                     },
-                    d: function(data) {
-                        return data.c + 'd';
+                    d: function(get) {
+                        return get('c') + 'd';
                     }
                 });
                 
@@ -3013,6 +3029,18 @@ describe("Ext.app.ViewModel", function() {
             expect(users2.getModel()).toBe(User);
             expect(users2.getFilters().getCount()).toBe(1);
         });
+
+        it("should accept a store instance", function() {
+            var s = new Ext.data.Store({
+                model: 'spec.User'
+            });
+            viewModel.setStores({
+                users: s
+            });
+            notify();
+            var users = viewModel.getStore('users');
+            expect(users).toBe(s);
+        });
         
         it("should not attach the store to the session by default", function() {
             viewModel.setStores({
@@ -3037,24 +3065,76 @@ describe("Ext.app.ViewModel", function() {
             expect(users.getSession()).toBe(session);
         });
         
-        it("should destroy the stores when the view model is destroyed", function() {
-            viewModel.setStores({
-                users1: {
-                    model: 'spec.User'
-                },
-                users2: {
-                    model: 'spec.User'
-                }
-            });
-            notify();
-            var users1 = viewModel.getStore('users1'),
-                users2 = viewModel.getStore('users2');
+        describe("when destroying the view model", function() {
+            describe("store config", function() {
+                it("should auto destroy the stores when the view model is destroyed", function() {
+                    viewModel.setStores({
+                        users1: {
+                            model: 'spec.User'
+                        },
+                        users2: {
+                            model: 'spec.User'
+                        }
+                    });
+                    notify();
+                    var users1 = viewModel.getStore('users1'),
+                        users2 = viewModel.getStore('users2');
                 
-            spyOn(users1, 'destroyStore');
-            spyOn(users2, 'destroyStore');
-            viewModel.destroy();
-            expect(users1.destroyStore).toHaveBeenCalled();
-            expect(users2.destroyStore).toHaveBeenCalled();
+                    spyOn(users1, 'destroyStore');
+                    spyOn(users2, 'destroyStore');
+                    viewModel.destroy();
+                    expect(users1.destroyStore).toHaveBeenCalled();
+                    expect(users2.destroyStore).toHaveBeenCalled();
+                });
+
+                it("should not destroy if configured with autoDestroy: false", function() {
+                    viewModel.setStores({
+                        users1: {
+                            autoDestroy: false,
+                            model: 'spec.User'
+                        }
+                    });
+                    notify();
+                    var users1 = viewModel.getStore('users1');
+                
+                    spyOn(users1, 'destroyStore');
+                    viewModel.destroy();
+                    expect(users1.destroyStore).not.toHaveBeenCalled();
+                });
+            });
+
+            describe("store instance", function() {
+                it("should not auto destroy by default", function() {
+                    var s = new Ext.data.Store({
+                        model: 'spec.User'
+                    });
+                    viewModel.setStores({
+                        users1: s
+                    });
+                    notify();
+                    var users1 = viewModel.getStore('users1');
+                
+                    spyOn(users1, 'destroyStore');
+                    viewModel.destroy();
+                    expect(users1.destroyStore).not.toHaveBeenCalled();
+                });
+
+                it("should auto destroy if configured with autoDestroy: true", function() {
+                    var s = new Ext.data.Store({
+                        model: 'spec.User',
+                        autoDestroy: true
+                    });
+                    viewModel.setStores({
+                        users1: s
+                    });
+                    notify();
+                    var users1 = viewModel.getStore('users1');
+                
+                    spyOn(users1, 'destroyStore');
+                    viewModel.destroy();
+                    expect(users1.destroyStore).toHaveBeenCalled();
+                });
+            });
         });
         
         describe("bindings", function() {
@@ -3826,8 +3906,8 @@ describe("Ext.app.ViewModel", function() {
         it("should wait until values are delivered before evaluating", function() {
             viewModel.bind('{f1}', spy);
             viewModel.setFormulas({
-                f1: function(data) {
-                    return data.foo + data.bar;
+                f1: function(get) {
+                    return get('foo') + get('bar');
                 }
             });
             notify();
@@ -3842,14 +3922,14 @@ describe("Ext.app.ViewModel", function() {
         it("should allow formulas to depend on other formulas", function() {
             viewModel.bind('{f1}', spy);
             viewModel.setFormulas({
-                f1: function(data) {
-                    return data.f2 + 1;
+                f1: function(get) {
+                    return get('f2') + 1;
                 },
-                f2: function(data) {
-                    return data.f3 + 1;
+                f2: function(get) {
+                    return get('f3') + 1;
                 },
-                f3: function(data) {
-                    return data.value + 1;
+                f3: function(get) {
+                    return get('value') + 1;
                 }
             });
             setNotify('value', 100);

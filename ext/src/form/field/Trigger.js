@@ -16,7 +16,7 @@ Ext.define('Ext.form.field.Trigger', {
 
     /**
      * @cfg {String} triggerCls
-     * An additional CSS class used to style the trigger button. The trigger will always get the {@link #triggerBaseCls}
+     * An additional CSS class used to style the trigger button. The trigger will always get the {@link Ext.form.trigger.Trigger#baseCls}
      * by default and triggerCls will be **appended** if specified.
      */
     triggerCls: Ext.baseCSSPrefix + 'form-arrow-trigger',
@@ -30,7 +30,7 @@ Ext.define('Ext.form.field.Trigger', {
         }
     },
 
-    onClassExtended: function(Class) {
+    onClassExtended: function() {
         this.warnDeprecated();
     },
 

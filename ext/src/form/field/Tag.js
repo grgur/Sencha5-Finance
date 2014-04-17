@@ -336,7 +336,7 @@ Ext.define('Ext.form.field.Tag', {
      * Create a store for the records of our current value based on the main store's model
      * @protected
      */
-    onBindStore: function(store, initial) {
+    onBindStore: function(store) {
         var me = this;
 
         if (store) {
@@ -526,7 +526,7 @@ Ext.define('Ext.form.field.Tag', {
             return false;
         }
 
-        matches = ds.queryBy(function(rec, id) {
+        matches = ds.queryBy(function(rec) {
             return rec.isEqual(rec.get(field), value);
         });
 
@@ -896,7 +896,7 @@ Ext.define('Ext.form.field.Tag', {
      * a list of values in to the field (e.g., for email addresses)
      * @protected
      */
-    onPaste: function(e, t) {
+    onPaste: function(e) {
         var me = this,
             rawValue = me.inputEl.dom.value,
             clipboard = (e && e.browserEvent && e.browserEvent.clipboardData) ? e.browserEvent.clipboardData : false;
@@ -945,7 +945,7 @@ Ext.define('Ext.form.field.Tag', {
      * Delegation control for selecting and removing labelled items or triggering list collapse/expansion
      * @protected
      */
-    onItemListClick: function(evt, el, o) {
+    onItemListClick: function(evt) {
         var me = this,
             itemEl = evt.getTarget('.' + Ext.baseCSSPrefix + 'tagfield-item'),
             closeEl = itemEl ? evt.getTarget('.' + Ext.baseCSSPrefix + 'tagfield-item-close') : false;
@@ -1204,8 +1204,8 @@ Ext.define('Ext.form.field.Tag', {
         var me = this,
             valueStore = me.valueStore,
             valueField = me.valueField,
-            record, len, i, valueRecord, h,
-            unknownValues = [];
+            unknownValues = [],
+            record, len, i, valueRecord;
 
         if (Ext.isEmpty(value)) {
             value = null;

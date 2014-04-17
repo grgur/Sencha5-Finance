@@ -18,6 +18,18 @@ Ext.define("Ext.util.Sortable", {
     $configStrict: false,
 
     config: {
+        /**
+         * @cfg {Ext.util.Sorter[]/Object[]} sorters
+         * The initial set of {@link Ext.util.Sorter Sorters}.
+         * 
+         *     sorters: [{
+         *         property: 'age',
+         *         direction: 'DESC'
+         *     }, {
+         *         property: 'firstName',
+         *         direction: 'ASC'
+         *     }]
+         */
         sorters: null
     },
 
@@ -79,19 +91,6 @@ Ext.define("Ext.util.Sortable", {
     /**
      * @cfg {String} sortRoot
      * The property in each item that contains the data to sort.
-     */
-
-    /**
-     * @cfg {Ext.util.Sorter[]/Object[]} sorters
-     * The initial set of {@link Ext.util.Sorter Sorters}.
-     * 
-     *     sorters: [{
-     *         property: 'age',
-     *         direction: 'DESC'
-     *     }, {
-     *         property: 'firstName',
-     *         direction: 'ASC'
-     *     }]
      */
 
     applySorters: function(sorters) {

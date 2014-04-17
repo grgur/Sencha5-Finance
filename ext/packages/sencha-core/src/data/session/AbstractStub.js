@@ -88,11 +88,6 @@ Ext.define('Ext.data.session.AbstractStub', {
         return name;
     },
 
-    getScheduler: function () {
-        var owner = this.owner;
-        return owner && owner.getScheduler();
-    },
-
     getSession: function () {
         var owner = this.owner;
 
@@ -181,21 +176,6 @@ Ext.define('Ext.data.session.AbstractStub', {
         }
     },
 
-    sort: function () {
-        var parent = this.parent;
-
-        if (parent) {
-            // We sort our parent first because if it is something like a link we need
-            // it to determine the value of the root-level property before we can dot
-            // our way into it. This is especially important for formulas that might
-            // throw errors if the links have not published results before they run.
-            this.scheduler.sortItem(parent);
-        }
-
-        // Schedulable#sort === emptyFn
-        //me.callParent();
-    },
-
     unbind: function (binding) {
         var bindings = this.bindings;
 
@@ -231,5 +211,27 @@ Ext.define('Ext.data.session.AbstractStub', {
         }
         
         return totalCount;
+    },
+
+    privates: {
+        getScheduler: function () {
+            var owner = this.owner;
+            return owner && owner.getScheduler();
+        },
+        
+        sort: function () {
+            var parent = this.parent;
+
+            if (parent) {
+                // We sort our parent first because if it is something like a link we need
+                // it to determine the value of the root-level property before we can dot
+                // our way into it. This is especially important for formulas that might
+                // throw errors if the links have not published results before they run.
+                this.scheduler.sortItem(parent);
+            }
+
+            // Schedulable#sort === emptyFn
+            //me.callParent();
+        }
     }
 });

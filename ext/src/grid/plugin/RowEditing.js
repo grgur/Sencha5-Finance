@@ -117,6 +117,10 @@ Ext.define('Ext.grid.plugin.RowEditing', {
         }
     },
 
+    shouldStartEdit: function(editor) {
+        return true;
+    },
+
     /**
      * Starts editing the specified record, using the specified Column definition to define which field is being edited.
      * @param {Ext.data.Model} record The Store data record which backs the row to be edited.

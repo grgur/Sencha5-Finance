@@ -395,7 +395,7 @@ Ext.define('Ext.view.AbstractView', {
      * Fires when the node associated with an individual record is removed
      * @param {Ext.data.Model} record The model instance
      * @param {Number} index The index from which the record was removed
-     * @param {HtmlElement} item The view item removed
+     * @param {HTMLElement} item The view item removed
      * @param {Ext.view.View} view The view removing the item
      */
 
@@ -787,11 +787,12 @@ Ext.define('Ext.view.AbstractView', {
 
     clearViewEl: function(leaveNodeContainer) {
         var me = this,
-            emptyEl = Ext.fly(me.emptyEl),
             nodeContainer, targetEl;
-            
-        if (emptyEl) {
-            emptyEl.destroy();
+
+        // emptyEl is likely to be a TextNode if emptyText is not HTML code.
+        // Use native DOM to remove it.
+        if (me.emptyEl) {
+            me.emptyEl.parentNode.removeChild(me.emptyEl);
         }
         me.emptyEl = null;
         me.all.clear(true);
@@ -1388,7 +1389,7 @@ Ext.define('Ext.view.AbstractView', {
 
     /**
      * Gets a record from a node
-     * @param {Ext.Element/HTMLElement} node The node to evaluate
+     * @param {Ext.dom.Element/HTMLElement} node The node to evaluate
      *
      * @return {Ext.data.Model} record The {@link Ext.data.Model} object
      * @since 2.3.0

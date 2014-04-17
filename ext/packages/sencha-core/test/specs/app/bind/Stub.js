@@ -36,6 +36,7 @@ describe("Ext.app.bind.Stub", function() {
     
     describe("stub - getAssociationBinding", function() {
         beforeEach(function() {
+            Ext.data.Model.schema.setNamespace('spec');
             Ext.define('spec.User', {
                 extend: 'Ext.data.Model',
                 fields: ['id', 'name']
@@ -62,7 +63,8 @@ describe("Ext.app.bind.Stub", function() {
             MockAjaxManager.removeMethods();
             Ext.undefine('spec.User');
             Ext.undefine('specProject');
-            Ext.undefine('spec.Post');            
+            Ext.undefine('spec.Post');   
+            Ext.data.Model.schema.clear(true);
         });
 
         describe("associations", function() {

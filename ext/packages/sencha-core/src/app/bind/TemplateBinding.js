@@ -93,13 +93,15 @@ Ext.define('Ext.app.bind.TemplateBinding', {
         }
     },
 
-    sort: function () {
-        var multi = this.multiBinding;
-        if (multi) {
-            this.scheduler.sortItem(multi);
-        }
+    privates: {
+        sort: function () {
+            var multi = this.multiBinding;
+            if (multi) {
+                this.scheduler.sortItem(multi);
+            }
 
-        // Schedulable#sort === emptyFn
-        //me.callParent();
+            // Schedulable#sort === emptyFn
+            //me.callParent();
+        }
     }
 });

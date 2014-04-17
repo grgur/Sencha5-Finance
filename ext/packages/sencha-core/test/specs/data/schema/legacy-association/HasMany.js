@@ -19,6 +19,7 @@ describe("Ext.data.association.HasMany_legacy", function() {
     }
     
     beforeEach(function() {
+        Ext.data.Model.schema.setNamespace('spec');
         Ext.define('spec.Post', {
             extend: 'Ext.data.Model',
             fields: ['title', 'content', 'user_id', 'thread_id']
@@ -42,7 +43,7 @@ describe("Ext.data.association.HasMany_legacy", function() {
         Ext.undefine('spec.Site');
         Ext.undefine('spec.Thread');
         
-        Ext.data.Model.schema.clear();
+        Ext.data.Model.schema.clear(true);
         
         rec = null;
     });

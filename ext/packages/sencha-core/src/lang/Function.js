@@ -510,18 +510,16 @@ Ext.Function = {
 
     /**
      * Wraps the passed function in a barrier function which will call the passed function after the passed number of invocations.
-     * @param {type} count The number of invocations which will result in the calling of the passed function.
-     * @param {type} fn The function to call after the required number of invocations.
-     * @param {type} scope The scope (`this` reference) in which the function will be called.
-     * @return {undefined}
-     * 
+     * @param {Number} count The number of invocations which will result in the calling of the passed function.
+     * @param {Function} fn The function to call after the required number of invocations.
+     * @param {Object} scope The scope (`this` reference) in which the function will be called.
      */    
     createBarrier: function(count, fn, scope) {
         return function() {
             if (!--count) {
                 fn.apply(scope, arguments);
             };
-        }
+        };
     },
 
     /**

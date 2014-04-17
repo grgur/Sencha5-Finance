@@ -92,9 +92,7 @@
 Ext.define('Ext.dom.Query', function() {
     var DQ,
         doc = document,
-        cache = {},
-        simpleCache = {},
-        valueCache = {},
+        cache, simpleCache, valueCache,
         useClassList = !!doc.documentElement.classList,
         useElementPointer = !!doc.documentElement.firstElementChild,
         useChildrenCollection = (function() {
@@ -597,6 +595,15 @@ Ext.define('Ext.dom.Query', function() {
         _init: function() {
             DQ = this;
             DQ.operators = Ext.Object.chain(Ext.util.Operators);  // can capture now
+            cache = new Ext.util.LruCache({
+                maxSize: 200
+            });
+            valueCache = new Ext.util.LruCache({
+                maxSize: 200
+            });
+            simpleCache = new Ext.util.LruCache({
+                maxSize: 200
+            });
         },
 
         getStyle: function(el, name) {
@@ -712,30 +719,32 @@ Ext.define('Ext.dom.Query', function() {
             if (typeof root == "string") {
                 root = doc.getElementById(root);
             }
-            var paths = path.split(","),
+            var paths = Ext.splitAndUnescape(path, ","),
                 results = [],
-                i, len, subPath, result;
+                query, i, len, subPath, result;
 
             // loop over each selector
             for (i = 0, len = paths.length; i < len; i++) {
                 subPath = paths[i].replace(trimRe, "");
                 // compile and place in cache
-                if (!cache[subPath]) {
+                query = cache.get(subPath);
+                if (!query) {
                     // When we compile, escaping is handled inside the compile method
-                    cache[subPath] = DQ.compile(subPath, type);
-                    if (!cache[subPath]) {
+                    query = DQ.compile(subPath, type);
+                    if (!query) {
                         Ext.Error.raise({
                             sourceClass:'Ext.DomQuery',
                             sourceMethod:'jsSelect',
                             msg:subPath + ' is not a valid selector'
                         });
                     }
+                    cache.add(subPath, query);
                 } else {
                     // If we've already compiled, we still need to check if the
                     // selector has escaping and setup the appropriate flags
                     setupEscapes(subPath);
                 }
-                result = cache[subPath](root);
+                result = query(root);
                 if (result && result !== doc) {
                     results = results.concat(result);
                 }
@@ -822,13 +831,17 @@ Ext.define('Ext.dom.Query', function() {
          */
         selectValue: function(path, root, defaultValue) {
             path = path.replace(trimRe, "");
-            if (!valueCache[path]) {
-                valueCache[path] = DQ.compile(path, "select");
+            var query = valueCache.get(path),
+                n, v;
+
+            if (!query) {
+                query = DQ.compile(path, "select");
+                valueCache.add(path, query);
             } else {
                 setupEscapes(path);
             }
 
-            var n = valueCache[path](root);
+            n = query(root);
             return DQ.getNodeValue(n[0] ? n[0] : n);
         },
 
@@ -890,13 +903,17 @@ Ext.define('Ext.dom.Query', function() {
          */
         filter: function(els, ss, nonMatches) {
             ss = ss.replace(trimRe, "");
-            if (!simpleCache[ss]) {
-                simpleCache[ss] = DQ.compile(ss, "simple");
+            var query = simpleCache.get(ss),
+                result;
+
+            if (!query) {
+                query = DQ.compile(ss, "simple");
+                simpleCache.add(ss, query);
             } else {
                 setupEscapes(ss);
             }
 
-            var result = simpleCache[ss](els);
+            result = query(els);
             return nonMatches ? quickDiff(result, els) : result;
         },
 

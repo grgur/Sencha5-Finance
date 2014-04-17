@@ -18,7 +18,7 @@
  * extends {@link Ext.Component}, where the selectors use
  * {@link Ext.ComponentQuery#query Ext.ComponentQuery}.
  * -   {@link Ext.app.domain.Global Global domain}. This domain provides Controllers with access
- * to events fired from {@link Ext#GlobalEvents} Observable instance. These events represent
+ * to events fired from {@link Ext.GlobalEvents} Observable instance. These events represent
  * the state of the application as a whole, and are always anonymous. Because of this, Global
  * domain does not provide selectors at all.
  * -   {@link Ext.app.domain.Controller Controller domain}. This domain includes all classes
@@ -154,6 +154,7 @@ Ext.define('Ext.app.EventDomain', {
             monitoredClasses = me.monitoredClasses,
             monitoredClassesCount = monitoredClasses.length,
             controllerId = controller.getId(),
+            eventNameMap = Ext.$eventNameMap,
             i, tree, info, selector, options, listener, scope, event, listeners, ev,
             classHasListeners;
 
@@ -174,6 +175,8 @@ Ext.define('Ext.app.EventDomain', {
                     options  = null;
                     listener = listeners[ev];
                     scope    = controller;
+                    // This is inlined for performance
+                    ev       = eventNameMap[ev] || (eventNameMap[ev] = ev.toLowerCase());
                     event    = new Ext.util.Event(controller, ev);
 
                     // Normalize the listener
@@ -282,19 +285,22 @@ Ext.define('Ext.app.EventDomain', {
      *
      * @private
      */
-    unlisten: function(controller) {
+    unlisten: function(controllerId) {
         var bus = this.bus,
-            id = controller,
+            id = controllerId,
             monitoredClasses = this.monitoredClasses,
             monitoredClassesCount = monitoredClasses.length,
+            eventNameMap = Ext.$eventNameMap,
             controllers, ev, events, len,
             item, selector, selectors, i, j, info, classHasListeners;
             
-        if (controller.isController) {
-            id = controller.getId();
+        if (controllerId.isController) {
+            id = controllerId.getId();
         }
 
         for (ev in bus) {
+            // This is inlined for performance
+            ev = eventNameMap[ev] || (eventNameMap[ev] = ev.toLowerCase());
             if (bus.hasOwnProperty(ev) && (selectors = bus[ev])) {
                 for (selector in selectors) {
                     controllers = selectors[selector];

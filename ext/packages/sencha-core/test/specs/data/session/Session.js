@@ -13,6 +13,7 @@ describe("Ext.data.session.Session", function() {
                 var Base, Derived;
 
                 beforeEach(function() {
+                    schema.setNamespace('spec');
                     Base = Ext.define('spec.Base', {
                         extend: Ext.data.Model,
 
@@ -40,9 +41,9 @@ describe("Ext.data.session.Session", function() {
                 afterEach(function() {
                     Ext.destroy(session);
 
-                    Base.schema.clear();
                     Ext.undefine('spec.Base');
                     Ext.undefine('spec.Derived');
+                    Base.schema.clear(true);
 
                     session = scheduler = null;
                     Base = Derived = null;
@@ -123,6 +124,7 @@ describe("Ext.data.session.Session", function() {
                     defaultIdentifier: 'uuid'
                 });
             }
+            schema.setNamespace('spec');
 
             Base = Ext.define('spec.Base', {
                 extend: Ext.data.Model,
@@ -147,9 +149,9 @@ describe("Ext.data.session.Session", function() {
         afterEach(function() {
             Ext.destroy(session);
 
-            Base.schema.clear();
             Ext.undefine('spec.Base');
             Ext.undefine('spec.Derived');
+            Base.schema.clear(true);
 
             session = scheduler = null;
             Base = Derived = null;
@@ -193,6 +195,7 @@ describe("Ext.data.session.Session", function() {
                     }
                 });
             }
+            schema.setNamespace('spec');
 
             Base = Ext.define('spec.Base', {
                 extend: Ext.data.Model,
@@ -217,9 +220,9 @@ describe("Ext.data.session.Session", function() {
         afterEach(function() {
             Ext.destroy(session);
 
-            Base.schema.clear();
             Ext.undefine('spec.Base');
             Ext.undefine('spec.Derived');
+            Base.schema.clear(true);
 
             session = scheduler = null;
             Base = Derived = null;
@@ -283,6 +286,8 @@ describe("Ext.data.session.Session", function() {
         beforeEach(function() {
             MockAjaxManager.addMethods();
 
+            Ext.data.Model.schema.setNamespace('spec');
+
             User = Ext.define('spec.User', {
                 extend: Ext.data.Model,
 
@@ -316,9 +321,9 @@ describe("Ext.data.session.Session", function() {
 
             MockAjaxManager.removeMethods();
 
-            User.schema.clear();
             Ext.undefine('spec.User');
             Ext.undefine('spec.Group');
+            User.schema.clear(true);
 
             session = scheduler = null;
             User = Group = null;
@@ -519,6 +524,7 @@ describe("Ext.data.session.Session", function() {
 
         beforeEach(function() {
             MockAjaxManager.addMethods();
+            Ext.data.Model.schema.setNamespace('spec');
 
             Base = Ext.define('spec.Base', {
                 extend: Ext.data.Model
@@ -599,13 +605,14 @@ describe("Ext.data.session.Session", function() {
 
             MockAjaxManager.removeMethods();
 
-            Base.schema.clear();
             Ext.undefine('spec.Base');
             Ext.undefine('spec.Parent');
             Ext.undefine('spec.Child');
             Ext.undefine('spec.GrandChild');
             Ext.undefine('spec.Group');
             Ext.undefine('spec.User');
+
+            Ext.data.Model.schema.clear(true);
 
             session = scheduler = null;
             Base = Parent = Child = GrandChild = Group = User = null;

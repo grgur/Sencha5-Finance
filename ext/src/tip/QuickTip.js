@@ -9,8 +9,8 @@ Ext.define('Ext.tip.QuickTip', {
     alternateClassName: 'Ext.QuickTip',
 
     /**
-     * @cfg {String/HTMLElement/Ext.Element} target
-     * The target HTMLElement, {@link Ext.Element} or id to associate with this Quicktip.
+     * @cfg {String/HTMLElement/Ext.dom.Element} target
+     * The target HTMLElement, {@link Ext.dom.Element} or id to associate with this Quicktip.
      *
      * Defaults to the document.
      */
@@ -88,7 +88,7 @@ Ext.define('Ext.tip.QuickTip', {
 
     /**
      * Removes this quick tip from its element and destroys it.
-     * @param {String/HTMLElement/Ext.Element} el The element from which the quick tip
+     * @param {String/HTMLElement/Ext.dom.Element} el The element from which the quick tip
      * is to be removed or ID of the element.
      */
     unregister : function(el){
@@ -97,7 +97,7 @@ Ext.define('Ext.tip.QuickTip', {
 
     /**
      * Hides a visible tip or cancels an impending show for a particular element.
-     * @param {String/HTMLElement/Ext.Element} el The element that is the target of
+     * @param {String/HTMLElement/Ext.dom.Element} el The element that is the target of
      * the tip or ID of the element.
      */
     cancelShow: function(el){

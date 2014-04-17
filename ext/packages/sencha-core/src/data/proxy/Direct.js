@@ -169,6 +169,11 @@ Ext.define('Ext.data.proxy.Direct', {
         });
         
         fn.apply(window, args);
+        
+        // Store expects us to return something to indicate that the request
+        // is pending; not doing so will make a buffered Store repeat the
+        // requests over and over. See https://sencha.jira.com/browse/EXTJSIV-11757
+        return request;
     },
 
     /**

@@ -22,7 +22,7 @@
  * - {@link #dateFormat Writer.dateFormat} The writer `dateFormat` will always have the
  *   highest precedence.
  * - {@link Ext.data.field.Date#dateWriteFormat} The `dateWriteFormat` given to the field
- *   instance. This is handled by {@link Ext.data.field.Date#serialize}.
+ *   instance. This is handled by {@link Ext.data.field.Date#method-serialize}.
  * - {@link Ext.data.field.Date#dateFormat Field.dateFormat} This is handled by the field's
  *   `serialize` method.
  * - {@link Ext.data.field.Date#dateReadFormat Field.dateReadFormat} Also handled by the

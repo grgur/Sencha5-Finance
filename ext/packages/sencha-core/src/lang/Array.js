@@ -723,7 +723,7 @@ Ext.Array = new (function() {
         },
 
         /**
-         * Returns the first item in the array which elicits a true return value from the
+         * Returns the first item in the array which elicits a truthy return value from the
          * passed selection function.
          * @param {Array} array The array to search
          * @param {Function} fn The selection function to execute for each item.

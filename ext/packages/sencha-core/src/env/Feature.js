@@ -1016,7 +1016,7 @@ Ext.feature = {
      * In Chrome, in RTL mode, horizontal overflow only into the vertical scrollbar does NOT trigger horizontal scrollability.
      * See https://code.google.com/p/chromium/issues/detail?id=179332
      * We need to detect this for when a grid header needs to have exactly the same horizontal scrolling range as its table view.
-     * @see {Ext.grid.ColumnLayout#publishInnerCtSize}
+     * See {@link Ext.grid.ColumnLayout#publishInnerCtSize}
      * TODO: Remove this when all supported Chrome versions are fixed.
      *
      * @private

@@ -408,16 +408,24 @@ Ext.define('Ext.data.Model', {
      * @property {String} entityName
      * The short name of this entity class. This name is derived from the `namespace` of
      * the associated `schema` and this class name. By default, this name is the leaf name
-     * of the class. For this class:
+     * of the class, or if the full class name contains `".model."`, the `entityName` will
+     * default to the tail of the class name following that segment. For this class:
      * 
-     *      Ext.define('MyApp.models.Foo', {
+     *      Ext.define('MyApp.model.Foo', {
      *          extend: 'Ext.data.Model',
      *          ...
      *      });
      *
-     * The `entityName` will be "Foo". All entities in a given `schema` must have a unique
-     * `entityName`. This is true in the default case (with no explicit `schema`) as long
-     * as all such classes belong to the same namespace.
+     *      // entityName == 'Foo'
+     *
+     *      Ext.define('MyApp.model.sub.Bar', {
+     *          extend: 'Ext.data.Model',
+     *          ...
+     *      });
+     *
+     *      // entityName == 'sub.Bar'
+     *
+     * All entities in a given `schema` must have a unique `entityName`.
      * 
      * For more details see "Relative Naming" in {@link Ext.data.schema.Schema}.
      */
@@ -649,6 +657,12 @@ Ext.define('Ext.data.Model', {
      * @readonly
      */
 
+     /**
+      * @property {Object} modified
+      * A hash of field values which holds the initial values of fields before a set of edits
+      * are {@link #commit committed}.
+      */
+
     /**
      * @property {Object} previousValues
      * This object is similar to the `modified` object except it holds the data values as
@@ -696,7 +710,7 @@ Ext.define('Ext.data.Model', {
 
     /**
      * @property {Number} generation
-     * This property is incremented on each modified of a record.
+     * This property is incremented on each modification of a record.
      * @readonly
      * @since 5.0.0
      */
@@ -714,10 +728,16 @@ Ext.define('Ext.data.Model', {
      */
     validationSeparator: null,
 
+    /**
+     * @cfg {Boolean} [convertOnSet=true]
+     * Set to `false` to  prevent any converters from being called during a set operation.
+     */
+     convertOnSet: true,
+
     // Associations configs and properties
     /**
      * @cfg {Object[]} associations
-     * An array of {@link Ext.data.Association associations} for this model.
+     * An array of {@link Ext.data.schema.Association associations} for this model.
      */
     /**
      * @cfg {String/Object/String[]/Object[]} hasMany
@@ -939,7 +959,7 @@ Ext.define('Ext.data.Model', {
             session = me.session,
             single = Ext.isString(fieldName),
             opt = (single ? options : newValue),
-            convertOnSet = !opt || opt.convert !== false,
+            convertOnSet = opt ? opt.convert !== false : me.convertOnSet,
             fieldsMap = me.fieldsMap,
             silent = opt && opt.silent,
             commit = opt && opt.commit,
@@ -1204,6 +1224,11 @@ Ext.define('Ext.data.Model', {
             stores = me.stores;
         
         if (!stores) {
+            /**
+             * @property {Ext.data.Store[]} stores
+             * The {@link Ext.data.Store Stores} to which this instance belongs. A record may be referenced
+             * by many stores at once.
+             */
             me.stores = stores = [];
         }
 
@@ -1248,7 +1273,7 @@ Ext.define('Ext.data.Model', {
      *     var rec = record.copy(null); // clone the record but no id (one is generated)
      *
      * @param {String} [newId] A new id, defaults to the id of the instance being copied.
-     * See `{@link Ext.data.Model#id id}`.
+     * See `{@link Ext.data.Model#idProperty idProperty}`.
      *
      * @return {Ext.data.Model}
      */
@@ -2180,6 +2205,11 @@ Ext.define('Ext.data.Model', {
                     // Get the targetField on which we depend and add this field to the
                     // targetField.dependents[]
                     targetField = cls.fieldsMap[dep[i]];
+                    //<debug>
+                    if (!targetField) {
+                        Ext.Error.raise(cls.$className + ": Field " + field.name + " depends on undefined field " + dep[i]);
+                    }
+                    //</debug>
                     (targetField.dependents || (targetField.dependents = [])).push(field);
 
                     if (!targetField.rank) { // if (!added)
@@ -2526,7 +2556,7 @@ Ext.define('Ext.data.Model', {
 
             /**
              * This method produces the `initializeFn` for this class. If there are no fields
-             * requiring {@link Ext.data.field.Field#convert conversion} and no fields requiring
+             * requiring {@link Ext.data.field.Field#cfg-convert conversion} and no fields requiring
              * a {@link Ext.data.field.Field#defaultValue default value} then this method will
              * return `null`.
              * @return {Function} The `initializeFn` for this class (or null).

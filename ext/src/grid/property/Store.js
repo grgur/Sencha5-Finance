@@ -9,7 +9,7 @@ Ext.define('Ext.grid.property.Store', {
 
     alternateClassName: 'Ext.grid.PropertyStore',
 
-    sortOnLoad: false,
+    remoteSort: true,
 
     uses: ['Ext.data.reader.Reader', 'Ext.data.proxy.Proxy', 'Ext.data.ResultSet', 'Ext.grid.property.Property'],
 
@@ -93,7 +93,7 @@ Ext.define('Ext.grid.property.Store', {
         me.source = dataObject;
         me.suspendEvents();
         me.removeAll();
-        me.proxy.setData(dataObject);
+        me.getProxy().setData(dataObject);
         me.load();
         me.resumeEvents();
         me.fireEvent('datachanged', me);

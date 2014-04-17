@@ -47,7 +47,7 @@ Ext.define('Ext.panel.Proxy', {
 
     /**
      * Gets the proxy's element
-     * @return {Ext.Element} The proxy's element
+     * @return {Ext.dom.Element} The proxy's element
      */
     getEl: function(){
         return this.ghost.el;
@@ -64,7 +64,7 @@ Ext.define('Ext.panel.Proxy', {
     /**
      * Gets the proxy element. This is the element that represents where the
      * Panel was before we started the drag operation.
-     * @return {Ext.Element} The proxy's element
+     * @return {Ext.dom.Element} The proxy's element
      */
     getProxy: function(){
         return this.proxy;

@@ -501,7 +501,7 @@ Ext.define('Ext.form.field.HtmlEditor', {
             if (me.enableSourceEdit) {
                 items.push(
                     '-',
-                    btn('sourceedit', true, function(btn){
+                    btn('sourceedit', true, function(){
                         me.toggleSourceEdit(!me.sourceEditMode);
                     })
                 );
@@ -1233,7 +1233,7 @@ Ext.define('Ext.form.field.HtmlEditor', {
     },
 
     // @private
-    onEditorEvent: function(e) {
+    onEditorEvent: function() {
         this.updateToolbar();
     },
 

@@ -37,8 +37,7 @@
 Ext.define('Ext.grid.plugin.BufferedRenderer', {
     extend: 'Ext.AbstractPlugin',
     requires: [
-        'Ext.grid.plugin.BufferedRendererTableView',
-        'Ext.grid.plugin.BufferedRendererTreeView'
+        'Ext.grid.plugin.BufferedRendererTableView'
     ],
     alias: 'plugin.bufferedrenderer',
     lockableScope: 'both',

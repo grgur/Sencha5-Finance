@@ -906,7 +906,7 @@ Ext.define('Ext.data.NodeInterface', {
 
                 /**
                  * Inserts the first node before the second node in this nodes childNodes collection.
-                 * @param {Ext.data.NodeInterface} node The node to insert
+                 * @param {Ext.data.NodeInterface/Ext.data.NodeInterface[]/Object} node The node to insert
                  * @param {Ext.data.NodeInterface} refNode The node to insert before (if null the node is appended)
                  * @return {Ext.data.NodeInterface} The inserted node
                  */
@@ -1720,10 +1720,10 @@ Ext.define('Ext.data.NodeInterface', {
 
                 /**
                 * Fires the specified event with the passed parameters (minus the event name, plus the `options` object passed
-                * to {@link #addListener}).
+                * to {@link Ext.mixin.Observable#addListener addListener}).
                 *
                 * An event may be set to bubble up an Observable parent hierarchy (See {@link Ext.Component#getBubbleTarget}) by
-                * calling {@link #enableBubble}.
+                * calling {@link Ext.mixin.Observable#enableBubble enableBubble}.
                 *
                 * @param {String} eventName The name of the event to fire.
                 * @param {Object...} args Variable number of parameters are passed to handlers.

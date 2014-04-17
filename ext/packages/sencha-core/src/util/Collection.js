@@ -676,7 +676,7 @@ Ext.define('Ext.util.Collection', {
     },
     
     /**
-     * Adds an item to the collection while removing any existing items. Similar to {@link #add}.
+     * Adds an item to the collection while removing any existing items. Similar to {@link #method-add}.
      * @param {Object/Object[]} item The item or items to add.
      * @return {Object/Object[]} The item or items added.
      * @since 5.0.0
@@ -3108,7 +3108,7 @@ Ext.define('Ext.util.Collection', {
      *   implementing intuitive "Sort by this" user interfaces.
      *
      * * `**append**` : The new sorters are added at the end of the collection.
-     * @return {Ext.mixin.Sortable} This instance.
+     * @return {Ext.util.Collection} This instance.
      */
     sort: function (property, direction, mode) {
         var sorters = this.getSorters();

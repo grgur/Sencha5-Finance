@@ -330,7 +330,7 @@ Ext.define('Ext.form.field.Field', {
      * Called when the field's value changes. Performs validation if the {@link #validateOnChange}
      * config is enabled, and invokes the dirty check.
      */
-    onChange: function (newVal, oldVal) {
+    onChange: function (newVal) {
         var me = this;
 
         if (me.validateOnChange) {

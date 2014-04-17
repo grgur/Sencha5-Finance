@@ -1,3 +1,9 @@
+/**
+ * @protected
+ * @class Ext.app.BaseController
+ * Base class for Controllers.
+ * 
+ */
 Ext.define('Ext.app.BaseController', {
     requires: [
         'Ext.app.EventBus',
@@ -104,7 +110,7 @@ Ext.define('Ext.app.BaseController', {
          *          }
          *      });
          *
-         * To listen to "idle" events fired by {@link Ext#GlobalEvents} when other event
+         * To listen to "idle" events fired by {@link Ext.GlobalEvents} when other event
          * processing is complete and Ext JS is about to return control to the browser:
          *
          *      Ext.define('AM.controller.Users', {
@@ -182,7 +188,111 @@ Ext.define('Ext.app.BaseController', {
          *          }
          *      });
          */
-        listen: null
+        listen: null,
+        /**
+         * @cfg {Object} routes
+         * @accessor
+         *
+         * An object of routes to handle hash changes. A route can be defined in a simple way:
+         *
+         *     routes : {
+         *         'foo/bar'  : 'handleFoo',
+         *         'user/:id' : 'showUser'
+         *     }
+         *
+         * Where the property is the hash (which can accept a parameter defined by a colon) and the value
+         * is the method on the controller to execute. The parameters will get sent in the action method.
+         *
+         * At the application level, you can define a event that will be executed when no matching
+         * routes are found.
+         *
+         *     Ext.application({
+         *         name: 'MyApp',
+         *         listen: {
+         *             controller: {
+         *                 '#': {
+         *                     unmatchedroute: 'onUnmatchedRoute'
+         *                 }
+         *             }
+         *         },
+         *
+         *         onUnmatchedRoute: function(hash) {
+         *             console.log('Unmatched', hash);
+         *             // Do something...
+         *         }
+         *     });
+         *
+         * There is also a complex means of defining a route where you can use a before action and even
+         * specify your own RegEx for the parameter:
+         *
+         *     routes : {
+         *         'foo/bar'  : {
+         *             action  : 'handleFoo',
+         *             before  : 'beforeHandleFoo'
+         *         },
+         *         'user/:id' : {
+         *             action     : 'showUser',
+         *             before     : 'beforeShowUser',
+         *             conditions : {
+         *                 ':id' : '([0-9]+)'
+         *             }
+         *         }
+         *     }
+         *
+         * This will not only match if the id is a number.
+         *
+         * The before action allows you to cancel an action. Every before action will get passed an action argument with
+         * a resume method as the last argument of the method and you *MUST* execute the resume method optionally passing a bool:
+         *
+         *     beforeHandleFoo : function(action) {
+         *         //some logic here
+         *
+         *         //this will allow the handleFoo action to be executed
+         *         action.resume();
+         *     },
+         *     handleFoo : function() {
+         *         //will get executed due to true being passed in callback in beforeHandleFoo
+         *     },
+         *     beforeShowUser : function(id, action) {
+         *         //allows for async process like an Ajax
+         *         Ext.Ajax.request({
+         *             url     : 'foo.php',
+         *             success : function() {
+         *                 //will not allow the showUser method to be executed but will continue other queued actions.
+         *                 action.resume(false);
+         *             },
+         *             failure : function() {
+         *                 //will not allow the showUser method to be executed and will not allow other queued actions to be executed.
+         *                 action.resume(true);
+         *             }
+         *         });
+         *     },
+         *     showUser : function(id) {
+         *         //will not get executed due to false being passed in callback in beforeShowUser
+         *     }
+         *
+         * There are 3 values you can pass to the resume method of the action argument:
+         *
+         *  - `undefined` - will allow the action to resume normally
+         *  - `false` - will not allow the action to resume and will continue with other queued actions
+         *  - `true` - will not allow the action to resume but will not allow other queued actions to continue to execute
+         *
+         * The default RegEx that will be used is `([%a-zA-Z0-9\\-\\_\\s,]+)` but you can specify any
+         * that may suit what you need to accomplish. An example of an advanced condition may be to make
+         * a parameter optional and case-insensitive:
+         *
+         *     routes : {
+         *         'user:id' : {
+         *             action     : 'showUser',
+         *             before     : 'beforeShowUser',
+         *             conditions : {
+         *                 ':id' : '(?:(?:\/){1}([%a-z0-9_,\s\-]+))?'
+         *             }
+         *         }
+         *     }
+         */
+        routes : null,
+        before : null
     },
 
     /**
@@ -220,7 +330,7 @@ Ext.define('Ext.app.BaseController', {
     },
 
     /**
-     * @param {Object} control The object to pass to the {@link #control} method
+     * @param {Object} control The object to pass to the {@link #method-control} method
      * @private
      */
     updateControl: function(control) {
@@ -231,13 +341,51 @@ Ext.define('Ext.app.BaseController', {
     },
 
     /**
-     * @param {Object} listen The object to pass to the {@link #listen} method
+     * @param {Object} listen The object to pass to the {@link #method-listen} method
      * @private
      */
     updateListen: function(listen) {
         if (listen) {
             this.ensureId && this.ensureId();
             this.listen(listen);
+        }
+    },
+
+    /**
+     * @param {Object} routes The routes to connect to the {@link Ext.app.route.Router}
+     * @private
+     */
+    updateRoutes : function(routes) {
+        if (routes) {
+            var me = this,
+                befores = me.getBefore() || {},
+                Router = Ext.app.route.Router,
+                url, config, method;
+
+            for (url in routes) {
+                config = routes[url];
+
+                if (Ext.isString(config)) {
+                    config = {
+                        action : config
+                    };
+                }
+
+                method = config.action;
+
+                if (!config.before) {
+                    config.before = befores[method];
+                }
+                //<debug>
+                else if (befores[method]) {
+                    Ext.log.warn('You have a before method configured on a route ("' + url + '") and in the before object property also in the "' +
+                        me.self.getName() + '" controller. Will use the before method in the route and disregard the one in the before property.');
+                }
+                //</debug>
+
+                //connect the route config to the Router
+                Router.connect(url, config, me);
+            }
         }
     },
 
@@ -423,6 +571,9 @@ Ext.define('Ext.app.BaseController', {
     
     destroy: function() {
         var bus = this.eventbus;
+
+        Ext.app.route.Router.disconnectAll(this);
+
         if (bus) {
             bus.unlisten(this);
             this.eventbus = null;

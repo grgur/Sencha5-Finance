@@ -1,3 +1,7 @@
+/**
+ * @private
+ * @class Ext.app.bindinspector.Util
+ */
 Ext.define('Ext.app.bindinspector.Util', {
     singleton: true,
     

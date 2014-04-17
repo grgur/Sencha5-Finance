@@ -63,6 +63,8 @@ Ext.define('Ext.overrides.dom.Helper', (function() {
 
         /**
          * @private
+         * @method insertIntoTable
+         * @member Ext.dom.Helper
          * workaround for broken table implementation in IE9m
          * http://www.ericvasilik.com/2006/07/code-karma.html
          */

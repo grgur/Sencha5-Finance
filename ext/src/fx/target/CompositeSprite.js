@@ -1,12 +1,10 @@
 /**
  * @class Ext.fx.target.CompositeSprite
-
-This class represents a animation target for a {@link Ext.draw.CompositeSprite}. It allows
-each {@link Ext.draw.Sprite} in the group to be animated as a whole. In general this class will not be
-created directly, the {@link Ext.draw.CompositeSprite} will be passed to the animation and
-and the appropriate target will be created.
-
- * @markdown
+ *
+ * This class represents a animation target for a {@link Ext.draw.sprite.Composite}. It allows
+ * each {@link Ext.draw.sprite.Sprite} in the group to be animated as a whole. In general this class will not be
+ * created directly, the {@link Ext.draw.sprite.Composite} will be passed to the animation and
+ * and the appropriate target will be created.
  */
 
 Ext.define('Ext.fx.target.CompositeSprite', {

@@ -324,18 +324,20 @@ Ext.define('Ext.slider.Multi', {
      * @param {Ext.slider.Thumb} topThumb The thumb to move to the top
      */
     promoteThumb: function(topThumb) {
-        var thumbs = this.thumbs,
+        var thumbs = this.thumbStack || (this.thumbStack = Ext.Array.slice(this.thumbs)),
             ln = thumbs.length,
-            thumb, i;
+            zIndex = 10000, i;
 
+        // Move topthumb to position zero
+        if (thumbs[0] !== topThumb) {
+            Ext.Array.remove(thumbs, topThumb);
+            thumbs.unshift(topThumb);
+        }
+
+        // Then shuffle the zIndices
         for (i = 0; i < ln; i++) {
-            thumb = thumbs[i];
-
-            if (thumb == topThumb) {
-                thumb.bringToFront();
-            } else {
-                thumb.sendToBack();
-            }
+            thumbs[i].el.setStyle('zIndex', zIndex);
+            zIndex -= 1000;
         }
     },
 

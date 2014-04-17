@@ -86,7 +86,7 @@ Ext.define('Ext.util.KeyMap', {
     alternateClassName: 'Ext.KeyMap',
 
     /**
-     * @cfg {Ext.Component/Ext.Element/HTMLElement/String} target
+     * @cfg {Ext.Component/Ext.dom.Element/HTMLElement/String} target
      * The object on which to listen for the event specified by the {@link #eventName} config option.
      */
 
@@ -153,7 +153,7 @@ Ext.define('Ext.util.KeyMap', {
     /**
      * @private
      * Old constructor signature
-     * @param {String/HTMLElement/Ext.Element/Ext.Component} el The element or its ID, or Component to bind to
+     * @param {String/HTMLElement/Ext.dom.Element/Ext.Component} el The element or its ID, or Component to bind to
      * @param {Object} binding The binding (see {@link #addBinding})
      * @param {String} [eventName="keydown"] The event to bind to
      */

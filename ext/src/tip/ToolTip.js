@@ -111,7 +111,7 @@ Ext.define('Ext.tip.ToolTip', {
      * the DOM element which triggered the show.
      */
     /**
-     * @cfg {HTMLElement/Ext.Element/String} target
+     * @cfg {HTMLElement/Ext.dom.Element/String} target
      * The target element or string id to monitor for mouseover events to trigger
      * showing this ToolTip.
      */
@@ -238,7 +238,7 @@ Ext.define('Ext.tip.ToolTip', {
 
     /**
      * Binds this ToolTip to the specified element. The tooltip will be displayed when the mouse moves over the element.
-     * @param {String/HTMLElement/Ext.Element} t The Element, HtmlElement, or ID of an element to bind to
+     * @param {String/HTMLElement/Ext.dom.Element} t The Element, HTMLElement, or ID of an element to bind to
      */
     setTarget: function(target) {
         var me = this,

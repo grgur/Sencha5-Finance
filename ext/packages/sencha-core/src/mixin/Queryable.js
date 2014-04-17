@@ -67,7 +67,7 @@ Ext.define('Ext.mixin.Queryable', {
         var children = this.getQueryRoot().getRefItems();
 
         if (selector && selector.isComponent) {
-            selector = Ext.makeIdSelector(selector.getItemId());
+            return this.matchById(children, selector.getItemId());
         }
 
         // Filter children array to only matches.
@@ -91,7 +91,7 @@ Ext.define('Ext.mixin.Queryable', {
      */
     down: function (selector) {
         if (selector && selector.isComponent) {
-            selector = Ext.makeIdSelector(selector.getItemId());
+            return this.matchById(this.getRefItems(true), selector.getItemId());
         }
 
         selector = selector || '';
@@ -146,6 +146,21 @@ Ext.define('Ext.mixin.Queryable', {
     
     getQueryRoot: function() {
         return this;
+    },
+
+    privates: {
+        matchById: function(items, id) {
+            var len = items.length,
+                i, item;
+ 
+            for (i = 0; i < len; ++i) {
+                item = items[i];
+                if (item.getItemId() === id) {
+                    return item;
+                }
+            }
+            return null;
+        }
     }
         
 });

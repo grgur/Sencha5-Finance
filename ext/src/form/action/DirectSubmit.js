@@ -99,9 +99,8 @@ Ext.define('Ext.form.action.DirectSubmit', {
             form = me.form,
             api = form.api,
             fn = api.submit,
-            callback, formInfo, options;
-            options;
-        
+            formInfo, options;
+
         if (typeof fn !== 'function') {
             //<debug>
             var fnName = fn;
@@ -135,7 +134,7 @@ Ext.define('Ext.form.action.DirectSubmit', {
         return (this.result = result);
     },
     
-    onComplete: function(data, response){
+    onComplete: function(data){
         if (data) {
             this.onSuccess(data);
         } else {

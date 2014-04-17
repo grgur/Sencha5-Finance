@@ -59,8 +59,8 @@ Ext.define('Ext.event.ListenerStack', {
 
         listener = this.create(fn, scope, options, order, observable);
 
-        // Allow for {foo: 'onFoo', scope: 'this'}
-        if (isMethodName && (!scope || scope === 'this')) {
+        // Allow for {foo: 'onFoo', scope: 'this/controller'}
+        if (isMethodName && (!scope || scope === 'this' || scope === 'controller')) {
             listener.boundFn = this.bindDynamicScope(observable, fn, scope);
             listener.isLateBinding = false;
         }
@@ -78,9 +78,9 @@ Ext.define('Ext.event.ListenerStack', {
         return true;
     },
 
-    bindDynamicScope: function (observable, funcName, scope) {
+    bindDynamicScope: function (observable, funcName, passedScope) {
         return function () {
-            var scope = observable.resolveListenerScope(scope);
+            var scope = observable.resolveListenerScope(passedScope);
             //<debug>
             if (typeof scope[funcName] !== 'function') {
                 Ext.Error.raise('No such method ' + funcName + ' on ' + scope.$className);

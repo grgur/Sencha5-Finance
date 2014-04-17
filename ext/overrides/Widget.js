@@ -48,7 +48,19 @@ Ext.define('Ext.overrides.Widget', {
      * Needed for when widget is rendered into a grid cell. The class to add to the cell element.
      */
     getTdCls: function() {
-        return this.getBaseCls() + '-cell';
+        return Ext.baseCSSPrefix + this.getTdType() + '-' + (this.ui || 'default') + '-cell';
+    },
+
+    /**
+     * @private
+     * Partner method to {@link #getTdCls}.
+     *
+     * Returns the base type for the component. Defaults to return `this.xtype`, but
+     * All derived classes of {@link Ext.form.field.Text TextField} can return the type 'textfield',
+     * and all derived classes of {@link Ext.button.Button Button} can return the type 'button'
+     */
+    getTdType: function() {
+        return this.xtype;
     },
 
     /**

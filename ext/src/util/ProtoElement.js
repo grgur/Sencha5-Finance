@@ -36,7 +36,7 @@ Ext.define('Ext.util.ProtoElement', function () {
 
         /**
          * True if the style must be converted to text during {@link #writeTo}. When used to
-         * populate tpl data, this will be true. When used to populate {@link Ext.DomHelper}
+         * populate tpl data, this will be true. When used to populate {@link Ext.dom.Helper}
          * specs, this will be false (the default).
          */
         styleIsText: false,

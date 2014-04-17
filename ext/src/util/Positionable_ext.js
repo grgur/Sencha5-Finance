@@ -15,7 +15,7 @@
 // inherit the docs for their setBox() impl
 
 /**
- * @class Ext.util.Positionable
+ * @class Ext.util.Positionable_ext
  * @private
  */
 Ext.define('Ext.util.Positionable_ext', {
@@ -144,6 +144,7 @@ Ext.define('Ext.util.Positionable_ext', {
     }
 
     /**
+     * @method setRegion
      * Sets the element's position and size to the specified region. If animation is true
      * then width, height, x and y will be animated concurrently.
      *

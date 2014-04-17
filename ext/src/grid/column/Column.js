@@ -350,12 +350,12 @@ Ext.define('Ext.grid.column.Column', {
      */
 
     /**
-     * @property {Ext.Element} triggerEl
+     * @property {Ext.dom.Element} triggerEl
      * Element that acts as button for column header dropdown menu.
      */
 
     /**
-     * @property {Ext.Element} textEl
+     * @property {Ext.dom.Element} textEl
      * Element that contains the text in column header.
      */
 
@@ -599,19 +599,20 @@ Ext.define('Ext.grid.column.Column', {
         me.callParent(arguments);
         
         if (me.isGroupHeader) {
-            if (!me.hasVisibleChildren()) {
+            if (!me.hasVisibleChildColumns()) {
                 me.hide();
             }
         }
     },
     
-    hasVisibleChildren: function() {
+    hasVisibleChildColumns: function() {
         var items = this.items.items,
             len = items.length,
-            i;
+            i, item;
             
         for (i = 0; i < len; ++i) {
-            if (!items[i].hidden) {
+            item = items[i];
+            if (item.isColumn && !item.hidden) {
                 return true;
             }
         }   
@@ -626,7 +627,7 @@ Ext.define('Ext.grid.column.Column', {
             child.addCls(this.groupSubHeaderCls);
         }
         
-        if (me.hidden) {
+        if (me.hidden && child.isColumn) {
             // Only hide automatically during construction time
             if (me.constructing) {
                 child.hide();
@@ -647,7 +648,7 @@ Ext.define('Ext.grid.column.Column', {
         me.callParent(arguments);
         
         // By this point, the component will be removed from the items collection
-        if (!(me.isDestroyed || me.destroying) && me.isGroupHeader && !me.hasVisibleChildren()) {
+        if (!(me.isDestroyed || me.destroying) && me.isGroupHeader && !me.hasVisibleChildColumns()) {
             me.hide();
         }
     },
@@ -952,7 +953,7 @@ Ext.define('Ext.grid.column.Column', {
      * Process UI events from the view. The owning TablePanel calls this method, relaying events from the TableView
      * @param {String} type Event type, eg 'click'
      * @param {Ext.view.Table} view TableView Component
-     * @param {HTMLElement} cell Cell HtmlElement the event took place within
+     * @param {HTMLElement} cell Cell HTMLElement the event took place within
      * @param {Number} recordIndex Index of the associated Store Model (-1 if none)
      * @param {Number} cellIndex Cell index within the row
      * @param {Ext.event.Event} e Original event

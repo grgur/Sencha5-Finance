@@ -25,10 +25,44 @@ Ext.define('Ext.dashboard.Column', {
 
     onRemove: function () {
         var me = this,
-            ownerCt = me.ownerCt;
+            ownerCt = me.ownerCt,
+            remainingSiblings,
+            numRemaining,
+            totalColumnWidth = 0,
+            i;
 
-        if (ownerCt && !me.destroyed && me.items.getCount() === 0) {
-            ownerCt.remove(me);
+        // If we've just emptied this column.
+        if (ownerCt && me.items.getCount() === 0) {
+
+            // Collect remaining column siblings when this one has gone.
+            remainingSiblings = Ext.Array.filter(ownerCt.query('>' + me.xtype), function(c){
+                return c !== me;
+            });
+            numRemaining = remainingSiblings.length;
+
+            // If this column is not destroyed, then remove this column (unless it is the last one!)
+            if (!me.destroyed && numRemaining) {
+                ownerCt.remove(me);
+
+                // Down to just one column; it must take up full width
+                if (numRemaining === 1) {
+                    remainingSiblings[0].columnWidth = 1;
+                }
+                // If more than one remaining sibling, redistribute columnWidths proportionally so that they
+                // still total 1.0
+                else {
+                    for (i = 0; i < numRemaining; i++) {
+                        totalColumnWidth += remainingSiblings[i].columnWidth;
+                    }
+                    for (i = 0; i < numRemaining; i++) {
+                        remainingSiblings[i].columnWidth = remainingSiblings[i].columnWidth / totalColumnWidth;
+                    }
+                }
+
+                // Needed if user is *closing* the last portlet in a column as opposed to just dragging it to another place
+                // The destruction will not force a layout
+                ownerCt.updateLayout();
+            }
         }
     }
 });

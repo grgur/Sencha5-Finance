@@ -83,7 +83,7 @@ Ext.define('Ext.view.DragZone', {
      * Return `true` to prevent drag start.
      * @param {Ext.event.Event} e The mousedown event.
      * @param {Ext.data.Model} record The record mousedowned upon.
-     * @param {HtmlElement} item The grid row mousedowned upon.
+     * @param {HTMLElement} item The grid row mousedowned upon.
      * @param {Number} index The row number mousedowned upon.
      */
     isPreventDrag: function(e, record, item, index) {

@@ -1,10 +1,20 @@
 /**
- * To use buffered Stores, initiate the process by loading the first page. The number of rows rendered are
+ * A BufferedStore maintains a sparsely populated map of pages corresponding to an extremely large server-side dataset.
+ *
+ * Use a BufferedStore when the dataset size is so large that the database and network latency, and client memory requirements
+ * preclude caching the entire dataset in a regular {@link Ext.data.Store Store}.
+ *
+ * When using a BufferedStore *not all of the dataset is present in the client*. Only pages which have been
+ * requested by the UI (usually a {@link Ext.grid.Panel GridPanel}) and surrounding pages will be present. Retention
+ * of viewed pages in the BufferedStore after they have been scrolled out of view is configurable. See {@link #leadingBufferZone},
+ * {@link #trailingBufferZone} and {@link #purgePageCount}.
+ *
+ * To use a BufferedStore, initiate the loading process by loading the first page. The number of rows rendered are
  * determined automatically, and the range of pages needed to keep the cache primed for scrolling is
  * requested and cached.
  * Example:
  *
- *     myStore.loadPage(1); // Load page 1
+ *     myBufferedStore.loadPage(1); // Load page 1
  *
  * A {@link Ext.grid.plugin.BufferedRenderer BufferedRenderer} is instantiated which will monitor the scrolling in the grid, and
  * refresh the view's rows from the page cache as needed. It will also pull new data into the page
@@ -361,8 +371,8 @@ Ext.define('Ext.data.BufferedStore', {
             requiredEnd,
             maxIndex = me.totalCount - 1,
             lastRequestStart = me.lastRequestStart,
+            result = [],
             pageAddHandler,
-            result,
             data = me.getData();
 
         options = Ext.apply({

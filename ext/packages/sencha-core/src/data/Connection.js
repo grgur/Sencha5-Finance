@@ -431,7 +431,7 @@ Ext.define('Ext.data.Connection', {
 
     /**
      * Uploads a form using a hidden iframe.
-     * @param {String/HTMLElement/Ext.Element} form The form to upload
+     * @param {String/HTMLElement/Ext.dom.Element} form The form to upload
      * @param {String} url The url to post to
      * @param {String} params Any extra parameters to pass
      * @param {Object} options The initial options

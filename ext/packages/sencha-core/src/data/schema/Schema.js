@@ -40,8 +40,9 @@
  * 
  * When describing associations between entities, it is desirable to use shorthand names
  * that do not contain the common namespace portion. This is called the `entityName` as
- * opposed to its class name. By default, the `entityName` is the last piece of its class
- * name. So, class `"MyApp.models.Foo"` has an `entityName` of `"Foo"` and the schema has
+ * opposed to its class name. By default, the `entityName` is the full class name. However,
+ * if a namespace is used, the common portion can be discarded and we can derive a shorter name.
+ * In the following code, `"MyApp.models.Foo"` has an `entityName` of `"Foo"` and the schema has
  * a `namespace` of "MyApp.models".
  * 
  * If you use deeper nesting for entities, you may need to set the `namespace` config to
@@ -273,7 +274,7 @@ Ext.define('Ext.data.schema.Schema', {
     config: {
         /**
          * @cfg {Object} defaultIdentifier
-         * This config is used to initialize the `{@link Ext.data.Model#identiier}` config
+         * This config is used to initialize the `{@link Ext.data.Model#identifier}` config
          * for classes that do not define one.
          */
         defaultIdentifier: null,
@@ -350,6 +351,17 @@ Ext.define('Ext.data.schema.Schema', {
         return ret;
     },
 
+    applyNamespace: function (namespace) {
+        if (namespace) {
+            var end = namespace.length - 1;
+            if (namespace.charAt(end) !== '.') {
+                namespace += '.';
+            }
+        }
+
+        return namespace;
+    },
+
     applyProxy: function (proxy) {
         return Ext.util.ObjectTemplate.create(proxy);
     },
@@ -412,22 +424,24 @@ Ext.define('Ext.data.schema.Schema', {
      */
     getEntityName: function (cls) {
         var ns = this.getNamespace(),
-            name;
+            index, name;
             
         if (typeof cls === 'string') {
             name = cls;
         } else {
             name = cls.$className || null;
         }
-            
+
         if (name) { // if (not anonymous class)
             if (ns) {
-                if (!this._endsWithPeriodRe.test(ns)) {
-                    ns += '.';
+                index = ns.length;
+                if (name.substring(0, index) !== ns) {
+                    return name;
                 }
-                name = name.replace(ns, '');
-            } else {
-                name = name.split('.').pop();
+            }
+
+            if (index) {
+                name = name.substring(index);
             }
         }
 
@@ -438,7 +452,7 @@ Ext.define('Ext.data.schema.Schema', {
      * Checks if the passed entity has attached associations that need to be read when
      * using nested loading.
      * 
-     * @param {String/Class/Ext.data.Model} The name, instance or Model class.
+     * @param {String/Ext.Class/Ext.data.Model} The name, instance or Model class.
      * @return {Boolean} `true` if there are associations attached to the entity.
      */
     hasAssociations: function(name) {
@@ -468,7 +482,7 @@ Ext.define('Ext.data.schema.Schema', {
      * appropriate to determine the missing values and pass along the proper results to
      * this method in the `callParent`.
      * 
-     * @param {Class} entityType A class derived from `Ext.data.Model`.
+     * @param {Ext.Class} entityType A class derived from `Ext.data.Model`.
      *
      * @param {String} matrixName The name of the matrix association.
      *
@@ -556,7 +570,7 @@ Ext.define('Ext.data.schema.Schema', {
      * appropriate to determine the missing values and pass along the proper results to
      * this method in the `callParent`.
      * 
-     * @param {Class} entityType A class derived from `Ext.data.Model`.
+     * @param {Ext.Class} entityType A class derived from `Ext.data.Model`.
      * 
      * @param {Ext.data.field.Field} referenceField The `field` with the `reference` config.
      * 
@@ -607,7 +621,7 @@ Ext.define('Ext.data.schema.Schema', {
             // like "orderId". The default implementation of "fieldRole" namer is to drop
             // the id suffix which gives is the role of the right side.
             if (legacy) {
-                rightRole = rightType;
+                rightRole = namer.apply('uncapitalize', rightType);
             } else {
                 rightRole = namer.apply('fieldRole', referenceField.name);
             }
@@ -631,8 +645,8 @@ Ext.define('Ext.data.schema.Schema', {
                     entityName + '.' + referenceField.name + ' (collides with ' +
                     associations[association].definedBy.entityName + ')');
         }
-        if (referenceField && referenceField.definedBy !== entityType) {
-            Ext.Error.raise('ForeignKey associations must put entity w/FK on left');
+        if (referenceField && referenceField.definedBy === entities[rightType]) {
+            Ext.Error.raise('ForeignKey reference should not be owned by the target model');
         }
         //</debug>
 
@@ -763,11 +777,9 @@ Ext.define('Ext.data.schema.Schema', {
     // Private
 
     privates: {
-        _endsWithPeriodRe: /\.$/,
-
         /**
          * Adds an {@link Ext.data.Model entity} to this `schema`.
-         * @param {Class} entityType A class derived from {@link Ext.data.Model}.
+         * @param {Ext.Class} entityType A class derived from {@link Ext.data.Model}.
          * @private
          */
         addEntity: function (entityType) {
@@ -821,7 +833,7 @@ Ext.define('Ext.data.schema.Schema', {
 
         /**
          * Adds the matrix associations of an {@link Ext.data.Model entity} to this `schema`.
-         * @param {Class} entityType A class derived from {@link Ext.data.Model Entity}.
+         * @param {Ext.Class} entityType A class derived from {@link Ext.data.Model Entity}.
          * @param {Object/String[]} matrices The manyToMany matrices for the class.
          * @private
          */
@@ -846,7 +858,7 @@ Ext.define('Ext.data.schema.Schema', {
          * Adds an entry from a {@link Ext.data.Model#manyToMany matrix config} declared by an
          * {@link Ext.data.Model entity}.
          *
-         * @param {Class} entityType A class derived from {@link Ext.data.Model Entity}.
+         * @param {Ext.Class} entityType A class derived from {@link Ext.data.Model Entity}.
          * @param {String} [matrixName] The name of the matrix association.
          * @param {String/Object} matrixDef A {@link Ext.data.Model#manyToMany matrix config}
          * declared by an {@link Ext.data.Model entity}.
@@ -1016,7 +1028,7 @@ Ext.define('Ext.data.schema.Schema', {
          * association for an entity to this `schema`. This method decodes the `reference`
          * config of the `referenceField` and calls {@link #addReference}.
          *
-         * @param {Class} entityType A class derived from {@link Ext.data.Model Nodel}.
+         * @param {Ext.Class} entityType A class derived from {@link Ext.data.Model Nodel}.
          * @param {Ext.data.Field} referenceField The `field` with the `reference` config.
          * @private
          */
@@ -1102,6 +1114,12 @@ Ext.define('Ext.data.schema.Schema', {
             if (assoc.associatedName) {
                 assoc.role = assoc.associatedName;
             }
+            // See https://sencha.jira.com/browse/EXTJSIV-12979 (and specs for Schema)
+//            if (assoc.name) {
+//                assoc.inverse = {
+//                    role: assoc.name
+//                };
+//            }
 
             return assoc;
         },
@@ -1120,7 +1138,7 @@ Ext.define('Ext.data.schema.Schema', {
             }
         },
 
-        clear: function() {
+        clear: function(clearNamespace) {
             // for testing
             var me = this;
 
@@ -1132,6 +1150,9 @@ Ext.define('Ext.data.schema.Schema', {
             me.entityClasses = {};
             me.pending = {};
             me.assocCount = me.entityCount = 0;
+            if (clearNamespace) {
+                me.setNamespace(null);
+            }
         },
 
         constructProxy: function (Model) {

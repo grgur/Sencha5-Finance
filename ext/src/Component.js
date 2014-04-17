@@ -528,8 +528,8 @@ Ext.define('Ext.Component', {
 
     /**
      * @property {String} [defaultBindProperty="html"]
-     * This property is used to determine the property of a `bind` config that is just
-     * the value. For example, if `defaultBindProperty="value"`, then this shorthand
+     * This property is used to determine the property modified when a `bind` config specifies just
+     * the value. For example, if `defaultBindProperty == "value"`, then this shorthand
      * `bind` config:
      *
      *      bind: '{name}'
@@ -620,7 +620,7 @@ Ext.define('Ext.Component', {
 
     /**
      * @cfg {String/Object} autoEl
-     * A tag name or {@link Ext.DomHelper DomHelper} spec used to create the {@link #getEl Element} which will
+     * A tag name or {@link Ext.dom.Helper DomHelper} spec used to create the {@link #getEl Element} which will
      * encapsulate this Component.
      *
      * You do not normally need to specify this. For the base classes {@link Ext.Component} and
@@ -682,7 +682,7 @@ Ext.define('Ext.Component', {
      */
 
     /**
-     * @cfg {Boolean/String/HTMLElement/Ext.Element} autoRender
+     * @cfg {Boolean/String/HTMLElement/Ext.dom.Element} autoRender
      * This config is intended mainly for non-{@link #cfg-floating} Components which may or may not be shown. Instead of using
      * {@link #renderTo} in the configuration, and rendering upon construction, this allows a Component to render itself
      * upon first _{@link Ext.Component#method-show show}_. If {@link #cfg-floating} is `true`, the value of this config is omitted as if it is `true`.
@@ -818,7 +818,7 @@ Ext.define('Ext.Component', {
      */
 
     /**
-     * @cfg {Ext.util.Region/Ext.Element} constrainTo
+     * @cfg {Ext.util.Region/Ext.dom.Element} constrainTo
      * A {@link Ext.util.Region Region} (or an element from which a Region measurement will be read) which is used
      * to constrain the component. Only applies when the component is floating.
      */
@@ -855,8 +855,8 @@ Ext.define('Ext.Component', {
 
     /**
      * @cfg {String} [defaultAlign="c-c"]
-     * The default {@link Ext.util.Positionable#getAlignToXY Ext.Element#getAlignToXY} anchor position value for this component
-     * relative to its {@link #alignTarget) (which defaults to its owning Container).
+     * The default {@link Ext.util.Positionable#getAlignToXY Ext.dom.Element#getAlignToXY} anchor position value for this component
+     * relative to its {@link #alignTarget} (which defaults to its owning Container).
      *
      * *Only applicable if this component is {@link #floating}*
      *
@@ -984,7 +984,7 @@ Ext.define('Ext.Component', {
 
     /**
      * @cfg {String/Object} [html='']
-     * An HTML fragment, or a {@link Ext.DomHelper DomHelper} specification to use as the layout element content.
+     * An HTML fragment, or a {@link Ext.dom.Helper DomHelper} specification to use as the layout element content.
      * The HTML content is added after the component is rendered, so the document will not contain this HTML at the time
      * the {@link #event-render} event is fired. This content is inserted into the body _before_ any configured {@link #contentEl}
      * is appended.
@@ -1000,8 +1000,8 @@ Ext.define('Ext.Component', {
      * all existing components. Components created with an `id` may be accessed globally
      * using {@link Ext#getCmp Ext.getCmp}.
      *
-     * Instead of using assigned ids, consider a {@link #reference} config and the
-     * {@link #lookup} method to manage child components of a view.
+     * Instead of using assigned ids, consider a {@link #reference} config and a {@link #cfg-controller ViewController}
+     * to respond to events and perform processing upon this Component.
      *
      * Alternatively, {@link #itemId} and {@link Ext.ComponentQuery ComponentQuery} can be
      * used to perform selector-based searching for Components analogous to DOM querying.
@@ -1266,7 +1266,7 @@ Ext.define('Ext.Component', {
      */
 
     /**
-     * @cfg {String/HTMLElement/Ext.Element} renderTo
+     * @cfg {String/HTMLElement/Ext.dom.Element} renderTo
      * Specify the `id` of the element, a DOM element or an existing Element that this component will be rendered into.
      *
      * **Notes:**
@@ -1342,7 +1342,7 @@ Ext.define('Ext.Component', {
     /**
      * @cfg {String/Object} style
      * A custom style specification to be applied to this component's Element. Should be a valid argument to
-     * {@link Ext.Element#applyStyles}.
+     * {@link Ext.dom.Element#applyStyles}.
      *
      *     new Ext.panel.Panel({
      *         title: 'Some Title',
@@ -1974,7 +1974,7 @@ Ext.define('Ext.Component', {
 
     /**
      * Creates new Component.
-     * @param {Ext.Element/String/Object} config The configuration options may be specified as either:
+     * @param {Ext.dom.Element/String/Object} config The configuration options may be specified as either:
      *
      * - **an element** : it is set as the internal element and its id used as the component id
      * - **a string** : it is assumed to be the id of an existing element and is used as the component id
@@ -1982,7 +1982,7 @@ Ext.define('Ext.Component', {
      */
     constructor: function(config) {
         var me = this,
-            i, len, xhooks;
+            i, len, xhooks, controller;
 
         config = config || {};
         if (config.initialConfig) {
@@ -2053,7 +2053,7 @@ Ext.define('Ext.Component', {
 
         controller = me.getController();
         if (controller) {
-            controller.init();
+            controller.init(me);
         }
 
         // Move this into Observable?
@@ -2461,7 +2461,7 @@ Ext.define('Ext.Component', {
      *
      * Gets passed the same parameters as #show.
      *
-     * @param {String/Ext.Element} [animateTarget]
+     * @param {String/Ext.dom.Element} [animateTarget]
      * @param {Function} [callback]
      * @param {Object} [scope]
      *
@@ -3882,7 +3882,19 @@ Ext.define('Ext.Component', {
      * Needed for when widget is rendered into a grid cell. The class to add to the cell element.
      */
     getTdCls: function() {
-        return this.baseCls + '-' + this.ui + '-cell';
+        return Ext.baseCSSPrefix + this.getTdType() + '-' + this.ui + '-cell';
+    },
+
+    /**
+     * @private
+     * Partner method to {@link #getTdCls}.
+     *
+     * Returns the base type for the component. Defaults to return `this.xtype`, but
+     * All derived classes of {@link Ext.form.field.Text TextField} can return the type 'textfield',
+     * and all derived classes of {@link Ext.button.Button Button} can return the type 'button'
+     */
+    getTdType: function() {
+        return this.xtype;
     },
 
     /**
@@ -3981,7 +3993,7 @@ Ext.define('Ext.Component', {
 
     /**
      * Hides this Component, setting it to invisible using the configured {@link #hideMode}.
-     * @param {String/Ext.Element/Ext.Component} [animateTarget=null] **only valid for {@link #cfg-floating} Components
+     * @param {String/Ext.dom.Element/Ext.Component} [animateTarget=null] **only valid for {@link #cfg-floating} Components
      * such as {@link Ext.window.Window Window}s or {@link Ext.tip.ToolTip ToolTip}s, or regular Components which have
      * been configured with `floating: true`.**. The target to which the Component should animate while hiding.
      * @param {Function} [callback] A callback function to call after the Component is hidden.
@@ -4888,7 +4900,7 @@ Ext.define('Ext.Component', {
      *
      * Gets passed the same parameters as #hide.
      *
-     * @param {String/Ext.Element/Ext.Component} [animateTarget]
+     * @param {String/Ext.dom.Element/Ext.Component} [animateTarget]
      * @param {Function} [callback]
      * @param {Object} [scope]
      *
@@ -5007,7 +5019,7 @@ Ext.define('Ext.Component', {
      *
      * Gets passed the same parameters as #show.
      *
-     * @param {String/Ext.Element} [animateTarget]
+     * @param {String/Ext.dom.Element} [animateTarget]
      * @param {Function} [callback]
      * @param {Object} [scope]
      *
@@ -5492,13 +5504,13 @@ Ext.define('Ext.Component', {
     /**
      * This method allows you to show or hide a LoadMask on top of this component.
      *
-     * The mask will be rendered into the element returned by {@link #getMaskEl} which for most Components is the Component's
+     * The mask will be rendered into the element returned by {@link #getMaskTarget} which for most Components is the Component's
      * element. See {@link #getMaskTarget} and {@link #maskElement}.
      *
      * Most Components will return `null` indicating that their LoadMask cannot reside inside their element, but must
      * be rendered into the document body.
      *
-     * {@link Ext.table.View Grid Views} however will direct a LoadMask to be rendered into the owning {@link Ext.table.Panel GridPanel}.
+     * {@link Ext.view.Table Grid Views} however will direct a LoadMask to be rendered into the owning {@link Ext.panel.Table GridPanel}.
      *
      * @param {Boolean/Object/String} load True to show the default LoadMask, a config object that will be passed to the
      * LoadMask constructor, or a message String to show. False to hide the current LoadMask.
@@ -5903,7 +5915,7 @@ Ext.define('Ext.Component', {
      * After being shown, a {@link #floating} Component (such as a {@link Ext.window.Window}), is activated it and
      * brought to the front of its {@link #zIndexManager z-index stack}.
      *
-     * @param {String/Ext.Element} [animateTarget=null] **only valid for {@link #floating} Components such as {@link
+     * @param {String/Ext.dom.Element} [animateTarget=null] **only valid for {@link #floating} Components such as {@link
      * Ext.window.Window Window}s or {@link Ext.tip.ToolTip ToolTip}s, or regular Components which have been configured
      * with `floating: true`.** The target from which the Component should animate from while opening.
      * @param {Function} [callback] A callback function to call after the Component is displayed.
@@ -6024,9 +6036,9 @@ Ext.define('Ext.Component', {
     },
 
     /**
-     * Shows this component by the specified {@link Ext.Component Component} or {@link Ext.Element Element}.
+     * Shows this component by the specified {@link Ext.Component Component} or {@link Ext.dom.Element Element}.
      * Used when this component is {@link #floating}.
-     * @param {Ext.Component/Ext.dom.Element} component The {@link Ext.Component} or {@link Ext.Element} to show the component by.
+     * @param {Ext.Component/Ext.dom.Element} component The {@link Ext.Component} or {@link Ext.dom.Element} to show the component by.
      * @param {String} [position] Alignment position as used by {@link Ext.util.Positionable#getAlignToXY}.
      * Defaults to `{@link #defaultAlign}`. See {@link #alignTo} for possible values.
      * @param {Number[]} [offsets] Alignment offsets as used by {@link Ext.util.Positionable#getAlignToXY}. See {@link #alignTo} for possible values.

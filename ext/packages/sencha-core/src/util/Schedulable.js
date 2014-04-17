@@ -31,63 +31,66 @@ Ext.define('Ext.util.Schedulable', {
         return this.name || this.id;
     },
 
-    /**
-     * This method returns the `Scheduler` for this item.
-     * @return {Ext.util.Scheduler}
-     */
-    getScheduler: function () {
-        return this.scheduler;
-    },
+    privates: {
+        /**
+         * This method returns the `Scheduler` for this item.
+         * @return {Ext.util.Scheduler}
+         */
+        getScheduler: function () {
+            return this.scheduler;
+        },
 
-    /**
-     * Schedules this item with the associated `Ext.util.Scheduler`.
-     */
-    schedule: function () {
-        var me = this,
-            scheduler;
+        /**
+         * Schedules this item with the associated `Ext.util.Scheduler`.
+         */
+        schedule: function () {
+            var me = this,
+                scheduler;
 
-        if (!me.scheduled) {
-            scheduler = me.getScheduler();
+            if (!me.scheduled) {
+                scheduler = me.getScheduler();
 
-            if (scheduler) {
-                me.scheduled = true;
+                if (scheduler) {
+                    me.scheduled = true;
 
-                if (me.onSchedule) {
-                    me.onSchedule();
+                    if (me.onSchedule) {
+                        me.onSchedule();
+                    }
+
+                    scheduler.scheduleItem(me);
+                }
+            }
+        },
+        
+        /**
+         * Unschedules this item with the associated `Ext.util.Scheduler`.
+         */
+        unschedule: function () {
+            var me = this,
+                scheduler;
+
+            if (me.scheduled) {
+                scheduler = me.getScheduler();
+                if (scheduler) {
+                    scheduler.unscheduleItem(me);
                 }
 
-                scheduler.scheduleItem(me);
+                me.scheduled = false;
             }
-        }
-    },
-
-    /**
-     * @method sort
-     * This method should be overridden by items that have dependencies to insert. The
-     * standard form would be:
-     *
-     *      sort: function () {
-     *          this.getScheduler().sortItems(this.dependencies);
-     *      }
-     *
-     * This example assumes the item has a "dependencies" array to pass to the scheduler.
-     */
-    sort: Ext.emptyFn,
-
-    /**
-     * Unschedules this item with the associated `Ext.util.Scheduler`.
-     */
-    unschedule: function () {
-        var me = this,
-            scheduler;
-
-        if (me.scheduled) {
-            scheduler = me.getScheduler();
-            if (scheduler) {
-                scheduler.unscheduleItem(me);
-            }
-
-            me.scheduled = false;
-        }
+        },
+        
+        /**
+         * @method sort
+         * This method should be overridden by items that have dependencies to insert. The
+         * standard form would be:
+         *
+         *      sort: function () {
+         *          this.getScheduler().sortItems(this.dependencies);
+         *      }
+         *
+         * This example assumes the item has a "dependencies" array to pass to the scheduler.
+         */
+         // Can't use Ext.emptyFn here to avoid setting $private: true on it
+        sort: function() {}
     }
 });

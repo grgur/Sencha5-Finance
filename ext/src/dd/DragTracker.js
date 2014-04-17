@@ -51,7 +51,7 @@ Ext.define('Ext.dd.DragTracker', {
      */
 
     /**
-     * @cfg {Ext.util.Region/Ext.Element} constrainTo
+     * @cfg {Ext.util.Region/Ext.dom.Element} constrainTo
      * A {@link Ext.util.Region Region} (Or an element from which a Region measurement will be read)
      * which is used to constrain the result of the {@link #getOffset} call.
      *
@@ -182,7 +182,7 @@ Ext.define('Ext.dd.DragTracker', {
 
     /**
      * Initializes the DragTracker on a given element.
-     * @param {Ext.Element/HTMLElement} el The element
+     * @param {Ext.dom.Element/HTMLElement} el The element
      */
     initEl: function(el) {
         var me = this,
@@ -476,7 +476,7 @@ Ext.define('Ext.dd.DragTracker', {
      * If the {@link #delegate} option is being used, this may be a child element which matches the
      * {@link #delegate} selector.
      *
-     * @return {Ext.Element} The element currently being tracked.
+     * @return {Ext.dom.Element} The element currently being tracked.
      */
     getDragTarget : function(){
         return this.dragTarget;
@@ -484,7 +484,7 @@ Ext.define('Ext.dd.DragTracker', {
 
     /**
      * @private
-     * @returns {Ext.Element} The DragTracker's encapsulating element.
+     * @returns {Ext.dom.Element} The DragTracker's encapsulating element.
      */
     getDragCt : function(){
         return this.el;

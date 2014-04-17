@@ -38,8 +38,7 @@ Ext.define('Ext.grid.column.Template', {
     /**
      * @cfg {String/Ext.XTemplate} tpl
      * An {@link Ext.XTemplate XTemplate}, or an XTemplate *definition string* to use to process a
-     * {@link Ext.data.Model Model}'s {@link Ext.data.Model#persistenceProperty data} to produce a
-     * column's rendered value.
+     * {@link Ext.data.Model Model}'s data object to produce a cell's rendered value.
      */
 
     /**

@@ -287,6 +287,16 @@ Ext.define('Ext.Mixin', function (Mixin) { return {
                     key;
 
                 if (befores) {
+                    //<legacyBrowser>
+                    if (Ext.isIE8 && befores.constructor) {
+                        targetClass.addMember(key, function () {
+                            if (mixin.constructor.apply(this, arguments) !== false) {
+                                return this.callParent(arguments);
+                            }
+                        });
+                    }
+                    //</legacyBrowser>
+
                     Ext.Object.each(befores, function (key, value) {
                         targetClass.addMember(key, function () {
                             if (mixin[value].apply(this, arguments) !== false) {
@@ -297,12 +307,20 @@ Ext.define('Ext.Mixin', function (Mixin) { return {
                 }
 
                 if (afters) {
+                    //<legacyBrowser>
+                    if (Ext.isIE8 && afters.constructor) {
+                        targetClass.addMember('constructor', function () {
+                            var ret = this.callParent(arguments);
+                            mixin.constructor.apply(this, arguments);
+                            return ret;
+                        });
+                    }
+                    //</legacyBrowser>
+
                     Ext.Object.each(afters, function (key, value) {
                         targetClass.addMember(key, function () {
                             var ret = this.callParent(arguments);
-
                             mixin[value].apply(this, arguments);
-
                             return ret;
                         });
                     });

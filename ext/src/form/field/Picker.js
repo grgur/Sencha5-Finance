@@ -141,7 +141,7 @@ Ext.define('Ext.form.field.Picker', {
         }
     },
 
-    onDownArrow: function(e) {
+    onDownArrow: function() {
         if (!this.isExpanded) {
             // Don't call expand() directly as there may be additional processing involved before
             // expanding, e.g. in the case of a ComboBox query.
@@ -326,8 +326,6 @@ Ext.define('Ext.form.field.Picker', {
     },
 
     triggerBlur: function() {
-        var picker = this.picker;
-
         this.callParent(arguments);
 
         // Hide picker (if visible), and remove all attendant listeners
@@ -352,6 +350,7 @@ Ext.define('Ext.form.field.Picker', {
 
         me.collapse();
         me.callParent();
+        Ext.un('resize', me.alignPicker, me);
         Ext.destroy(me.keyNav, picker);
         if (picker) {
             delete me.picker;

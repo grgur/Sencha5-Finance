@@ -200,7 +200,9 @@ Ext.define('Ext.panel.Panel', {
      * @cfg {Boolean} [border=true]
      * Specify as `false` to render the Panel with zero width borders.
      *
-     * Leaving the value as 'true' uses the selected theme's {@link Ext.panel.Panel#$panel-border-width}
+     * Leaving the value as `true` uses the selected theme's {@link Ext.panel.Panel#$panel-border-width}
+     *
+     * Defaults to `false` when using or extending Neptune.
      */
     border: true,
 

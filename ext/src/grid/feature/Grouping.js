@@ -1,5 +1,5 @@
 /**
- * This feature allows to display the grid rows aggregated into groups as specified by the {@link Ext.data.Store#groupers}
+ * This feature allows to display the grid rows aggregated into groups as specified by the {@link Ext.data.Store#grouper grouper}
  * specified on the Store. The group will show the title for the group name and then the appropriate records for the group
  * underneath. The groups can also be expanded and collapsed.
  *
@@ -157,8 +157,8 @@ Ext.define('Ext.grid.feature.Grouping', {
      * @cfg {Mixed}            groupHeaderTpl.groupValue         The value of the {@link Ext.data.Store#groupField groupField} for the group header being rendered.
      * @cfg {String}           groupHeaderTpl.renderedGroupValue The rendered value of the {@link Ext.data.Store#groupField groupField} for the group header being rendered, as produced by the column renderer.
      * @cfg {String}           groupHeaderTpl.name               An alias for renderedGroupValue
-     * @cfg {Ext.data.Model[]} groupHeaderTpl.rows               Deprecated - use children instead. An array containing the child records for the group being rendered. *Not available if the store is {@link Ext.data.Store#buffered buffered}*
-     * @cfg {Ext.data.Model[]} groupHeaderTpl.children           An array containing the child records for the group being rendered. *Not available if the store is {@link Ext.data.Store#buffered buffered}*
+     * @cfg {Ext.data.Model[]} groupHeaderTpl.rows               Deprecated - use children instead. An array containing the child records for the group being rendered. *Not available if the store is a {@link Ext.data.BufferedStore BufferedStore}*
+     * @cfg {Ext.data.Model[]} groupHeaderTpl.children           An array containing the child records for the group being rendered. *Not available if the store is a {@link Ext.data.BufferedStore BufferedStore}*
      */
     groupHeaderTpl: '{columnName}: {name}',
 
@@ -218,7 +218,7 @@ Ext.define('Ext.grid.feature.Grouping', {
      * Set to `false` to disable collapsing groups from the UI.
      *
      * This is set to `false` when the associated {@link Ext.data.Store store} is
-     * {@link Ext.data.Store#buffered buffered}.
+     * a {@link Ext.data.BufferedStore BufferedStore}.
      */
     collapsible: true,
 
@@ -376,7 +376,7 @@ Ext.define('Ext.grid.feature.Grouping', {
             store = view.getStore(),
             lockPartner;
 
-        if (store.getGroupField()) {
+        if (store.getGrouper()) {
             view.isGrouping = true;
         }
 
@@ -730,7 +730,7 @@ Ext.define('Ext.grid.feature.Grouping', {
 
     /**
      * Returns `true` if the named group is expanded.
-     * @param {String} groupName The group name as returned from {@link Ext.data.Store#getGroupString getGroupString}. This is usually the value of
+     * @param {String} groupName The group name. This is the value of
      * the {@link Ext.data.Store#groupField groupField}.
      * @return {Boolean} `true` if the group defined by that value is expanded.
      */
@@ -1090,7 +1090,7 @@ Ext.define('Ext.grid.feature.Grouping', {
         var me = this,
             data = me.refreshData,
             view = rowValues.view,
-            isGrouping = !me.disabled && view.store.isGrouped();
+            isGrouping = !me.disabled && view.isGrouping;
 
         me.skippedRows = 0;
         if (view.bufferedRenderer) {

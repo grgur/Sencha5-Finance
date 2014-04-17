@@ -469,8 +469,7 @@ Ext.define('Ext.form.FieldSet', {
      */
     setTitle: function(title) {
         var me = this,
-            legend = me.legend,
-            baseCls = me.baseCls;
+            legend = me.legend;
             
         me.title = title;
         if (me.rendered) {

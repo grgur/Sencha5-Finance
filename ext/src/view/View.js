@@ -350,32 +350,32 @@ Ext.define('Ext.view.View', {
      */
 
     /**
-     * @event
+     * @event selectionchange
      * @inheritdoc Ext.selection.DataViewModel#selectionchange
      */
 
     /**
-     * @event
+     * @event beforeselect
      * @inheritdoc Ext.selection.DataViewModel#beforeselect
      */
 
     /**
-     * @event
+     * @event beforedeselect
      * @inheritdoc Ext.selection.DataViewModel#beforedeselect
      */
 
     /**
-     * @event
+     * @event select
      * @inheritdoc Ext.selection.DataViewModel#select
      */
 
     /**
-     * @event
+     * @event deselect
      * @inheritdoc Ext.selection.DataViewModel#deselect
      */
 
     /**
-     * @event
+     * @event focuschange
      * @inheritdoc Ext.selection.DataViewModel#focuschange
      */
 
@@ -383,14 +383,14 @@ Ext.define('Ext.view.View', {
      * @event highlightitem
      * Fires when a node is highlighted using keyboard navigation, or mouseover.
      * @param {Ext.view.View} view This View Component.
-     * @param {Ext.Element} node The highlighted node.
+     * @param {Ext.dom.Element} node The highlighted node.
      */
 
     /**
      * @event unhighlightitem
      * Fires when a node is unhighlighted using keyboard navigation, or mouseout.
      * @param {Ext.view.View} view This View Component.
-     * @param {Ext.Element} node The previously highlighted node.
+     * @param {Ext.dom.Element} node The previously highlighted node.
      */
 
     getFocusEl: function() {
@@ -399,8 +399,7 @@ Ext.define('Ext.view.View', {
 
     // @private
     afterRender: function() {
-        var me = this,
-            buffer = me.mouseOverOutBuffer;
+        var me = this;
 
         me.callParent();
         me.mon(me.el, {
@@ -413,7 +412,7 @@ Ext.define('Ext.view.View', {
             contextmenu: me.handleEvent,
             keydown: me.handleEvent,
             mouseover: me.handleMouseOver,
-            mouseout:  me.handleMouseOut
+            mouseout: me.handleMouseOut
         });
     },
 
@@ -424,54 +423,56 @@ Ext.define('Ext.view.View', {
 
     handleMouseOver: function(e) {
         var me = this,
-            itemSelector = me.itemSelector,
+        // this.getTargetSelector() can be used as a template method, e.g., in features.
+            itemSelector = me.getTargetSelector(),
             item = e.getTarget(itemSelector);
 
-        // If mouseover/out handling is buffered, view might have been destroyed during buffer time.
+        // If mouseover/out handling is buffered, view might have been destyroyed during buffer time.
         if (!me.isDestroyed) {
             if (item) {
                 if (me.mouseOverItem !== item && me.el.contains(item)) {
                     me.mouseOverItem = e.item = item;
                     e.newType = 'mouseenter';
                     me.handleEvent(e);
-                    e.item = e.newType = null;
                 }
             } else {
-                // not over a item, handle container event
+                // We're not over an item, so handle a container event.
                 me.handleEvent(e);
             }
         }
     },
 
-    handleMouseOut: function(e) {
-        var me = this,
-            itemSelector = me.itemSelector,
+    handleMouseOut: function (e) {
+        var itemSelector = this.getTargetSelector(),
             item = e.getTarget(itemSelector),
+            computedRelatedTarget = e.getRelatedTarget(itemSelector),
             sourceView;
 
-        // If mouseover/out handling is buffered, view might have been destroyed during buffer time.
-        if (!me.isDestroyed) {
-            me._mouseOutPending = false;
+        // We can only exit early when mousing within the same row, but we can't simply do an equality check
+        // since it's valid for both item and computedRelatedTarget to be null!
+        if ((item === computedRelatedTarget) && !(item === null && computedRelatedTarget === null)) {
+            return;
+        }
 
-            if (item) {
-                if (e.getRelatedTarget(itemSelector) !== item && me.mouseOverItem === item) {
-                    sourceView = me.self.getBoundView(item);
-                    e.item = item;
-                    e.newType = 'mouseleave';
-                    sourceView.handleEvent(e);
-                    sourceView.mouseOverItem = null;
-                    e.item = e.newType = null;
-                }
+        // Note that a mouseout event can trigger either an item event or a container event.
+        // If mouseover/out handling is buffered, view might have been destroyed during buffer time.
+        if (!this.isDestroyed) {
+            // Yes, this is an assignment.
+            if (item && (sourceView = this.self.getBoundView(item))) {
+                e.item = item;
+                e.newType = 'mouseleave';
+                sourceView.handleEvent(e);
+                sourceView.mouseOverItem = null;
             } else {
-                // not over a item, handle container event
-                me.handleEvent(e);
+                // We're not over an item, so handle a container event.
+                this.handleEvent(e);
             }
         }
     },
 
     handleEvent: function(e) {
         var me = this,
-            isKeydown = e.type == 'keydown',
+            isKeydown = e.type === 'keydown',
             key = isKeydown && e.getKey(),
             sm;
 

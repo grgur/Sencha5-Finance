@@ -112,7 +112,7 @@ Ext.define('Ext.form.field.File', {
      */
 
     /**
-     * @property {Ext.Element} fileInputEl
+     * @property {Ext.dom.Element} fileInputEl
      * A reference to the invisible file input element created for this upload field. Only populated after this
      * component is rendered.
      */
@@ -136,6 +136,7 @@ Ext.define('Ext.form.field.File', {
     readOnly: true,
 
     /**
+     * @cfg {Boolean} editable
      * @inheritdoc
      */
     editable: false,
@@ -185,7 +186,6 @@ Ext.define('Ext.form.field.File', {
     // @private
     onRender: function() {
         var me = this,
-            id = me.id,
             inputEl, button, buttonEl, trigger;
 
         me.callParent(arguments);
@@ -272,6 +272,10 @@ Ext.define('Ext.form.field.File', {
         this.button.enable();
     },
 
+    /**
+     * @method
+     * @inheritdoc
+     */
     isFileUpload: Ext.returnTrue,
 
     extractFileInput: function() {

@@ -102,7 +102,7 @@ Ext.define('Ext.panel.Table', {
     scroll: true,
 
     /**
-     * @cgh {Boolean] [reserveScrollbar=false]
+     * @cfg {Boolean} [reserveScrollbar=false]
      * Set this to true to **always** leave a scrollbar sized space at the end of the grid content when
      * fitting content into the width of the grid.
      *
@@ -111,7 +111,7 @@ Ext.define('Ext.panel.Table', {
      */
 
     /**
-     * @cfg {Ext.grid.column.Column[]/Object} columns
+     * @cfg {Ext.grid.column.Column[]/Object} columns (required)
      * An array of {@link Ext.grid.column.Column column} definition objects which define all columns that appear in this
      * grid. Each column definition provides the header text for the column, and a definition of where the data for that
      * column comes from.
@@ -201,7 +201,7 @@ Ext.define('Ext.panel.Table', {
      *
      * As subsequent columns are clicked upon, they become the new primary sort key.
      *
-     * The maximum number of sorters allowed in a Store is configurable. See {@link Ext.data.Store#multiSortLimit}
+     * The maximum number of sorters allowed in a Store is configurable via its underlying data collection. See {@link Ext.util.Collection#multiSortLimit}
      */
     multiColumnSort: false,
 
@@ -883,15 +883,16 @@ Ext.define('Ext.panel.Table', {
      */
     getView: function() {
         var me = this,
-            sm;
+            sm,
+            viewConfig;
 
         if (!me.view) {
             sm = me.getSelectionModel();
 
-            // TableView injects the view reference into this grid so that we have a reference as early as possible
-            Ext.widget(Ext.apply({
-
-                // Features need a reference to the grid, so configure a reference into the View
+            viewConfig = Ext.apply({
+                // TableView injects the view reference into this grid so that we have a reference as early as possible
+                // and Features need a reference to the grid.
+                // For these reasons, we configure a reference to this grid into the View
                 grid: me,
                 ownerGrid: me.ownerGrid || me,
                 deferInitialRefresh: me.deferRowRender !== false,
@@ -907,7 +908,15 @@ Ext.define('Ext.panel.Table', {
                 features: me.features,
                 panel: me,
                 emptyText: me.emptyText || ''
-            }, me.viewConfig));
+            }, me.viewConfig);
+
+            // Reconcile conflicting scroll requests in the grid's scroll configuration and viewConfig's scroll configuration.
+            // If the grid has scroll:'vertical', and the viewConfig has scroll"horizontal', the outcome must be scroll: 'both'
+            if (me.scroll && me.viewConfig.scroll && me.scroll !== me.viewConfig.scroll) {
+                viewConfig.scroll = 'both';
+            }
+
+            Ext.widget(viewConfig);
 
             // Normalize the application of the markup wrapping the emptyText config.
             // `emptyText` can now be defined on the grid as well as on its viewConfig, and this led to the emptyText not
@@ -964,7 +973,7 @@ Ext.define('Ext.panel.Table', {
      * Processes UI events from the view. Propagates them to whatever internal Components need to process them.
      * @param {String} type Event type, eg 'click'
      * @param {Ext.view.Table} view TableView Component
-     * @param {HTMLElement} cell Cell HtmlElement the event took place within
+     * @param {HTMLElement} cell Cell HTMLElement the event took place within
      * @param {Number} recordIndex Index of the associated Store Model (-1 if none)
      * @param {Number} cellIndex Cell index within the row
      * @param {Ext.event.Event} e Original event

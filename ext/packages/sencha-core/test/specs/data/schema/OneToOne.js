@@ -24,6 +24,7 @@ describe("Ext.data.schema.OneToOne", function() {
     
     beforeEach(function() {
         schema = Ext.data.Model.schema;
+        schema.setNamespace('spec');
         
         Address = Ext.define('spec.Address', {
             extend: 'Ext.data.Model',
@@ -36,8 +37,7 @@ describe("Ext.data.schema.OneToOne", function() {
         Ext.undefine('spec.User');
         Ext.undefine('spec.Address');
         
-        schema.clear();
-        schema.setNamespace(null); 
+        schema.clear(true);
         assoc = User = userRole = Address = addressRole = schema = null;   
     });
     

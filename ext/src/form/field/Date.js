@@ -266,11 +266,11 @@ Ext.define('Ext.form.field.Date', {
      * @param {String[]} disabledDates An array of date strings (see the {@link #disabledDates} config for details on
      * supported values) used to disable a pattern of dates.
      */
-    setDisabledDates : function(dd){
+    setDisabledDates : function(disabledDates){
         var me = this,
             picker = me.picker;
 
-        me.disabledDates = dd;
+        me.disabledDates = disabledDates;
         me.initDisabledDays();
         if (picker) {
             picker.setDisabledDates(me.disabledDatesRE);
@@ -282,12 +282,12 @@ Ext.define('Ext.form.field.Date', {
      * @param {Number[]} disabledDays An array of disabled day indexes. See the {@link #disabledDays} config for details on
      * supported values.
      */
-    setDisabledDays : function(dd){
+    setDisabledDays : function(disabledDays){
         var picker = this.picker;
 
-        this.disabledDays = dd;
+        this.disabledDays = disabledDays;
         if (picker) {
-            picker.setDisabledDays(dd);
+            picker.setDisabledDays(disabledDays);
         }
     },
 
@@ -295,10 +295,10 @@ Ext.define('Ext.form.field.Date', {
      * Replaces any existing {@link #minValue} with the new value and refreshes the Date picker.
      * @param {Date} value The minimum date that can be selected
      */
-    setMinValue : function(dt){
+    setMinValue : function(value){
         var me = this,
             picker = me.picker,
-            minValue = (Ext.isString(dt) ? me.parseDate(dt) : dt);
+            minValue = (Ext.isString(value) ? me.parseDate(value) : value);
 
         me.minValue = minValue;
         if (picker) {
@@ -311,10 +311,10 @@ Ext.define('Ext.form.field.Date', {
      * Replaces any existing {@link #maxValue} with the new value and refreshes the Date picker.
      * @param {Date} value The maximum date that can be selected
      */
-    setMaxValue : function(dt){
+    setMaxValue : function(value){
         var me = this,
             picker = me.picker,
-            maxValue = (Ext.isString(dt) ? me.parseDate(dt) : dt);
+            maxValue = (Ext.isString(value) ? me.parseDate(value) : value);
 
         me.maxValue = maxValue;
         if (picker) {

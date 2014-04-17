@@ -21,6 +21,7 @@ describe("Ext.data.association.HasOne_legacy", function() {
     }
     
     beforeEach(function() {
+        Ext.data.Model.schema.setNamespace('spec');
         Ext.define('spec.Profile', {
             extend: 'Ext.data.Model',
             fields: ['id', 'bio', 'age']
@@ -38,7 +39,7 @@ describe("Ext.data.association.HasOne_legacy", function() {
         Ext.undefine('spec.Profile');
         Ext.undefine('spec.Person');
         
-        Ext.data.Model.schema.clear();
+        Ext.data.Model.schema.clear(true);
         
         rec = null;
     });

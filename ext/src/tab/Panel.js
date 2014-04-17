@@ -384,7 +384,7 @@ Ext.define('Ext.tab.Panel', {
     deferredRender : true,
 
     /**
-     * @event
+     * @event beforetabchange
      * Fires before a tab change (activated by {@link #setActiveTab}). Return false in any listener to cancel
      * the tabchange
      * @param {Ext.tab.Panel} tabPanel The TabPanel
@@ -393,7 +393,7 @@ Ext.define('Ext.tab.Panel', {
      */
 
     /**
-     * @event
+     * @event tabchange
      * Fires when a new tab has been activated (activated by {@link #setActiveTab}).
      * @param {Ext.tab.Panel} tabPanel The TabPanel
      * @param {Ext.Component} newCard The newly activated item

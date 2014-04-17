@@ -100,7 +100,7 @@ Ext.define('Ext.container.Viewport', {
      */
 
     /**
-     * @cfg {String/HTMLElement/Ext.Element} renderTo
+     * @cfg {String/HTMLElement/Ext.dom.Element} renderTo
      * Always renders to document body.
      * @private
      */

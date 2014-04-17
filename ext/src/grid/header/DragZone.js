@@ -32,7 +32,7 @@ Ext.define('Ext.grid.header.DragZone', {
                 if (!this.headerCt.dragging && headerCmp.draggable && !(headerCmp.isOnLeftEdge(e) || headerCmp.isOnRightEdge(e))) {
                     ddel = document.createElement('div');
                     ddel.role = 'presentation';
-                    ddel.innerHTML = Ext.getCmp(header.id).text;
+                    ddel.innerHTML = headerCmp.text;
                     return {
                         ddel: ddel,
                         header: headerCmp

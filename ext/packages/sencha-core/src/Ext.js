@@ -351,6 +351,14 @@ Ext._startTime = Date.now ? Date.now() : (+ new Date());
         baseCSSPrefix: Ext.buildSettings.baseCSSPrefix,
 
         /**
+         * @property {Object} $eventNameMap
+         * A map of event names which contained the lower-cased verions of any mixed
+         * case event names.
+         * @private
+         */
+        $eventNameMap: {},
+
+        /**
          * Copies all the properties of config to object if they don't already exist.
          * @param {Object} object The receiver of the properties
          * @param {Object} config The source of the properties
@@ -917,7 +925,45 @@ Ext._startTime = Date.now ? Date.now() : (+ new Date());
         // private
         getElementById: function(id) {
             return document.getElementById(id);
-        }
+        },
+
+        /**
+         * @member Ext
+         * @private
+         */
+        splitAndUnescape: (function() {
+            var cache = {};
+    
+            return function(origin, delimiter) {
+                if (!origin) {
+                    return [];
+                }
+                else if (!delimiter) {
+                    return [origin];
+                }
+    
+                var replaceRe = cache[delimiter] || (cache[delimiter] = new RegExp('\\\\' + delimiter, 'g')),
+                    result = [],
+                    parts, part;
+    
+                parts = origin.split(delimiter);
+    
+                while ((part = parts.shift()) !== undefined) {
+                    // If any of the parts ends with the delimiter that means
+                    // the delimiter was escaped and the split was invalid. Roll back.
+                    while (part.charAt(part.length - 1) === '\\' && parts.length > 0) {
+                        part = part + delimiter + parts.shift();
+                    }
+    
+                    // Now that we have split the parts, unescape the delimiter char
+                    part = part.replace(replaceRe, delimiter);
+    
+                    result.push(part);
+                }
+    
+                return result;
+            }
+        })()
     }); // Ext.apply(Ext
 
     Ext.returnTrue.$nullFn = Ext.returnId.$nullFn = true;

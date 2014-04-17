@@ -2,8 +2,8 @@
  * This animation class is a mixin.
  *
  * Ext.util.Animate provides an API for the creation of animated transitions of properties and styles.
- * This class is used as a mixin and currently applied to {@link Ext.Element}, {@link Ext.CompositeElement},
- * {@link Ext.draw.Sprite}, {@link Ext.draw.CompositeSprite}, and {@link Ext.Component}.  Note that Components
+ * This class is used as a mixin and currently applied to {@link Ext.dom.Element}, {@link Ext.CompositeElement},
+ * {@link Ext.draw.sprite.Sprite}, {@link Ext.draw.sprite.Composite}, and {@link Ext.Component}.  Note that Components
  * have a limited subset of what attributes can be animated such as top, left, x, y, height, width, and
  * opacity (color, paddings, and margins can not be animated).
  *
@@ -208,7 +208,7 @@ Ext.define('Ext.util.Animate', {
     /**
      * Performs custom animation on this object.
      *
-     * This method is applicable to both the {@link Ext.Component Component} class and the {@link Ext.draw.Sprite Sprite}
+     * This method is applicable to both the {@link Ext.Component Component} class and the {@link Ext.draw.sprite.Sprite Sprite}
      * class. It performs animated transitions of certain properties of this object over a specified timeline.
      *
      * ### Animating a {@link Ext.Component Component}
@@ -309,7 +309,7 @@ Ext.define('Ext.util.Animate', {
      * Stops any running effects and clears this object's internal effects queue if it contains any additional effects
      * that haven't started yet.
      * @deprecated 4.0 Replaced by {@link #stopAnimation}
-     * @return {Ext.Element} The Element
+     * @return {Ext.dom.Element} The Element
      * @method
      */
     stopFx: Ext.Function.alias(Ext.util.Animate, 'stopAnimation'),
@@ -317,7 +317,7 @@ Ext.define('Ext.util.Animate', {
     /**
      * Stops any running effects and clears this object's internal effects queue if it contains any additional effects
      * that haven't started yet.
-     * @return {Ext.Element} The Element
+     * @return {Ext.dom.Element} The Element
      */
     stopAnimation: function() {
         Ext.fx.Manager.stopAnimation(this.id);

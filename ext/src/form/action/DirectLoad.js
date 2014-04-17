@@ -112,7 +112,7 @@ Ext.define('Ext.form.action.DirectLoad', {
         return (this.result = result);
     },
 
-    onComplete: function(data, response) {
+    onComplete: function(data) {
         if (data) {
             this.onSuccess(data);
         } else {

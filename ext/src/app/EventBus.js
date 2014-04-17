@@ -55,12 +55,12 @@ Ext.define('Ext.app.EventBus', {
      *
      * @param {Ext.app.BaseController} controllerId The id of the controller.
      */
-    unlisten: function(controller) {
+    unlisten: function(controllerId) {
         var domains = Ext.app.EventDomain.instances,
             domain;
         
         for (domain in domains) {
-            domains[domain].unlisten(controller);
+            domains[domain].unlisten(controllerId);
         }
     }
 });

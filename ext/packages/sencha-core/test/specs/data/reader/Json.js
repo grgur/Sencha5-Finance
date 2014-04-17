@@ -3,6 +3,7 @@ describe("Ext.data.reader.Json", function() {
 
     beforeEach(function() {
         Ext.ClassManager.enableNamespaceParseCache = false;
+        Ext.data.Model.schema.setNamespace('spec');
         Ext.define('spec.JsonReader', {
             extend: 'Ext.data.Model',
             fields: [
@@ -21,8 +22,8 @@ describe("Ext.data.reader.Json", function() {
 
     afterEach(function(){
         Ext.ClassManager.enableNamespaceParseCache = true;
-        Ext.data.Model.schema.clear();
         Ext.undefine('spec.JsonReader');
+        Ext.data.Model.schema.clear(true);
     });
     
     describe("preserveRawData", function() {

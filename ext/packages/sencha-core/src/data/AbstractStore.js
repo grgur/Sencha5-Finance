@@ -94,7 +94,7 @@ Ext.define('Ext.data.AbstractStore', {
         * @cfg {String} groupDir
         * The direction in which sorting should be applied when grouping. Supported values are "ASC" and "DESC".
         */
-        groupDir: "ASC",
+        groupDir: 'ASC',
         
         /**
          * @cfg {Object/Ext.util.Grouper} grouper
@@ -116,7 +116,7 @@ Ext.define('Ext.data.AbstractStore', {
 
     /**
      * @property {Number} currentPage
-     * The page that the Store has most recently loaded (see {@link #loadPage})
+     * The page that the Store has most recently loaded (see {@link Ext.data.Store#loadPage loadPage})
      */
     currentPage: 1,
 
@@ -197,7 +197,7 @@ Ext.define('Ext.data.AbstractStore', {
 
         /**
          * @event clear
-         * Fired after the {@link #removeAll} method is called.
+         * Fired after the {@link Ext.data.Store#removeAll removeAll} method is called.
          * @param {Ext.data.Store} this
          * @since 1.1.0
          */
@@ -220,14 +220,14 @@ Ext.define('Ext.data.AbstractStore', {
         /**
          * @event beginupdate
          * Fires when the {@link #beginUpdate} method is called. Automatic synchronization as configured
-         * by the {@link #autoSync} flag is deferred until the {@link #endUpdate} method is called, so multiple
+         * by the {@link Ext.data.ProxyStore#autoSync autoSync} flag is deferred until the {@link #endUpdate} method is called, so multiple
          * mutations can be coalesced into one synchronization operation.
          */
         
         /**
          * @event endupdate
          * Fires when the {@link #endUpdate} method is called. Automatic synchronization as configured
-         * by the {@link #autoSync} flag is deferred until the {@link #endUpdate} method is called, so multiple
+         * by the {@link Ext.data.ProxyStore#autoSync autoSync} flag is deferred until the {@link #endUpdate} method is called, so multiple
          * mutations can be coalesced into one synchronization operation.
          */
         me.isInitializing = true;
@@ -247,8 +247,8 @@ Ext.define('Ext.data.AbstractStore', {
      * Gets the number of records in store.
      *
      * If using paging, this may not be the total size of the dataset. If the data object
-     * used by the Reader contains the dataset size, then the {@link #getTotalCount} function returns
-     * the dataset size.  **Note**: see the Important note in {@link #method-load}.
+     * used by the Reader contains the dataset size, then the {@link Ext.data.ProxyStore#getTotalCount} function returns
+     * the dataset size.  **Note**: see the Important note in {@link Ext.data.ProxyStore#method-load}.
      *
      * When store is filtered, it's the number of records matching the filter.
      *
@@ -452,7 +452,7 @@ Ext.define('Ext.data.AbstractStore', {
     },
     
     /**
-     * Removes an individual Filter from the current {@link #property-filters filter set} using the passed Filter/Filter id and
+     * Removes an individual Filter from the current {@link #cfg-filters filter set} using the passed Filter/Filter id and
      * by default, applys the updated filter set to the Store's unfiltered dataset.
      *
      * @param {String/Ext.util.Filter} toRemove The id of a Filter to remove from the filter set, or a Filter instance to remove.
@@ -489,9 +489,9 @@ Ext.define('Ext.data.AbstractStore', {
     },
 
     /**
-     * Adds a new Filter to this Store's {@link #property-filters filter set} and
+     * Adds a new Filter to this Store's {@link #cfg-filters filter set} and
      * by default, applys the updated filter set to the Store's unfiltered dataset.
-     * @param {Object[]/Ext.util.Filter[]} filters The set of filters to add to the current {@link #property-filters filter set}.
+     * @param {Object[]/Ext.util.Filter[]} filters The set of filters to add to the current {@link #cfg-filters filter set}.
      */
     addFilter: function(filters) {
         this.getFilters().add(filters);
@@ -503,8 +503,7 @@ Ext.define('Ext.data.AbstractStore', {
      * otherwise it is filtered out.
      *
      * When store is filtered, most of the methods for accessing store data will be working only
-     * within the set of filtered records. Two notable exceptions are {@link #queryBy} and
-     * {@link #getById}.
+     * within the set of filtered records. The notable exception is {@link #getById}.
      *
      * @param {Function} fn The function to be called. It will be passed the following parameters:
      *  @param {Ext.data.Model} fn.record The record to test for filtering. Access field values
@@ -565,8 +564,13 @@ Ext.define('Ext.data.AbstractStore', {
         }
         
         var fieldName = sorter.getProperty(),
-            field = this.getModel().getField(fieldName),
+            Model = this.getModel(),
+            field, sortType;
+
+        if (Model) {
+            field = Model.getField(fieldName);
             sortType = field ? field.getSortType() : null;
+        }
         
         if (sortType && sortType !== Ext.identityFn)  {
             sorter.setTransform(sortType);
@@ -576,7 +580,7 @@ Ext.define('Ext.data.AbstractStore', {
     /**
      * This method may be called to indicate the start of multiple changes to the store.
      *
-     * Automatic synchronization as configured by the {@link #autoSync} flag is deferred
+     * Automatic synchronization as configured by the {@link Ext.data.ProxyStore#autoSync autoSync} flag is deferred
      * until the {@link #endUpdate} method is called, so multiple mutations can be coalesced
      * into one synchronization operation.
      *
@@ -849,7 +853,7 @@ Ext.define('Ext.data.AbstractStore', {
      * Groups data inside the store.
      * @param {String/Object} grouper Either a string name of one of the fields in this Store's
      * configured {@link Ext.data.Model Model}, or an object, or a {@link Ext.util.Grouper grouper} configuration object.
-     * @param {String} [direction="ASC"] The overall direction to group the data by.
+     * @param {String} The overall direction to group the data by. Defaults to the value of {@link #groupDir}.
      */
     group: function(grouper, direction, /* private */ initial) {
         var me = this,
@@ -858,7 +862,7 @@ Ext.define('Ext.data.AbstractStore', {
         if (grouper && typeof grouper === 'string') {
             grouper = {
                 property: grouper,
-                direction: direction
+                direction: direction || me.getGroupDir()
             };
         }
 
@@ -919,7 +923,7 @@ Ext.define('Ext.data.AbstractStore', {
 
     /**
      * Returns an array containing the result of applying grouping to the records in this store.
-     * See {@link #groupField}, {@link #groupDir} and {@link #getGroupString}. Example for a store
+     * See {@link #groupField}, {@link #groupDir}. Example for a store
      * containing records with a color field:
      *
      *     var myStore = Ext.create('Ext.data.Store', {

@@ -109,15 +109,15 @@ Ext.define('Ext.util.Event', function() {
 
     createListener: function(fn, scope, o, caller) {
         var me = this,
-            isThisScope = scope === 'this',
+            preventClimb = scope === 'this' || scope === 'controller',
             listener = {
                 fn: fn,
                 scope: scope,
                 ev: me,
                 caller: caller,
-                isThisScope: isThisScope,
-                defaultScope: isThisScope ? scope : undefined,
-                lateBound: (typeof fn === 'string' && (!scope || isThisScope))
+                preventClimb: preventClimb,
+                defaultScope: preventClimb ? scope : undefined,
+                lateBound: (typeof fn === 'string' && (!scope || preventClimb))
             },
             handler = fn,
             allowLookup = true;
@@ -158,7 +158,7 @@ Ext.define('Ext.util.Event', function() {
             listener = listeners[i];
             if (listener) {
                 s = listener.scope;
-                checkScope = (listener.lateBound && !listener.isThisScope) ? undefined : (scope || this.observable); 
+                checkScope = (listener.lateBound && !listener.preventClimb) ? undefined : (scope || this.observable); 
 
                 // Compare the listener's scope with *JUST THE PASSED SCOPE* if one is passed, and only fall back to the owning Observable if none is passed.
                 // We cannot use the test (s == scope || s == this.observable)

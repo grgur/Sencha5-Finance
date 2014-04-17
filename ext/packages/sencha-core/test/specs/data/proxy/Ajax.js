@@ -279,7 +279,8 @@ describe("Ext.data.proxy.Ajax", function() {
                     expect(operation.wasSuccessful()).toBe(false);
                     expect(operation.getError()).toEqual({
                         status: 500,
-                        statusText: 'failStatus'
+                        statusText: 'failStatus',
+                        response: jasmine.any(Object)
                     });
                 });
                 
@@ -306,7 +307,8 @@ describe("Ext.data.proxy.Ajax", function() {
                         expect(operation.wasSuccessful()).toBe(false);
                         expect(operation.getError()).toEqual({
                             status: 0,
-                            statusText: 'communication failure'
+                            statusText: 'communication failure',
+                            response: jasmine.any(Object)
                         });
                     });
                 });

@@ -32,7 +32,7 @@ Ext.define('Ext.selection.CheckboxModel', {
     /**
      * @cfg {Boolean} showHeaderCheckbox
      * Configure as `false` to not display the header checkbox at the top of the column.
-     * When {@link Ext.data.Store#buffered} is set to `true`, this configuration will
+     * When the store is a {@link Ext.data.BufferedStore BufferedStore}, this configuration will
      * not be available because the buffered data set does not always contain all data. 
      */
     showHeaderCheckbox: undefined,

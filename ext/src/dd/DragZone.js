@@ -61,7 +61,7 @@ Ext.define('Ext.dd.DragZone', {
 
     /**
      * Creates new DragZone.
-     * @param {String/HTMLElement/Ext.Element} el The container element or ID of it.
+     * @param {String/HTMLElement/Ext.dom.Element} el The container element or ID of it.
      * @param {Object} config
      */
     constructor : function(el, config){

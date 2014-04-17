@@ -49,6 +49,7 @@ Ext.apply(Ext, {
      * URL to a blank file used by Ext when in secure mode for iframe src and onReady src
      * to prevent the IE insecure content warning (`'about:blank'`, except for IE
      * in secure mode, which is `'javascript:""'`).
+     * @member Ext
      */
     SSL_SECURE_URL : Ext.isSecure && Ext.isIE ? 'javascript:\'\'' : 'about:blank',
 
@@ -56,6 +57,7 @@ Ext.apply(Ext, {
      * @property {String} BLANK_IMAGE_URL
      * URL to a 1x1 transparent gif image used by Ext to create inline icons with
      * CSS background images.
+     * @member Ext
      */
     BLANK_IMAGE_URL: 'data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='
 });

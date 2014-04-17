@@ -19,6 +19,7 @@ describe("Ext.data.schema.ManyToOne", function() {
     
     beforeEach(function() {
         schema = Ext.data.Model.schema;
+        schema.setNamespace('spec');
         
         Thread = Ext.define('spec.Thread', {
             extend: 'Ext.data.Model',
@@ -30,8 +31,7 @@ describe("Ext.data.schema.ManyToOne", function() {
         Ext.undefine('spec.Post');
         Ext.undefine('spec.Thread');
         
-        schema.clear();
-        schema.setNamespace(null); 
+        schema.clear(true);
         Post = postRole = Thread = threadRole = schema = null;   
     });
     

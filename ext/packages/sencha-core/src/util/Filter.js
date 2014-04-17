@@ -59,7 +59,7 @@ Ext.define('Ext.util.Filter', {
 
         /**
          * @cfg {String} [id]
-         * An identifier by which this Filter is indexed in a {@link Ext.data.Store#property-filters Store's filters collection}
+         * An identifier by which this Filter is indexed in a {@link Ext.data.Store#cfg-filters Store's filters collection}
          *
          * Identified Filters may be individually removed from a Store's filter set by using {@link Ext.data.Store#removeFilter}.
          *
@@ -87,7 +87,7 @@ Ext.define('Ext.util.Filter', {
 
         /**
          * @property {Boolean} disabled
-         * Setting this property to `true` disables this individual Filter so that it no longer contributes to a {@link Ext.data.Store#property-filters Store's filter set}
+         * Setting this property to `true` disables this individual Filter so that it no longer contributes to a {@link Ext.data.Store#cfg-filters Store's filter set}
          *
          * When disabled, the next time the store is filtered, the Filter plays no part in filtering and records eliminated by it may rejoin the dataset.
          *

@@ -23,6 +23,7 @@ Ext.define('Ext.grid.plugin.HeaderResizer', {
 
     colHeaderCls: Ext.baseCSSPrefix + 'column-header',
 
+    minColWidth: 40,
     maxColWidth: 1000,
     eResizeCursor: 'col-resize',
 
@@ -56,10 +57,10 @@ Ext.define('Ext.grid.plugin.HeaderResizer', {
 
     afterHeaderRender: function() {
         var me = this,
-            headerCt = this.headerCt,
+            headerCt = me.headerCt,
             el = headerCt.el;
 
-        headerCt.mon(el, 'mousemove', this.onHeaderCtMouseMove, this);
+        headerCt.mon(el, 'mousemove', me.onHeaderCtMouseMove, me);
         me.markerOwner = me.ownerGrid = me.headerCt.up('tablepanel');
         if (me.markerOwner.ownerLockable) {
             me.markerOwner = me.markerOwner.ownerLockable;
@@ -270,27 +271,30 @@ Ext.define('Ext.grid.plugin.HeaderResizer', {
     },
 
     onEnd: function(e) {
-        this.headerCt.dragging = false;
-        if (this.dragHd) {
-            if (!this.dynamic) {
-                var markerOwner = this.headerCt.up('tablepanel');
+        var me = this,
+            markerOwner;
+
+        me.headerCt.dragging = false;
+        if (me.dragHd) {
+            if (!me.dynamic) {
+                markerOwner = me.headerCt.up('tablepanel');
 
                 // hide markers
                 if (markerOwner.ownerLockable) {
                     markerOwner = markerOwner.ownerLockable;
                 }
                 // If we had saved the gridOverflowSetting, restore it
-                if ('gridOverflowSetting' in this) {
-                    markerOwner.el.dom.style.overflow = this.gridOverflowSetting;
+                if ('gridOverflowSetting' in me) {
+                    markerOwner.el.dom.style.overflow = me.gridOverflowSetting;
                 }
 
-                this.setMarkerX(markerOwner.getLhsMarker(), -9999);
-                this.setMarkerX(markerOwner.getRhsMarker(), -9999);
+                me.setMarkerX(markerOwner.getLhsMarker(), -9999);
+                me.setMarkerX(markerOwner.getRhsMarker(), -9999);
             }
-            this.doResize();
+            me.doResize();
         }
         // If the mouse is still within the handleWidth, then we must be ready to drag again
-        this.onHeaderCtMouseMove(e);
+        me.onHeaderCtMouseMove(e);
     },
 
     doResize: function() {
@@ -337,16 +341,18 @@ Ext.define('Ext.grid.plugin.HeaderResizer', {
     },
 
     disable: function() {
+        var tracker = this.tracker;
         this.disabled = true;
-        if (this.tracker) {
-            this.tracker.disable();
+        if (tracker) {
+            tracker.disable();
         }
     },
 
     enable: function() {
+        var tracker = this.tracker;
         this.disabled = false;
-        if (this.tracker) {
-            this.tracker.enable();
+        if (tracker) {
+            tracker.enable();
         }
     },
 

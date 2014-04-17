@@ -324,6 +324,13 @@ describe("Ext.XTemplate", function() {
       
                 expect(tpl.apply([1, 2, 3, 4, 5, 6])).toBe('OneTwoThreeFourBiggerBigger');
             });
+
+            it("should allow spaces after the switch", function() {
+                tpl = new Ext.XTemplate('<tpl switch="foo">         <tpl case="bar">bar</tpl>');
+                expect(tpl.apply({
+                    foo: 'bar'
+                })).toBe('bar');
+            });
         });
 
         describe("for", function () {

@@ -156,19 +156,21 @@ Ext.define('Ext.data.session.AssociatedEntityStub', {
         }
     },
 
-    sort: function () {
-        var me = this,
-            assocBinding = me.assocBinding,
-            entityBinding = me.entityBinding,
-            scheduler = me.scheduler;
+    privates: {
+        sort: function () {
+            var me = this,
+                assocBinding = me.assocBinding,
+                entityBinding = me.entityBinding,
+                scheduler = me.scheduler;
 
-        if (entityBinding) {
-            scheduler.sortItem(entityBinding);
-        }
-        if (assocBinding) {
-            scheduler.sortItem(assocBinding);
-        }
+            if (entityBinding) {
+                scheduler.sortItem(entityBinding);
+            }
+            if (assocBinding) {
+                scheduler.sortItem(assocBinding);
+            }
 
-        me.callParent();
+            me.callParent();
+        }
     }
 });

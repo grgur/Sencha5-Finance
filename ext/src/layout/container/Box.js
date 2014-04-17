@@ -296,6 +296,8 @@ Ext.define('Ext.layout.container.Box', {
             infiniteValue = Infinity,
             aTarget = a.target,
             bTarget = b.target,
+            aFlex = aTarget.flex,
+            bFlex = bTarget.flex,
             result = 0,
             aMin, bMin, aMax, bMax,
             hasMin, hasMax;
@@ -318,6 +320,15 @@ Ext.define('Ext.layout.container.Box', {
             // b) The max values were the same
             if (result === 0 && hasMin) {
                 result = bMin - aMin;
+            }
+
+            // If 0, it means either the max and/or minimum was the same
+            if (result === 0) {
+                if (hasMax) {
+                    result = bFlex - aFlex;
+                } else {
+                    result = aFlex - bFlex;
+                }
             }
         }
         return result;

@@ -1068,10 +1068,18 @@ Ext.define('Ext.grid.locking.Lockable', {
             store = Ext.data.StoreManager.lookup(store);
             me.store = store;
             lockedGrid.bindStore(store);
+            
+            // Subsidiary views have their bindStore changed to Ext.emptyFn because they must not
+            // bind listeners themselves. This view listens and relays calls to each view.
+            // BUT the dataSource and store properties must be set
+            lockedGrid.view.dataSource = lockedGrid.view.store = store;
             normalGrid.bindStore(store);
+            normalGrid.view.dataSource = normalGrid.view.store = store;
+            me.view.store = store;
+            me.view.bindStore(store, false, 'dataSource');
         } else {
-            lockedGrid.getView().refresh();
-            normalGrid.getView().refresh();
+            lockedGrid.getView().refreshView();
+            normalGrid.getView().refreshView();
         }
         Ext.resumeLayouts(true);
     },

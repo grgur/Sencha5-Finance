@@ -16,7 +16,7 @@
  * your Viewport is created.
  *
  * The init function is a great place to set up how your controller interacts with the view, and is usually used in
- * conjunction with another Controller function - {@link Ext.app.Controller#control control}. The control function
+ * conjunction with another Controller function - {@link Ext.app.BaseController#method-control control}. The control function
  * makes it easy to listen to events on your view classes and take some action with a handler function. Let's update
  * our Users controller to tell us when the panel is rendered:
  *
@@ -36,7 +36,7 @@
  *          }
  *      });
  *
- * We've updated the init function to use {@link Ext.app.Controller#control control method} to set up listeners on views
+ * We've updated the init function to use {@link Ext.app.BaseController#method-control control method} to set up listeners on views
  * in our application. The control method uses the ComponentQuery engine to quickly and easily get references to components
  * on the page. If you are not familiar with ComponentQuery yet, be sure to check out the
  * {@link Ext.ComponentQuery documentation}. In brief though, it allows us to pass a CSS-like selector that will find
@@ -56,7 +56,7 @@
  * This feature provides a way to communicate between parts of the whole application without the need
  * to bind controllers together tightly, and allows to develop and test application parts in isolation.
  *
- * See usage examples in {@link #listen} method documentation.
+ * See usage examples in {@link Ext.app.BaseController#method-listen listen} method documentation.
  *
  * ## Using refs
  *
@@ -454,117 +454,9 @@ Ext.define('Ext.app.Controller', {
          *   you don't provide xtype, an Ext.Component instance will be created.
          */
         refs: null,
-        
-        /**
-         * 
-         */
+
         active: true,
-        
-        /**
-         * @cfg {Object} routes
-         * @accessor
-         *
-         * An object of routes to handle hash changes. A route can be defined in a simple way:
-         *
-         *     routes : {
-         *         'foo/bar'  : 'handleFoo',
-         *         'user/:id' : 'showUser'
-         *     }
-         *
-         * Where the property is the hash (which can accept a parameter defined by a colon) and the value
-         * is the method on the controller to execute. The parameters will get sent in the action method.
-         * 
-         * At the application level, you can define a event that will be executed when no matching
-         * routes are found.
-         * 
-         *     Ext.application({
-         *         name: 'MyApp',
-         *         listen: {
-         *             controller: {
-         *                 '#': {
-         *                     unmatchedroute: 'onUnmatchedRoute'
-         *                 }
-         *             }
-         *         },
-         *         
-         *         onUnmatchedRoute: function(hash) {
-         *             console.log('Unmatched', hash);
-         *             // Do something...
-         *         }
-         *     });
-         *
-         * There is also a complex means of defining a route where you can use a before action and even
-         * specify your own RegEx for the parameter:
-         *
-         *     routes : {
-         *         'foo/bar'  : {
-         *             action  : 'handleFoo',
-         *             before  : 'beforeHandleFoo'
-         *         },
-         *         'user/:id' : {
-         *             action     : 'showUser',
-         *             before     : 'beforeShowUser',
-         *             conditions : {
-         *                 ':id' : '([0-9]+)'
-         *             }
-         *         }
-         *     }
-         *
-         * This will not only match if the id is a number.
-         *
-         * The before action allows you to cancel an action. Every before action will get passed an action argument with
-         * a resume method as the last argument of the method and you *MUST* execute the resume method optionally passing a bool:
-         *
-         *     beforeHandleFoo : function(action) {
-         *         //some logic here
-         *
-         *         //this will allow the handleFoo action to be executed
-         *         action.resume();
-         *     },
-         *     handleFoo : function() {
-         *         //will get executed due to true being passed in callback in beforeHandleFoo
-         *     },
-         *     beforeShowUser : function(id, action) {
-         *         //allows for async process like an Ajax
-         *         Ext.Ajax.request({
-         *             url     : 'foo.php',
-         *             success : function() {
-         *                 //will not allow the showUser method to be executed but will continue other queued actions.
-         *                 action.resume(false);
-         *             },
-         *             failure : function() {
-         *                 //will not allow the showUser method to be executed and will not allow other queued actions to be executed.
-         *                 action.resume(true);
-         *             }
-         *         });
-         *     },
-         *     showUser : function(id) {
-         *         //will not get executed due to false being passed in callback in beforeShowUser
-         *     }
-         *
-         * There are 3 values you can pass to the resume method of the action argument:
-         *
-         *  - `undefined` - will allow the action to resume normally
-         *  - `false` - will not allow the action to resume and will continue with other queued actions
-         *  - `true` - will not allow the action to resume but will not allow other queued actions to continue to execute
-         *
-         * The default RegEx that will be used is `([%a-zA-Z0-9\\-\\_\\s,]+)` but you can specify any
-         * that may suit what you need to accomplish. An example of an advanced condition may be to make
-         * a parameter optional and case-insensitive:
-         *
-         *     routes : {
-         *         'user:id' : {
-         *             action     : 'showUser',
-         *             before     : 'beforeShowUser',
-         *             conditions : {
-         *                 ':id' : '(?:(?:\/){1}([%a-z0-9_,\s\-]+))?'
-         *             }
-         *         }
-         *     }
-         */
-        routes: null,
-        before: null,
-        
+
         // private
         moduleClassName: null
     },
@@ -702,44 +594,6 @@ Ext.define('Ext.app.Controller', {
         }
     },
 
-    /**
-     * @param {Object} routes The routes to connect to the {@link Ext.app.route.Router}
-     * @private
-     */
-    updateRoutes: function(routes) {
-        if (routes) {
-            var me = this,
-                befores = me.getBefore() || {},
-                Router = Ext.app.route.Router,
-                url, config, method;
-
-            for (url in routes) {
-                config = routes[url];
-
-                if (Ext.isString(config)) {
-                    config = {
-                        action : config
-                    };
-                }
-
-                method = config.action;
-
-                if (!config.before) {
-                    config.before = befores[method];
-                }
-                //<debug>
-                else if (befores[method]) {
-                    Ext.log.warn('You have a before method configured on a route ("' + url + '") and in the before object property also in the "' +
-                        me.self.getName() + '" controller. Will use the before method in the route and disregard the one in the before property.');
-                }
-                //</debug>
-
-                //connect the route config to the Router
-                Router.connect(url, config, me);
-            }
-        }
-    },
-    
     initAutoGetters: function() {
         var proto = this.self.prototype,
             prop, fn;
@@ -811,7 +665,7 @@ Ext.define('Ext.app.Controller', {
     /**
      * Prevent this controller from receiving events from the event bus.
      * Routes will also not be triggered on inactive controllers unless
-     * the {@link #Ext.app.router.Route#allowInactive} flag is set.
+     * the {@link Ext.app.route.Route#allowInactive} flag is set.
      * Also see {@link #activate}.
      */
     deactivate: function() {
@@ -954,7 +808,7 @@ Ext.define('Ext.app.Controller', {
      * Returns a {@link Ext.data.Model Model} class with the given name.
      *
      * @param {String} name
-     * @return {Class} A class ultimately derived from `Ext.data.Model`.
+     * @return {Ext.Class} A class ultimately derived from `Ext.data.Model`.
      */
     getModel: function(model) {
         var name = Ext.app.Controller.getFullName(model, 'model', this.$namespace),
@@ -995,8 +849,7 @@ Ext.define('Ext.app.Controller', {
         var me = this,
             app = me.application,
             refCache, ref;
-           
-        Ext.app.route.Router.disconnectAll(me);
+
         if (!fromApp && app) {
             app.unregister(me);
         }

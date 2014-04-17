@@ -41,19 +41,19 @@ Ext.define("Ext.form.Labelable", {
 
     childEls: [
         /**
-         * @property {Ext.Element} labelEl
+         * @property {Ext.dom.Element} labelEl
          * The label Element for this component. Only available after the component has been rendered.
          */
         'labelEl',
 
         /**
-         * @property {Ext.Element} bodyEl
+         * @property {Ext.dom.Element} bodyEl
          * The div Element wrapping the component's contents. Only available after the component has been rendered.
          */
         'bodyEl',
 
         /**
-         * @property {Ext.Element} errorEl
+         * @property {Ext.dom.Element} errorEl
          * The div Element that will contain the component's error message(s). Note that depending on the configured
          * {@link #msgTarget}, this element may be hidden in favor of some other form of presentation, but will always
          * be present in the DOM for use by assistive technologies.
@@ -579,7 +579,6 @@ Ext.define("Ext.form.Labelable", {
             sideError = (me.msgTarget === 'side'),
             underError = (me.msgTarget === 'under'),
             errorMsgCls = me.errorMsgCls,
-            msgTarget = me.msgTarget,
             labelPad = me.labelPad,
             labelWidth = me.labelWidth,
             labelClsExtra = me.labelClsExtra || '',
@@ -673,7 +672,7 @@ Ext.define("Ext.form.Labelable", {
             style = {},
             ExtElement = Ext.Element,
             errorWrapEl = me.errorWrapEl,
-            visibilityMode, margins, side;
+            margins, side;
 
         if (errorWrapEl) {
             errorWrapEl.setVisibilityMode((me.msgTarget === 'side' && !me.autoFitErrors) ?

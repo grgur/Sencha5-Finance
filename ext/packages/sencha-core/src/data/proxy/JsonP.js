@@ -131,11 +131,11 @@ Ext.define('Ext.data.proxy.JsonP', {
     alias: ['proxy.jsonp', 'proxy.scripttag'],
     requires: ['Ext.data.JsonP'],
 
-    /**
-     * @cfg {String} callbackKey
-     * See {@link Ext.data.JsonP#callbackKey}.
-     */
     config: {
+        /**
+         * @cfg {String} callbackKey
+         * See {@link Ext.data.JsonP#callbackKey}.
+         */
         callbackKey : 'callback',
 
         /**
@@ -153,15 +153,6 @@ Ext.define('Ext.data.proxy.JsonP', {
         */
         autoAppendParams: true
     },
-
-    /**
-     * @event
-     * Fires when the server returns an exception. This event may also be listened
-     * to in the event that a request has timed out or has been aborted.
-     * @param {Ext.data.proxy.Proxy} this
-     * @param {Ext.data.Request} request The request that was sent
-     * @param {Ext.data.operation.Operation} operation The operation that triggered the request
-     */
 
     /**
      * @private

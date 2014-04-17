@@ -351,36 +351,6 @@ Ext.define('Ext.app.bind.Stub', {
         this.storeBinding = storeBinding;
     },
 
-    sort: function () {
-        var me = this,
-            formula = me.formula,
-            assocBinding = me.assocBinding,
-            scheduler = me.scheduler,
-            storeBinding = me.storeBinding,
-            recordBinding = me.recordBinding;
-
-        me.callParent();
-
-        if (assocBinding) {
-            scheduler.sortItem(assocBinding);
-        }
-        
-        if (storeBinding) {
-            scheduler.sortItem(storeBinding);
-        }
-        
-        if (recordBinding) {
-            scheduler.sortItem(recordBinding);
-        }
-
-        if (formula) {
-            // Our formula must run before we do so it can set the value on us. Our
-            // bindings in turn depend on us so they will be scheduled as part of the
-            // current sweep if the formula produces a different result.
-            scheduler.sortItem(formula);
-        }
-    },
-    
     onRecordChange: function(rec) {
         var children = this.children,
             key, associations;
@@ -394,6 +364,38 @@ Ext.define('Ext.app.bind.Stub', {
                 if (!(associations && key in associations)) {
                     children[key].schedule();
                 }
+            }
+        }
+    },
+    
+    privates: {
+        sort: function () {
+            var me = this,
+                formula = me.formula,
+                assocBinding = me.assocBinding,
+                scheduler = me.scheduler,
+                storeBinding = me.storeBinding,
+                recordBinding = me.recordBinding;
+
+            me.callParent();
+
+            if (assocBinding) {
+                scheduler.sortItem(assocBinding);
+            }
+        
+            if (storeBinding) {
+                scheduler.sortItem(storeBinding);
+            }
+        
+            if (recordBinding) {
+                scheduler.sortItem(recordBinding);
+            }
+
+            if (formula) {
+                // Our formula must run before we do so it can set the value on us. Our
+                // bindings in turn depend on us so they will be scheduled as part of the
+                // current sweep if the formula produces a different result.
+                scheduler.sortItem(formula);
             }
         }
     }

@@ -190,7 +190,7 @@ Ext.define('Ext.Widget', {
      * Adds an element reference to this Widget instance.
      * @param {String} name The name of the reference
      * @param {HTMLElement} domNode
-     * @return {Ext.Element}
+     * @return {Ext.dom.Element}
      */
     addElementReference: function (name, domNode) {
         var me = this,

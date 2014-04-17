@@ -15,7 +15,7 @@
  *    * record
  *
  * Note that if performing rapid data updates, then to get the best results by avoiding too frequent browser style recalculations,
- * layout recalculations and painting operations, you should configure your grid with {@link Ext.table.Panel#throttledUpdate}: `true`
+ * layout recalculations and painting operations, you should configure your grid's {@link Ext.panel.Table#viewConfig} with `{@link Ext.view.Table#throttledUpdate throttledUpdate}: true`
  * which will mean that the view will be updated at {@link Ext.view.AbstractView#updateFPS} frames per second instead of on every cell change.
  */
 Ext.define('Ext.grid.plugin.CellUpdating', {
@@ -37,7 +37,7 @@ Ext.define('Ext.grid.plugin.CellUpdating', {
 
     /**
      * @cfg {Number} [unhighlightDelay=1000]
-     * Number of milliseconds to leave the {@link #highlight} class on a modified cell before restoring it to default state.
+     * Number of milliseconds to leave the {@link #highlightClass} class on a modified cell before restoring it to default state.
      */
     unhighlightDelay: 1000,
 
@@ -54,7 +54,7 @@ Ext.define('Ext.grid.plugin.CellUpdating', {
      },
 
     /**
-     * This method is injected into the client grid's {@link Ext.table.View view} to take over responsibility
+     * This method is injected into the client grid's {@link Ext.view.Table view} to take over responsibility
      * for updating the view upon record modification.
      *
      * This method usually calls the {@link Ext.grid.column.Column#renderer column renderer} for the modified fields

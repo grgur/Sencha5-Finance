@@ -167,7 +167,7 @@ Ext.define('Ext.Shadow', {
 
     /**
      * Displays the shadow under the target element
-     * @param {String/HTMLElement/Ext.Element} targetEl The id or element under which the shadow should display
+     * @param {String/HTMLElement/Ext.dom.Element} targetEl The id or element under which the shadow should display
      */
     show: function(target) {
         var me = this,

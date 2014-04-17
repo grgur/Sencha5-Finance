@@ -618,7 +618,7 @@ var makeCtor = Ext.Class.makeCtor,
          * Get the name of the class by its reference or its instance. This is
          * usually invoked by the shorthand {@link Ext#getClassName}.
          *
-         *     Ext.getName(Ext.Action); // returns "Ext.Action"
+         *     Ext.ClassManager.getName(Ext.Action); // returns "Ext.Action"
          *
          * @param {Ext.Class/Object} object
          * @return {String} className

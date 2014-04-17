@@ -30,6 +30,8 @@ Ext.apply(Ext, {
     }()),
 
     /**
+     * @method callback
+     * @member Ext
      * Execute a callback function in a particular scope. If `callback` argument is a
      * function reference, that is called. If it is a string, the string is assumed to
      * be the name of a method on the given `scope`. If no function is passed the call
@@ -63,11 +65,11 @@ Ext.apply(Ext, {
             return;
         }
 
-        var isThis = scope === 'this';
+        var preventClimb = scope === 'this' || scope === 'controller';
         
         if (callback.charAt) { // if (isString(fn))
-            if ((!scope || isThis) && caller) {
-                scope = caller.resolveListenerScope(isThis ? scope : defaultScope);
+            if ((!scope || preventClimb) && caller) {
+                scope = caller.resolveListenerScope(preventClimb ? scope : defaultScope);
             }
             //<debug>
             if (!scope || !Ext.isObject(scope)) {
@@ -80,7 +82,7 @@ Ext.apply(Ext, {
             //</debug>
 
             callback = scope[callback];
-        } else if (isThis) {
+        } else if (preventClimb) {
             scope = defaultScope || caller;
         } else if (!scope) {
             scope = caller;
@@ -103,6 +105,8 @@ Ext.apply(Ext, {
     },
 
     /**
+     * @method coerce
+     * @member Ext
      * Coerces the first value if possible so that it is comparable to the second value.
      *
      * Coercion only works between the basic atomic data types String, Boolean, Number, Date, null and undefined.
@@ -146,6 +150,8 @@ Ext.apply(Ext, {
     },
 
     /**
+     * @method copyTo
+     * @member Ext
      * Copies a set of named properties fom the source object to the destination object.
      *
      * Example:
@@ -186,8 +192,9 @@ Ext.apply(Ext, {
     },
 
     /**
+     * @method extend
+     * @member Ext
      * This method deprecated. Use {@link Ext#define Ext.define} instead.
-     * @method
      * @param {Function} superclass
      * @param {Object} overrides
      * @return {Function} The subclass constructor from the <tt>overrides</tt> parameter, or a generated one if not provided.
@@ -255,6 +262,8 @@ Ext.apply(Ext, {
     }()),
 
     /**
+     * @method iterate
+     * @member Ext
      * Iterates either an array or an object. This method delegates to
      * {@link Ext.Array#each Ext.Array.each} if the given value is iterable, and {@link Ext.Object#each Ext.Object.each} otherwise.
      *
@@ -315,6 +324,8 @@ Ext.apply(Ext, {
     },
 
     /**
+     * @method getScrollbarSize
+     * @member Ext
      * Returns the size of the browser scrollbars. This can differ depending on
      * operating system settings, such as the theme or font size.
      * @param {Boolean} [force] true to force a recalculation of the value.
@@ -352,6 +363,8 @@ Ext.apply(Ext, {
     },
 
     /**
+     * @method typeOf
+     * @member Ext
      * Returns the type of the given variable in string format. List of possible values are:
      *
      * - `undefined`: If the given value is `undefined`
@@ -512,6 +525,8 @@ Ext.apply(Ext, {
     },
 
     /**
+     * @method log
+     * @member Ext
      * Logs a message. If a console is present it will be used. On Opera, the method
      * "opera.postError" is called. In other cases, the message is logged to an array
      * "Ext.log.out". An attached debugger can watch this array and view the log. The
@@ -543,13 +558,11 @@ Ext.apply(Ext, {
      *
      * @param {String...} [message] The message to log (required unless specified in
      * options object).
-     *
-     * @method
      */
     log:
     //<debug>
         (function () {
-            /**
+            /*
              * Iterate through an object to dump its content into a string.
              * For example:
              *     {

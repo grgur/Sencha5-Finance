@@ -24,7 +24,7 @@ Ext.define('Ext.data.TreeModel', {
      * documentation for an example.
      *
      * *Important*
-     * If you are using this declaration on your tree models, and have a {@link Ext.tree.Panel#hiddenRoot hidden root node}, you
+     * If you are using this declaration on your tree models, and have a {@link Ext.tree.Panel#rootVisible hidden root node}, you
      * MUST create a special root model definition which declares the type of its children.
      *
      * If you allow the TreeStore to create a root node of the same type as the first level of *visible* nodes

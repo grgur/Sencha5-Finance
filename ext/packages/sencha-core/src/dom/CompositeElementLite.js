@@ -20,7 +20,7 @@
  * @mixins Ext.dom.Element
  */
 Ext.define('Ext.dom.CompositeElementLite', {
-    alternateClassName: ['Ext.CompositeElementLite', 'Ext.CompositeElement'],
+    alternateClassName: ['Ext.CompositeElementLite'],
 
     requires: ['Ext.dom.Fly'],
 
@@ -294,7 +294,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
 
     /**
      * Find the index of the passed element within the composite collection.
-     * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, or an Ext.dom.Element, or an HtmlElement
+     * @param {String/HTMLElement/Ext.dom.Element/Number} el The id of an element, or an Ext.dom.Element, or an HtmlElement
      * to find within the composite collection.
      * @return {Number} The index of the passed Ext.dom.Element in the composite collection, or -1 if not found.
      */
@@ -304,9 +304,9 @@ Ext.define('Ext.dom.CompositeElementLite', {
 
     /**
      * Replaces the specified element with the passed element.
-     * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, the Element itself, the index of the
+     * @param {String/HTMLElement/Ext.dom.Element/Number} el The id of an element, the Element itself, the index of the
      * element in this composite to replace.
-     * @param {String/Ext.Element} replacement The id of an element or the Element itself.
+     * @param {String/Ext.dom.Element} replacement The id of an element or the Element itself.
      * @param {Boolean} [domReplace] `true` to remove and replace the element in the document too.
      * @return {Ext.dom.CompositeElementLite} this
      */
@@ -380,7 +380,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
 
     /**
      * Returns `true` if this composite contains the passed element
-     * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, or an Ext.Element, or an HtmlElement to
+     * @param {String/HTMLElement/Ext.dom.Element/Number} el The id of an element, or an Ext.Element, or an HtmlElement to
      * find within the composite collection.
      * @return {Boolean}
      */
@@ -390,7 +390,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
 
     /**
      * Removes the specified element(s).
-     * @param {String/HTMLElement/Ext.Element/Number} el The id of an element, the Element itself, the index of the
+     * @param {String/HTMLElement/Ext.dom.Element/Number} el The id of an element, the Element itself, the index of the
      * element in this composite or an array of any of those.
      * @param {Boolean} [removeDom] `true` to also remove the element from the document
      * @return {Ext.dom.CompositeElementLite} this

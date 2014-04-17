@@ -29,30 +29,28 @@ Ext.define('Ext.util.CSS', function() {
          * @param {String} id An id to add to the stylesheet for later removal
          * @return {CSSStyleSheet}
          */
-        createStyleSheet : function(cssText, id) {
+        createStyleSheet: function (cssText, id) {
             var ss,
-                head = doc.getElementsByTagName("head")[0],
-                styleEl = doc.createElement("style");
+                head = doc.getElementsByTagName('head')[0],
+                styleEl = doc.createElement('style');
 
-            styleEl.setAttribute("type", "text/css");
+            styleEl.setAttribute('type', 'text/css');
+
             if (id) {
-               styleEl.setAttribute("id", id);
+               styleEl.setAttribute('id', id);
             }
 
-            // IE11 switched to standard CSSOM
-            if (Ext.isIE10m) {
-               head.appendChild(styleEl);
-               ss = styleEl.styleSheet;
-               ss.cssText = cssText;
-            } else {
-                try{
-                    styleEl.appendChild(doc.createTextNode(cssText));
-                } catch(e) {
-                   styleEl.cssText = cssText;
-                }
+            // Feature detect old IE
+            ss = styleEl.styleSheet;
+            if (ss) {
                 head.appendChild(styleEl);
-                ss = styleEl.styleSheet ? styleEl.styleSheet : (styleEl.sheet || doc.styleSheets[doc.styleSheets.length-1]);
+                ss.cssText = cssText;
+            } else {
+                styleEl.appendChild(doc.createTextNode(cssText));
+                head.appendChild(styleEl);
+                ss = styleEl.sheet;
             }
+
             CSS.cacheStyleSheet(ss);
             return ss;
         },
@@ -155,6 +153,10 @@ Ext.define('Ext.util.CSS', function() {
             return result;
         },
         
+        /**
+         * Refresh the rule cache if you have dynamically added stylesheets
+         * @return {Object} An object (hash) of rules indexed by selector
+         */
         refreshCache: function() {
             var ds = doc.styleSheets,
                 i = 0,

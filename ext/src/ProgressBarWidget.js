@@ -28,8 +28,19 @@ Ext.define('Ext.ProgressBarWidget', {
          */
         value: 0,
 
+        /**
+         * @cfg {Boolean} [animate=false]
+         * Specify as `true` to have this progress bar animate to new extent when updated.
+         */
         animate: false,
-        
+
+        /**
+         * @cfg {String/Ext.XTemplate} [textTpl]
+         * A template used to create this ProgressBar's background text given two values:
+         *
+         *    `value  ' - The raw progress value between 0 and 1
+         *    'percent' - The value as a percentage between 0 and 100
+         */
         textTpl: null
     },
 
@@ -55,15 +66,6 @@ Ext.define('Ext.ProgressBarWidget', {
     }],
 
     defaultBindProperty: 'value',
-
-
-    /**
-     * @private
-     * Needed for when widget is rendered into a grid cell. The class to add to the cell element.
-     */
-    getTdCls: function() {
-        return this.getBaseCls() + '-' + (this.ui || 'default') + '-cell';
-    },
             
     updateUi: function(ui, oldUi) {
 

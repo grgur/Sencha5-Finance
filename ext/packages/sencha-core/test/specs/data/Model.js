@@ -2,11 +2,12 @@ describe("Ext.data.Model", function() {
     
     beforeEach(function() {
         Ext.ClassManager.enableNamespaceParseCache = false;
+        Ext.data.Model.schema.setNamespace('spec');
     });
     
     afterEach(function() {
         Ext.ClassManager.enableNamespaceParseCache = true; 
-        Ext.data.Model.schema.clear();
+        Ext.data.Model.schema.clear(true);
     });
     
     describe("getField/getFields", function() {
@@ -60,10 +61,42 @@ describe("Ext.data.Model", function() {
         
         afterEach(function() {
             A = B = null;
+            Ext.undefine('specModel');
             Ext.undefine('spec.A');
             Ext.undefine('spec.B');
+            Ext.undefine('spec.model.sub.C');
         });
-        
+
+        describe('entityName', function () {
+            beforeEach(function () {
+                Ext.define('specModel', {
+                    extend: 'Ext.data.Model'
+                });
+                Ext.define('spec.A', {
+                    extend: 'Ext.data.Model'
+                });
+                Ext.define('spec.B', {
+                    extend: 'Ext.data.Model'
+                });
+                Ext.define('spec.model.sub.C', {
+                    extend: 'Ext.data.Model'
+                });
+            });
+
+            it('should generate proper default entityName for top-level', function () {
+                expect(specModel.entityName).toBe('specModel');
+            });
+
+            it('should generate proper default entityName for namespaced entity', function () {
+                expect(spec.A.entityName).toBe('A');
+                expect(spec.B.entityName).toBe('B');
+            });
+
+            it('should generate proper default entityName for a deep namespaced entity', function () {
+                expect(spec.model.sub.C.entityName).toBe('model.sub.C');
+            });
+        });
+
         describe("fields", function() {
             function defineA(fields, cfg) {
                 cfg = Ext.apply({

@@ -60,7 +60,12 @@ Ext.define('Ext.dashboard.Panel', {
 
         me.closing = false;
         me.fireEvent('close', me);
+
+        // The close of the last portlet within a column results in removal of both the column and its splitter.
+        // So coalesce any layouts resulting from this operation.
+        Ext.suspendLayouts();
         me[closeAction]();
+        Ext.resumeLayouts(true);
 
         if (closeAction === 'hide') {
             me.el.setOpacity(1);

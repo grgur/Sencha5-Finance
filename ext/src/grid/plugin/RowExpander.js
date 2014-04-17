@@ -219,7 +219,7 @@ Ext.define('Ext.grid.plugin.RowExpander', {
     },
 
     onLockableProcessColumns: function(lockable, lockedHeaders, normalHeaders) {
-        this.addExpander(lockedHeaders.length ? lockable.lockedGrid : lockable.normalGrid)
+        this.addExpander(lockedHeaders.length ? lockable.lockedGrid : lockable.normalGrid);
     },
 
     /**
@@ -274,7 +274,7 @@ Ext.define('Ext.grid.plugin.RowExpander', {
     },
 
     onKeyDown: function(view, record, row, rowIdx, e) {
-        if (e.getKey() == e.ENTER) {
+        if (e.getKey() === e.ENTER) {
             var ds   = view.store,
                 sels = view.getSelectionModel().getSelection(),
                 ln   = sels.length,
@@ -294,6 +294,8 @@ Ext.define('Ext.grid.plugin.RowExpander', {
     toggleRow: function(rowIdx, record) {
         var me = this,
             view = me.view,
+            bufferedRenderer = view.bufferedRenderer,
+            scrollManager = view.scrollManager,
             fireView = view,
             rowNode = view.getNode(rowIdx),
             normalRow = Ext.fly(rowNode, '_rowExpander'),
@@ -330,6 +332,15 @@ Ext.define('Ext.grid.plugin.RowExpander', {
         if (view.getSizeModel().height.shrinkWrap || ownerLockable) {
             view.refreshSize();
         }
+        // If we are using the touch scroller, ensure that the scroller knows about
+        // the correct scrollable range
+        if (scrollManager) {
+            if (bufferedRenderer) {
+                bufferedRenderer.stretchView(view, bufferedRenderer.getScrollHeight(true));
+            } else {
+                scrollManager.refresh(true);
+            }
+        }    
     },
 
     // Called from TableLayout.finishedLayout

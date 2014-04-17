@@ -75,7 +75,7 @@ Ext.define('Ext.util.KeyNav', {
     /**
      * @private
      * Old constructor signature.
-     * @param {String/HTMLElement/Ext.Element} el The element or its ID to bind to
+     * @param {String/HTMLElement/Ext.dom.Element} el The element or its ID to bind to
      * @param {Object} config The config
      */
     legacyConstructor: function(el, config) {
@@ -184,7 +184,7 @@ Ext.define('Ext.util.KeyNav', {
     forceKeyDown: false,
 
     /**
-     * @cfg {Ext.Component/Ext.Element/HTMLElement/String} target
+     * @cfg {Ext.Component/Ext.dom.Element/HTMLElement/String} target
      * The object on which to listen for the event specified by the {@link #eventName} config option.
      */
 

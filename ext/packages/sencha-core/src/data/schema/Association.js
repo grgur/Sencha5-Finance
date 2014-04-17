@@ -84,7 +84,7 @@ Ext.define('Ext.data.schema.Association', {
     owner: null,
 
     /**
-     * @property {Class} definedBy
+     * @property {Ext.Class} definedBy
      * @readonly
      */
 

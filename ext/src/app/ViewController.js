@@ -140,15 +140,15 @@ Ext.define('Ext.app.ViewController', {
     },
     
     /**
-     * Called when the view initializes with this controller
-     * @param {Ext.Component} The view
+     * Called when the view initializes with this controller.
+     * @param {Ext.Component} view The view
      * @protected
      */
     init: Ext.emptyFn,
 
     /**
      * Called when the view model instance for an attached view is first created.
-     * @param {Ext.app.ViewModel}
+     * @param {Ext.app.ViewModel} viewModel The ViewModel
      * @protected
      */
     initViewModel: Ext.emptyFn,
@@ -244,6 +244,23 @@ Ext.define('Ext.app.ViewController', {
         return viewModel ? viewModel.getStore(name) : null;
     },
 
+    /**
+     * Fires an event on the view. See {@link Ext.Component#fireEvent}.
+     * @param {String} eventName The name of the event to fire.
+     * @param {Object...} args Variable number of parameters are passed to handlers.
+     * @return {Boolean} returns false if any of the handlers return false otherwise it returns true.
+     * @protected
+     */
+    fireViewEvent: function(eventName) {
+        var view = this.view,
+            result = false;
+
+        if (view) {
+            result = view.fireEvent.apply(view, arguments);
+        }
+        return result;
+    },
+
     //=========================================================================
     privates: {
         view: null,
@@ -257,7 +274,7 @@ Ext.define('Ext.app.ViewController', {
 
         /**
          * Set a reference to a component.
-         * @param {Ext.Component} component The component to reference
+         * @param {Ext.Component} ref The component to reference
          *
          * @private
          */
@@ -270,7 +287,7 @@ Ext.define('Ext.app.ViewController', {
         
         /**
          * Clear a reference to a component
-         * @param {Ext.Component} component The component to reference
+         * @param {Ext.Component} ref The component to reference
          * 
          * @private
          */

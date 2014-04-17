@@ -127,11 +127,8 @@ Ext.define('Ext.data.proxy.Proxy', {
      * @param {Object} [config] Config object.
      */
     constructor: function(config) {
-        var me = this;
-
-        me.initConfig(config);
-
-        me.mixins.observable.constructor.call(me);
+        this.initConfig(config);
+        this.mixins.observable.constructor.call(this, config);
     },
      
     applyModel: function(model) {

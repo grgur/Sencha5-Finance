@@ -20,7 +20,7 @@ Ext.define('Ext.util.ComponentDragger', {
      */
 
     /**
-     * @cfg {String/Ext.Element} delegate
+     * @cfg {String/Ext.dom.Element} delegate
      * A CSS selector which identifies child elements within the Component's encapsulating
      * Element which are the drag handles. This limits dragging to only begin when the matching elements are
      * mousedowned.

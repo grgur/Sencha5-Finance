@@ -2559,6 +2559,14 @@ describe("Ext.data.Store", function() {
                 expect(store.getSorters().getCount()).toBe(1);
                 expect(sorter.getProperty()).toBe('evilness');
             });
+
+            it("should not throw an error when the store has no model", function() {
+                store.destroyStore();
+                store = new Ext.data.Store();
+                expect(function() {
+                    store.sort('something', 'ASC');
+                }).not.toThrow();
+            });
         });
         
         describe("isSorted", function() {
@@ -3088,6 +3096,32 @@ describe("Ext.data.Store", function() {
                 value: value
             });
         }
+
+        describe('groupDir and the group() method', function () {
+            it('should default to "ASC"', function () {
+                createStore();
+
+                expect(store.getGroupDir()).toBe('ASC');
+            });
+
+            it('should default to "ASC" when calling group()', function () {
+                createStore();
+
+                store.group('name');
+
+                expect(store.getGrouper().getDirection()).toBe('ASC');
+            });
+
+            it('should use whatever was set in the config when calling group()', function () {
+                createStore({
+                    groupDir: 'DESC'
+                });
+
+                store.group('email');
+
+                expect(store.getGrouper().getDirection()).toBe('DESC');
+            });
+        });
         
         describe("getGroupField", function() {
             beforeEach(function() {
@@ -3285,6 +3319,96 @@ describe("Ext.data.Store", function() {
                         });
 
                         store.remove(abeRec);
+                    });
+
+                    describe('using removeAt', function () {
+                        it('should remove the record from its group', function () {
+                            var admins;
+
+                            groupBy();
+                            admins = store.getGroups().get('admin');
+
+                            expect(admins.contains(abeRec)).toBe(true);
+
+                            store.removeAt(0);
+
+                            expect(admins.contains(abeRec)).toBe(false);
+                        });
+
+                        it('should remove a range of records from their groups', function () {
+                            var admins, codes;
+
+                            groupBy();
+                            admins = store.getGroups().get('admin');
+                            codes = store.getGroups().get('code');
+
+                            expect(codes.contains(edRec)).toBe(true);
+                            expect(codes.contains(tommyRec)).toBe(true);
+                            expect(admins.contains(aaronRec)).toBe(true);
+
+                            store.removeAt(1, 3);
+
+                            expect(codes.contains(edRec)).toBe(false);
+                            expect(codes.contains(tommyRec)).toBe(false);
+                            expect(admins.contains(aaronRec)).toBe(false);
+                            // The second group has been removed because all its items were removed.
+                            expect(store.getGroups().length).toBe(1);
+                        });
+                    });
+
+                    describe('using removeAll', function () {
+                        it('should remove the groups', function () {
+                            var admins, groups;
+
+                            groupBy();
+                            groups = store.getGroups();
+
+                            admins = groups.get('admin');
+
+                            expect(groups.length).toBe(2);
+
+                            store.removeAll();
+
+                            expect(groups.length).toBe(0);
+                        });
+                    });
+
+                    describe('phantom group records', function () {
+                        it('should remove phantoms from their groups', function () {
+                            var admins;
+
+                            groupBy();
+                            admins = store.getGroups().get('admin');
+
+                            var data = [
+                                { name: 'Phil' },
+                                { name: 'Evan' },
+                                { name: 'Nige' },
+                                { name: 'Alex' }
+                            ],
+                            record;
+
+                            // Destroy the store created in the beforeEach(). We need a store of phantom records.
+                            store.destroyStore();
+
+                            // Use an ajax proxy with local data to so it doesn't go through the reader and marked as non-phantom.
+                            store = new Ext.data.Store({
+                                fields: ['name'],
+                                data: data,
+                                groupField: 'name',
+                                proxy: {
+                                    type: 'ajax'
+                                }
+                            });
+
+                            record = store.getAt(0);
+
+                            expect(record.phantom).toBe(true);
+
+                            store.remove(record);
+
+                            expect(store.getGroups().getAt(0).contains(record)).toBe(false);
+                        });
                     });
                 });
 
@@ -4698,6 +4822,137 @@ describe("Ext.data.Store", function() {
         });
     });
     
+    describe("metachange event", function () {
+        var wasCalled = false,
+            successData = {
+                success: true,
+                data: [
+                    {name: 'alex'},
+                    {name: 'ben'},
+                    {name: 'don'},
+                    {name: 'evan'},
+                    {name: 'nige'},
+                    {name: 'phil'}
+                ],
+                metaData: {
+                    root: 'data'
+                }
+            },
+            args, storeArg, metaArg;
+
+        beforeEach(function () {
+            createStore({
+                proxy: {
+                    type: "ajax",
+                    url: "foo"
+                },
+                listeners: {
+                    metachange: function (store, meta) {
+                        wasCalled = true;
+                        args = arguments;
+                        storeArg = store;
+                        metaArg = meta;
+                    }
+                }
+            });
+
+            store.load();
+            completeWithData(successData);
+        });
+
+        afterEach(function () {
+            wasCalled = false;
+            args = storeArg = metaArg = null;
+        });
+
+        it("should call the listener", function () {
+            expect(wasCalled).toBe(true);
+        });
+
+        it("should return the store", function () {
+            expect(storeArg).toBe(store);
+        });
+
+        it("should return the meta data", function () {
+            expect(metaArg).toEqual(successData.metaData);
+        });
+
+        it("should return the store as the first arg", function () {
+            expect(args[0]).toBe(store);
+        });
+
+        it("should return the meta data as the second arg", function () {
+            expect(args[1]).toBe(metaArg);
+        });
+
+        describe("disableMetaChangeEvent (for associated models)", function () {
+            var wasCalled = false;
+
+            afterEach(function () {
+                wasCalled = false;
+            });
+
+            it("should not be set by default", function () {
+                createStore({
+                    proxy: {
+                        type: "ajax",
+                        url: "foo"
+                    },
+                    listeners: {
+                        metachange: function (store, meta) {
+                            wasCalled = true;
+                        }
+                    }
+                });
+
+                store.load();
+                completeWithData(successData);
+
+                expect(wasCalled).toBe(true);
+            });
+
+            it("should not fire the event if `true`", function () {
+                createStore({
+                    disableMetaChangeEvent: true,
+                    proxy: {
+                        type: "ajax",
+                        url: "foo"
+                    },
+                    listeners: {
+                        metachange: function (store, meta) {
+                            wasCalled = true;
+                        }
+                    }
+                });
+
+                store.load();
+                completeWithData(successData);
+
+                expect(wasCalled).toBe(false);
+            });
+
+            it("should fire the event if `false`", function () {
+                createStore({
+                    disableMetaChangeEvent: false,
+                    proxy: {
+                        type: "ajax",
+                        url: "foo"
+                    },
+                    listeners: {
+                        metachange: function (store, meta) {
+                            wasCalled = true;
+                        }
+                    }
+                });
+
+                store.load();
+                completeWithData(successData);
+
+                expect(wasCalled).toBe(true);
+            });
+        });
+    });
+
     describe("with a session", function() {
         var session;
 

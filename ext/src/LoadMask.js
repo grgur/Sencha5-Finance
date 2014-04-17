@@ -358,7 +358,7 @@ Ext.define('Ext.LoadMask', {
 
         // Only need to mask on load if the proxy is asynchronous - ie: Ajax/JsonP
         if (!store.proxy.isSynchronous) {
-            result.beforeLoad = beforeLoad;
+            result.beforeload = beforeLoad;
             result.load = load;
         }
         return result;

@@ -21,6 +21,7 @@ describe("Ext.data.association.BelongsTo_legacy", function() {
     }
     
     beforeEach(function() {
+        Ext.data.Model.schema.setNamespace('spec');
         Ext.define('spec.User', {
             extend: 'Ext.data.Model',
             fields: ['id', 'name']
@@ -38,7 +39,7 @@ describe("Ext.data.association.BelongsTo_legacy", function() {
         Ext.undefine('spec.Post');
         Ext.undefine('spec.Job');
         
-        Ext.data.Model.schema.clear();
+        Ext.data.Model.schema.clear(true);
         
         rec = null;
     });

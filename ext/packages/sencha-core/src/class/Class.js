@@ -1,4 +1,3 @@
-// @tag class
 /**
  * @class Ext.Class
  *
@@ -14,6 +13,7 @@
  * @private
  */
 (function() {
+// @tag class
 // @define Ext.Class
 // @require Ext.Util
 // @require Ext.Base

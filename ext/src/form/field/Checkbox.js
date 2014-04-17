@@ -99,7 +99,7 @@ Ext.define('Ext.form.field.Checkbox', {
 
     childEls: [
         /**
-         * @property {Ext.Element} boxLabelEl
+         * @property {Ext.dom.Element} boxLabelEl
          * A reference to the label element created for the {@link #boxLabel}. Only present if the component has been
          * rendered and has a boxLabel configured.
          */
@@ -372,7 +372,7 @@ Ext.define('Ext.form.field.Checkbox', {
     /**
      * @private Handle click on the checkbox button
      */
-    onBoxClick: function(e) {
+    onBoxClick: function() {
         var me = this;
         if (!me.disabled && !me.readOnly) {
             this.setValue(!this.checked);

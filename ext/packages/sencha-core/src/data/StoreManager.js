@@ -167,7 +167,7 @@ Ext.define('Ext.data.StoreManager', {
     // A dummy empty store with a fieldless Model defined in it.
     // Just for binding to Views which are instantiated with no Store defined.
     // They will be able to run and render fine, and be bound to a generated Store later.
-    var emptyStore = Ext.regStore('ext-empty-store', { proxy: 'memory' });
+    var emptyStore = Ext.regStore('ext-empty-store', { proxy: 'memory', useModelWarning: false });
 
     emptyStore.isEmptyStore = true;
 

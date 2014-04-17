@@ -17,8 +17,8 @@ Ext.define('Ext.data.Batch', {
         * True to pause the execution of the batch if any operation encounters an exception
         * (defaults to false). If you set this to true you are responsible for implementing the appropriate
         * handling logic and restarting or discarding the batch as needed. There are different ways you could 
-        * do this, e.g. by handling the batch's {@link #exception} event directly, or perhaps by overriding
-        * {@link Ext.data.AbstractStore#onBatchException onBatchException} at the store level. If you do pause
+        * do this, e.g. by handling the batch's {@link #event-exception} event directly, or perhaps by overriding
+        * {@link Ext.data.ProxyStore#onBatchException onBatchException} at the store level. If you do pause
         * and attempt to handle the exception you can call {@link #retry} to process the same operation again. 
         * 
         * Note that {@link Ext.data.operation.Operation operations} are atomic, so any operations that may have succeeded

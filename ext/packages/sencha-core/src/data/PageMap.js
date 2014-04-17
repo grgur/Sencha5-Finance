@@ -156,7 +156,7 @@ Ext.define('Ext.data.PageMap', {
         for (startIdx = 0; pageNumber <= lastPage; pageNumber++, startIdx += me.pageSize) {
             page = Ext.Array.slice(records, startIdx, startIdx + me.pageSize);
             me.add(pageNumber, page);
-            me.fireEvent('pageAdded', pageNumber, page);
+            me.fireEvent('pageadded', pageNumber, page);
         }
     },
 

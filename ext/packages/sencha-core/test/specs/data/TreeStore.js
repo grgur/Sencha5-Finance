@@ -1103,6 +1103,7 @@ describe("Ext.data.TreeStore", function() {
 
         beforeEach(function() {
             schema = Ext.data.Model.schema;
+            schema.setNamespace('spec');
 
             Ext.define('spec.Territory', {
                 extend: 'Ext.data.TreeModel',
@@ -1202,7 +1203,7 @@ describe("Ext.data.TreeStore", function() {
             Ext.undefine('spec.Territory');
             Ext.undefine('spec.Country');
             Ext.undefine('spec.City');
-            schema.clear();
+            schema.clear(true);
         });
 
         it("should use the parentNode\'s childType to resolve child node models if no typeProperty is used on Reader", function() {

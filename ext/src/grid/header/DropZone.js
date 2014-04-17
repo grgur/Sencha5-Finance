@@ -30,15 +30,15 @@ Ext.define('Ext.grid.header.DropZone', {
 
     getTopIndicator: function() {
         if (!this.topIndicator) {
-            this.topIndicator = Ext.DomHelper.append(Ext.getBody(), {
+            this.topIndicator = Ext.getBody().createChild({
                 role: 'presentation',
-                cls: "col-move-top",
+                cls: Ext.baseCSSPrefix + "col-move-top",
                 //<debug>
                 // tell the spec runner to ignore this element when checking if the dom is clean
                 "data-sticky": true,
                 //</debug>
                 html: "&#160;"
-            }, true);
+            });
             this.indicatorXOffset = Math.floor((this.topIndicator.dom.offsetWidth + 1) / 2);
         }
         return this.topIndicator;
@@ -46,15 +46,15 @@ Ext.define('Ext.grid.header.DropZone', {
 
     getBottomIndicator: function() {
         if (!this.bottomIndicator) {
-            this.bottomIndicator = Ext.DomHelper.append(Ext.getBody(), {
+            this.bottomIndicator = Ext.getBody().createChild({
                 role: 'presentation',
-                cls: "col-move-bottom",
+                cls: Ext.baseCSSPrefix + "col-move-bottom",
                 //<debug>
                 // tell the spec runner to ignore this element when checking if the dom is clean
                 "data-sticky": true,
                 //</debug>
                 html: "&#160;"
-            }, true);
+            });
         }
         return this.bottomIndicator;
     },

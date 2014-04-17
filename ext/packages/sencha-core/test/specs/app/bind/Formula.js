@@ -40,108 +40,137 @@ describe("Ext.app.bind.Formula", function() {
             }
         });
         delete expr.$literal;
-        expect(expr).toEqual(result);
+        expect(Ext.Object.getKeys(expr)).toEqual(result);
     }
 
     // we parse out the argument name, so it should give us argName.expression.
     // here, we just want to check whether we get the name correctly
     describe("argument parsing", function() {
-
         it("should work with a simple function definition", function() {
-            matchExpr("function (data) { return data.foo; };", ['foo']);
+            matchExpr("function (get) { return get('foo'); };", ['foo']);
         });
 
         it("should parse a var with numbers in the name", function() {
-            matchExpr("function (d2ata) { return d2ata.foo; };", ['foo']);
+            matchExpr("function (g2et) { return g2et('foo'); };", ['foo']);
         });
 
         it("should parse a var starting with an underscore", function() {
-            matchExpr("function (_data) { return _data.foo; };", ['foo']);
+            matchExpr("function (_get) { return _get('foo'); };", ['foo']);
         });
 
         it("should parse a with multi vars", function() {
-            matchExpr("function (data, some, other, stuff) { return data.foo; };", ['foo']);
+            matchExpr("function (get, some, other, stuff) { return get('foo'); };", ['foo']);
         });
 
         it("should parse with no spaces between function and parens", function() {
-            matchExpr("function(data) { return data.foo; };", ['foo']);
+            matchExpr("function(get) { return get('foo'); };", ['foo']);
         });
 
         it("should parse with no spaces between parens and curly", function() {
-            matchExpr("function (data){ return data.foo; };", ['foo']);
+            matchExpr("function (get){ return get('foo'); };", ['foo']);
         });
 
         it("should parse without an ending semi colon", function() {
-            matchExpr("function (data) { return data.foo; }", ['foo']);
+            matchExpr("function (get) { return get('foo'); }", ['foo']);
         });
 
         it("should parse with leading spaces", function() {
-            matchExpr("    function (data) { return data.foo; }", ['foo']);
+            matchExpr("    function (get) { return get('foo'); }", ['foo']);
         });
 
         it("should parse with trailing spaces", function() {
-            matchExpr("function (data) { return data.foo; };                ", ['foo']);
+            matchExpr("function (get) { return get('foo'); };                ", ['foo']);
         });
     });
 
     describe("recognizing bindings", function() {
-        describe("basic bindings", function() {
-            it("should parse a simple variable", function() {
-                matchExpr("function (data) { return data.foo; };", ['foo']);
-            });
+        it("should parse a simple variable", function() {
+            matchExpr("function (get) { return get('foo'); };", ['foo']);
+        });
 
-            it("should only match a variable once", function() {
-                matchExpr("function (data) { return data.foo + data.foo + data.foo; };", ['foo']);
-            });
+        it("should only match a variable once", function() {
+            matchExpr("function (get) { return get('foo') + get('foo') + get('foo'); };", ['foo']);
+        });
 
+        it("should match multiple expressions", function() {
+            matchExpr("function (get) { return get('foo') + get('bar') + get('baz'); };", ['foo', 'bar', 'baz']);
+        });
+
+        it("should match an expression with a number in it", function() {   
+            matchExpr("function (get) { return get('foo1'); };", ['foo1']);
+        });
+
+        it("should match an expression that starts with an underscore", function() {   
+            matchExpr("function (get) { return get('_foo'); };", ['_foo']);
+        });
+
+        it("should match as a dynamic property", function() {
+            matchExpr("function (get) { return someObj[get('foo')]; };", ['foo']);
+        });
+
+        it("should match inside parens", function() {
+            matchExpr("function (get) { return (get('foo') + 1 + get('bar')); };", ['foo', 'bar']);
+        });
+
+        it("should match an expression with double quotes", function() {
+            matchExpr('function (get) { return get("foo"); };', ['foo']);
+        });
+
+        describe("non-matches", function() {
             it("should not match when the identifier has a prefix", function() {
-                matchExpr("function (data) { return data.foo + thedata.bar; };", ['foo']);
+                matchExpr("function (get) { return get('foo') + forget('bar'); };", ['foo']);
             });
 
             it("should not match when the identifier has a suffix", function() {
-                matchExpr("function (data) { return data.foo + dataextra.bar; };", ['foo']);
+                matchExpr("function (get) { return get('foo') + getfor('bar'); };", ['foo']);
             });
 
-            it("should match multiple expressions", function() {
-                matchExpr("function (data) { return data.foo + data.bar + data.baz; };", ['foo', 'bar', 'baz']);
-            });
-
-            it("should match an expression with a number in it", function() {   
-                matchExpr("function (data) { return data.foo1; };", ['foo1']);
-            });
-
-            it("should match an expression that starts with an underscore", function() {   
-                matchExpr("function (data) { return data._foo; };", ['_foo']);
-            });
-        });
-
-        describe("fields", function() {
-            it("should match a field name using single quotes", function() {
-                matchExpr("function (data) { return data.user.get('name'); };", ['user.name']);
-            });
-
-            it("should match a field name using double quotes", function() {
-                matchExpr("function (data) { return data.user.get(\"name\"); };", ['user.name']);
-            });
-
-            it("should match a nested expression ending with a field", function() {
-                matchExpr("function (data) { return data.foo.bar.baz.user.get('name'); };", ['foo.bar.baz.user.name']);
+            it("should not match when the identifier is a property of another object", function() {
+                matchExpr("function (get) { return get('foo') + something.get('bar'); };", ['foo']);
             });
         });
 
         describe("functions", function() {
             it("should match only the expression part", function() {
-                matchExpr("function (data) { return data.foo.substring(0, 3); };", ['foo']);
+                matchExpr("function (get) { return get('foo').substring(0, 3); };", ['foo']);
+            });
+
+            it("should match as the sole param to a function", function() {
+                matchExpr("function (get) { return someFn(get('foo')) };", ['foo']);
+            });
+
+            it("should match as the first param to a function", function() {
+                matchExpr("function (get) { return someFn(get('foo'), 1, 2) };", ['foo']);
+            });
+
+            it("should match as a middle param to a function", function() {
+                matchExpr("function (get) { return someFn(1, get('foo'), 2) };", ['foo']);
+            });
+
+            it("should match as the last param to a function", function() {
+                matchExpr("function (get) { return someFn(1, 2, get('foo')) };", ['foo']);
+            });
+
+            it("should match multiple params to a function", function() {
+                matchExpr("function (get) { return someFn(get('foo'), get('bar')) };", ['foo', 'bar']);
             });
         });
 
         describe("nesting", function() {
+            it("should match a nested expression", function() {
+                matchExpr("function (get) { return get('foo.bar.baz'); };", ['foo.bar.baz']);
+            });
+
             it("should match multiple nested subpaths", function() {
-                matchExpr("function (data) { return data.foo.bar.baz.a + data.foo.bar.baz.b; };", ['foo.bar.baz.a', 'foo.bar.baz.b']);
+                matchExpr("function (get) { return get('foo.bar.baz.a') + get('foo.bar.baz.b'); };", ['foo.bar.baz.a', 'foo.bar.baz.b']);
             });
 
             it("should match paths at different depths", function() {
-                matchExpr("function (data) { return data.foo + data.bar.baz.a.b + data.some.other.path.x.y; };", ['foo', 'bar.baz.a.b', 'some.other.path.x.y']);
+                matchExpr("function (get) { return get('foo') + get('bar.baz.a.b') + get('some.other.path.x.y'); };", ['foo', 'bar.baz.a.b', 'some.other.path.x.y']);
+            });
+
+            it("should match get calls inside get calls", function() {
+                matchExpr("function (get) { return (get(get('foo') + get('bar')); };", ['foo', 'bar']);
             });
         })
     });

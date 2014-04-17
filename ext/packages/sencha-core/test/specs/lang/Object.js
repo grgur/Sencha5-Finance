@@ -17,13 +17,36 @@ describe("Ext.Object", function(){
        });
     });
     
-    describe('clear', function () {
-        it('should remove all keys', function () {
+    describe("clear", function () {
+        it("should remove a single key", function () {
             var obj = { x: 42 };
-            expect(obj.hasOwnProperty('x')).toBe(true);
-
             Ext.Object.clear(obj);
             expect(obj.hasOwnProperty('x')).toBe(false);
+        });
+
+        it("should remove multiple keys", function() {
+            var obj = { a: 1, b: 2, c: 3 };
+            Ext.Object.clear(obj);
+            expect(obj.hasOwnProperty('a')).toBe(false);
+            expect(obj.hasOwnProperty('b')).toBe(false);
+            expect(obj.hasOwnProperty('c')).toBe(false);
+        });
+
+        it("should retain items that are not hasOwnProperty on the object", function() {
+            var obj = Ext.Object.chain({
+                a: 1,
+                b: 2
+            });
+            obj.c = 3;
+            Ext.Object.clear(obj);
+            expect(obj.hasOwnProperty('c')).toBe(false);
+            expect(obj.a).toBe(1);
+            expect(obj.b).toBe(2);
+        });
+
+        it("should return the object", function() {
+            var obj = {};
+            expect(Ext.Object.clear(obj)).toBe(obj);
         });
     });
     

@@ -34,7 +34,7 @@ Ext.define('Ext.data.schema.Role', {
     isMany: false,
 
     /**
-     * @property {Class} cls
+     * @property {Ext.Class} cls
      * The `Ext.data.Model` derived class.
      * @readonly
      */

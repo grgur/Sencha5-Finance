@@ -112,5 +112,64 @@ describe("Ext.data.proxy.Proxy", function() {
             });
         });
     });
-    
+
+    describe("metachange event", function () {
+        var wasCalled = false,
+            successData = {
+                success: true,
+                data: [
+                    {name: 'alex'},
+                    {name: 'ben'},
+                    {name: 'don'},
+                    {name: 'evan'},
+                    {name: 'nige'},
+                    {name: 'phil'}
+                ],
+                metaData: {
+                    root: 'data',
+                    fields: ['occupation']
+                }
+            },
+            args, proxyArg, metaArg;
+
+        beforeEach(function () {
+            proxy = new Proxy({
+                listeners: {
+                    metachange: function (proxy, meta) {
+                        wasCalled = true;
+                        args = arguments;
+                        proxyArg = proxy;
+                        metaArg = meta;
+                    }
+                }
+            });
+
+            proxy.getReader().readRecords(successData);
+        });
+
+        afterEach(function () {
+            wasCalled = false;
+            args = proxyArg = metaArg = null;
+        });
+
+        it("should call the listener", function () {
+            expect(wasCalled).toBe(true);
+        });
+
+        it("should return the proxy", function () {
+            expect(proxyArg).toBe(proxy);
+        });
+
+        it("should return the meta data", function () {
+            expect(metaArg).toEqual(successData.metaData);
+        });
+
+        it("should return the proxy as the first arg", function () {
+            expect(args[0]).toBe(proxy);
+        });
+
+        it("should return the meta data as the second arg", function () {
+            expect(args[1]).toBe(metaArg);
+        });
+    });
 });

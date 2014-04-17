@@ -71,7 +71,7 @@ Ext.define('Ext.mixin.Observable', {
      * @property {Object} hasListeners
      * @readonly
      * This object holds a key for any event that has a listener. The listener may be set
-     * directly on the instance, or on its class or a super class (via {@link #observe}) or
+     * directly on the instance, or on its class or a super class or
      * on the {@link Ext.app.EventBus MVC EventBus}. The values of this object are truthy
      * (a non-zero number) and falsy (0 or undefined). They do not represent an exact count
      * of listeners. The value for an event is truthy if the event must be fired and is
@@ -142,6 +142,12 @@ Ext.define('Ext.mixin.Observable', {
      * @since 5.0.0
      */
     resolveListenerScope: function (defaultScope) {
+        //<debug>
+        if (defaultScope === 'controller') {
+            Ext.Error.raise('scope: "controller" can only be specified on components that derive from component');
+        }
+        //</debug>
+
         if (defaultScope === 'this') {
             defaultScope = null;
         }
@@ -187,15 +193,18 @@ Ext.define('Ext.mixin.Observable', {
     },
 
     getEventDispatcher: function() {
-        if (!this.eventDispatcher) {
-            this.eventDispatcher = Ext.event.Dispatcher.getInstance();
-            this.getEventDispatcher = this.getOptimizedEventDispatcher;
+        var me = this,
+            dispatcher = me.eventDispatcher;
 
-            this.getListeners();
-            this.getBubbleEvents();
+        if (!dispatcher) {
+            dispatcher = me.eventDispatcher = Ext.event.Dispatcher.getInstance();
+            me.getEventDispatcher = me.getOptimizedEventDispatcher;
+
+            me.getListeners();
+            me.getBubbleEvents();
         }
 
-        return this.eventDispatcher;
+        return dispatcher;
     },
 
     getManagedListeners: function(object, eventName) {
@@ -316,8 +325,11 @@ Ext.define('Ext.mixin.Observable', {
     doFireEvent: function(eventName, args, action, connectedController) {
         var me = this,
             eventQueue = me.eventQueue,
+            eventNameMap = Ext.$eventNameMap,
             ret = true;
 
+        // This is inlined for performance
+        eventName = eventNameMap[eventName] || (eventNameMap[eventName] = eventName.toLowerCase());
         if (me.eventFiringSuspended || me.suspendedEvents[eventName]) {
             if (eventQueue) {
                 eventQueue.push([eventName, args, action, connectedController]);
@@ -334,10 +346,11 @@ Ext.define('Ext.mixin.Observable', {
      * @return {Boolean}
      */
     doAddListener: function(name, fn, scope, options, order) {
-        var isManaged = (scope && scope !== this && scope.isIdentifiable),
-            usedSelectors = this.getUsedSelectors(),
+        var me = this,
+            isManaged = (scope && scope !== me && scope.isIdentifiable),
+            usedSelectors = me.getUsedSelectors(),
             usedSelectorsMap = usedSelectors.$map,
-            selector = this.getObservableId(),
+            selector = me.getObservableId(),
             isAdded, managedListeners, delegate;
 
         if (!options) {
@@ -345,7 +358,7 @@ Ext.define('Ext.mixin.Observable', {
         }
 
         if (!scope && typeof fn === 'function') {
-            scope = this;
+            scope = me;
         }
 
         if (options.delegate) {
@@ -359,10 +372,10 @@ Ext.define('Ext.mixin.Observable', {
             usedSelectors.push(selector);
         }
 
-        isAdded = this.addDispatcherListener(selector, name, fn, scope, options, order);
+        isAdded = me.addDispatcherListener(selector, name, fn, scope, options, order);
 
         if (isAdded && isManaged) {
-            managedListeners = this.getManagedListeners(scope, name);
+            managedListeners = me.getManagedListeners(scope, name);
             managedListeners.push({
                 delegate: delegate,
                 scope: scope,
@@ -379,8 +392,9 @@ Ext.define('Ext.mixin.Observable', {
     },
 
     doRemoveListener: function(name, fn, scope, options, order) {
-        var isManaged = (scope && scope !== this && scope.isIdentifiable),
-            selector = this.getObservableId(),
+        var me = this,
+            isManaged = (scope && scope !== me && scope.isIdentifiable),
+            selector = me.getObservableId(),
             isRemoved,
             managedListeners, i, ln, listener, delegate;
 
@@ -389,7 +403,7 @@ Ext.define('Ext.mixin.Observable', {
         }
 
         if (!scope && typeof fn === 'function') {
-            scope = this;
+            scope = me;
         }
 
         if (options.delegate) {
@@ -398,10 +412,10 @@ Ext.define('Ext.mixin.Observable', {
             selector += ' ' + delegate;
         }
 
-        isRemoved = this.removeDispatcherListener(selector, name, fn, scope, options, order);
+        isRemoved = me.removeDispatcherListener(selector, name, fn, scope, options, order);
 
         if (isRemoved && isManaged) {
-            managedListeners = this.getManagedListeners(scope, name);
+            managedListeners = me.getManagedListeners(scope, name);
 
             for (i = 0,ln = managedListeners.length; i < ln; i++) {
                 listener = managedListeners[i];
@@ -421,11 +435,12 @@ Ext.define('Ext.mixin.Observable', {
     },
 
     clearManagedListeners: function(object) {
-        var managedListeners = this.managedListeners,
+        var me = this,
+            managedListeners = me.managedListeners,
             id, namedListeners, listeners, eventName, i, ln, listener, options;
 
         if (!managedListeners) {
-            return this;
+            return me;
         }
 
         if (object) {
@@ -451,7 +466,7 @@ Ext.define('Ext.mixin.Observable', {
                             options.delegate = listener.delegate;
                         }
 
-                        if (this.doRemoveListener(eventName, listener.fn, listener.scope, options, listener.order)) {
+                        if (me.doRemoveListener(eventName, listener.fn, listener.scope, options, listener.order)) {
                             i--;
                             ln--;
                         }
@@ -460,12 +475,12 @@ Ext.define('Ext.mixin.Observable', {
             }
 
             delete managedListeners[id];
-            return this;
+            return me;
         }
 
         for (id in managedListeners) {
             if (managedListeners.hasOwnProperty(id)) {
-                this.clearManagedListeners(id);
+                me.clearManagedListeners(id);
             }
         }
     },
@@ -474,7 +489,9 @@ Ext.define('Ext.mixin.Observable', {
      * @private
      */
     changeListener: function(actionFn, eventName, fn, scope, options, order) {
-        var eventNames,
+        var me = this,
+            eventNameMap = Ext.$eventNameMap,
+            eventNames,
             listeners,
             listenerOptionsRegex,
             actualOptions,
@@ -485,26 +502,31 @@ Ext.define('Ext.mixin.Observable', {
             if (typeof eventName !== 'string') {
                 for (i = 0,ln = eventName.length; i < ln; i++) {
                     name = eventName[i];
-
-                    actionFn.call(this, name, fn, scope, options, order);
+                    // This is inlined for performance
+                    name = eventNameMap[name] || (eventNameMap[name] = name.toLowerCase());
+                    actionFn.call(me, name, fn, scope, options, order);
                 }
 
-                return this;
+                return me;
             }
 
-            actionFn.call(this, eventName, fn, scope, options, order);
+            // This is inlined for performance
+            eventName = eventNameMap[eventName] || (eventNameMap[eventName] = eventName.toLowerCase());
+            actionFn.call(me, eventName, fn, scope, options, order);
         }
         else if (Ext.isArray(eventName)) {
             listeners = eventName;
 
             for (i = 0,ln = listeners.length; i < ln; i++) {
                 listener = listeners[i];
-
-                actionFn.call(this, listener.event, listener.fn, listener.scope, listener, listener.order);
+                eventName = listener.event;
+                // This is inlined for performance
+                eventName = eventNameMap[eventName] || (eventNameMap[eventName] = eventName.toLowerCase());
+                actionFn.call(me, eventName, listener.fn, listener.scope, listener, listener.order);
             }
         }
         else {
-            listenerOptionsRegex = this.listenerOptionsRegex;
+            listenerOptionsRegex = me.listenerOptionsRegex;
             options = eventName;
             eventNames = [];
             listeners = [];
@@ -523,6 +545,8 @@ Ext.define('Ext.mixin.Observable', {
                 }
 
                 if (!listenerOptionsRegex.test(name)) {
+                    // This is inlined for performance
+                    name = eventNameMap[name] || (eventNameMap[name] = name.toLowerCase());
                     valueType = typeof value;
 
                     if (valueType !== 'string' && valueType !== 'function') {
@@ -539,11 +563,11 @@ Ext.define('Ext.mixin.Observable', {
             }
 
             for (i = 0,ln = eventNames.length; i < ln; i++) {
-                actionFn.call(this, eventNames[i], listeners[i], scope, actualOptions, order);
+                actionFn.call(me, eventNames[i], listeners[i], scope, actualOptions, order);
             }
         }
 
-        return this;
+        return me;
     },
 
     /**
@@ -620,10 +644,10 @@ Ext.define('Ext.mixin.Observable', {
      * most element of the component. {@link Ext.Container} also has the `innerElement`
      * element which contains all children. In most cases `element` is adequate.
      *
-     * @param {String} [options.delegate] For {@link Ext.Elements, a simple selector to
-     * filter the target or look for a descendant of the target. See {@link Ext.dom.Query}
-     * for information about simple selectors.  Sencha Touch Components can use
-     * {@link Ext.ComponentQuery} selectors to filter child Components.
+     * @param {String} [options.delegate] For {@link Ext.dom.Element Elements}, a simple DOM selector to
+     * filter the target or look for a descendant of the target.
+     *
+     * Sencha Touch Components can use {@link Ext.ComponentQuery} selectors to filter child Components.
      *
      *     // Create a container with a two children; a button and a toolbar
      *     var container = Ext.create('Ext.Container', {
@@ -755,14 +779,15 @@ Ext.define('Ext.mixin.Observable', {
      * Removes all listeners for this object.
      */
     clearListeners: function() {
-        var usedSelectors = this.getUsedSelectors(),
-            dispatcher = this.getEventDispatcher(),
+        var me = this,
+            usedSelectors = me.getUsedSelectors(),
+            dispatcher = me.getEventDispatcher(),
             i, ln, selector;
 
         for (i = 0,ln = usedSelectors.length; i < ln; i++) {
             selector = usedSelectors[i];
 
-            dispatcher.clearListeners(this.observableType, selector, this);
+            dispatcher.clearListeners(me.observableType, selector, me);
         }
     },
 
@@ -778,11 +803,16 @@ Ext.define('Ext.mixin.Observable', {
     
     /**
      * Checks if all events, or a specific event, is suspended.
-     * @param {String} [event] The name of the specific event to check
+     * @param {String} [eventName] The name of the specific event to check
      * @return {Boolean} `true` if events are suspended
      */
-    isSuspended: function(event) {
-        return !!(this.eventFiringSuspended || this.suspendedEvents[event]);
+    isSuspended: function(eventName) {
+        var eventNameMap = Ext.$eventNameMap;
+        if (eventName) {
+            // This is inlined for performance
+            eventName = eventNameMap[eventName] || (eventNameMap[eventName] = eventName.toLowerCase());
+        }
+        return !!(this.eventFiringSuspended || this.suspendedEvents[eventName]);
     },
 
     /**
@@ -811,15 +841,18 @@ Ext.define('Ext.mixin.Observable', {
     suspendEvent: function() {
         var args = arguments,
             suspendedEvents = this.suspendedEvents,
+            eventNameMap = Ext.$eventNameMap,
             ln = args.length,
-            i, name;
+            i, eventName;
 
         for (i = 0; i < ln; i++) {
-            name = args[i];
-            if (!(name in suspendedEvents)) {
-                suspendedEvents[name] = 0;
+            eventName = args[i];
+            // This is inlined for performance
+            eventName = eventNameMap[eventName] || (eventNameMap[eventName] = eventName.toLowerCase());
+            if (!(eventName in suspendedEvents)) {
+                suspendedEvents[eventName] = 0;
             }
-            ++suspendedEvents[name];
+            ++suspendedEvents[eventName];
         }
     },
 
@@ -863,13 +896,16 @@ Ext.define('Ext.mixin.Observable', {
         var me = this,
             args = arguments,
             suspendedEvents = me.suspendedEvents,
+            eventNameMap = Ext.$eventNameMap,
             ln = args.length,
-            i, name;
+            i, eventName;
 
         for (i = 0; i < ln; i++) {
-            name = args[i];
-            if (suspendedEvents[name]) {
-                --suspendedEvents[name];
+            eventName = args[i];
+            // This is inlined for performance
+            eventName = eventNameMap[eventName] || (eventNameMap[eventName] = eventName.toLowerCase());
+            if (suspendedEvents[eventName]) {
+                --suspendedEvents[eventName];
             }
         }
 
@@ -884,11 +920,13 @@ Ext.define('Ext.mixin.Observable', {
      * @param {String/Array/Object} events Array of event names to relay.
      */
     relayEvents: function(object, events, prefix) {
-        var i, ln, oldName, newName;
+        var eventNameMap = Ext.$eventNameMap,
+            i, ln, oldName, newName;
 
         if (typeof prefix === 'undefined') {
             prefix = '';
         }
+        prefix = prefix.toLowerCase();
 
         if (typeof events === 'string') {
             events = [events];
@@ -897,6 +935,8 @@ Ext.define('Ext.mixin.Observable', {
         if (Ext.isArray(events)) {
             for (i = 0,ln = events.length; i < ln; i++) {
                 oldName = events[i];
+                // This is inlined for performance
+                oldName = eventNameMap[oldName] || (eventNameMap[oldName] = oldName.toLowerCase());
                 newName = prefix + oldName;
 
                 object.addListener(oldName, this.createEventRelayer(newName), this);
@@ -905,6 +945,8 @@ Ext.define('Ext.mixin.Observable', {
         else {
             for (oldName in events) {
                 if (events.hasOwnProperty(oldName)) {
+                    // This is inlined for performance
+                    oldName = eventNameMap[oldName] || (eventNameMap[oldName] = oldName.toLowerCase());
                     newName = prefix + events[oldName];
 
                     object.addListener(oldName, this.createEventRelayer(newName), this);
@@ -960,7 +1002,8 @@ Ext.define('Ext.mixin.Observable', {
      */
     enableBubble: function(events) {
         var isBubblingEnabled = this.isBubblingEnabled,
-            i, ln, name;
+            eventNameMap = Ext.$eventNameMap,
+            i, ln, eventName;
 
         if (!isBubblingEnabled) {
             isBubblingEnabled = this.isBubblingEnabled = {};
@@ -971,11 +1014,13 @@ Ext.define('Ext.mixin.Observable', {
         }
 
         for (i = 0,ln = events.length; i < ln; i++) {
-            name = events[i];
+            eventName = events[i];
+            // This is inlined for performance
+            eventName = eventNameMap[eventName] || (eventNameMap[eventName] = eventName.toLowerCase());
 
-            if (!isBubblingEnabled[name]) {
-                isBubblingEnabled[name] = true;
-                this.addListener(name, this.createEventBubbler(name), this);
+            if (!isBubblingEnabled[eventName]) {
+                isBubblingEnabled[eventName] = true;
+                this.addListener(eventName, this.createEventBubbler(eventName), this);
             }
         }
     },
@@ -995,10 +1040,12 @@ Ext.define('Ext.mixin.Observable', {
     },
 
     destroy: function() {
-        if (this.observableId) {
-            this.fireEvent('destroy', this);
-            this.clearListeners();
-            this.clearManagedListeners();
+        var me = this;
+
+        if (me.observableId) {
+            me.fireEvent('destroy', me);
+            me.clearListeners();
+            me.clearManagedListeners();
         }
     },
 

@@ -125,8 +125,8 @@ Ext.define('Ext.form.field.VTypes', (function(){
          * @param {String} value The email address
          * @return {Boolean} true if the RegExp test passed, and false if not.
          */
-        'email' : function(v){
-            return email.test(v);
+        'email' : function(value){
+            return email.test(value);
         },
         //<locale>
         /**
@@ -148,8 +148,8 @@ Ext.define('Ext.form.field.VTypes', (function(){
          * @param {String} value The URL
          * @return {Boolean} true if the RegExp test passed, and false if not.
          */
-        'url' : function(v){
-            return url.test(v);
+        'url' : function(value){
+            return url.test(value);
         },
         //<locale>
         /**
@@ -165,8 +165,8 @@ Ext.define('Ext.form.field.VTypes', (function(){
          * @param {String} value The value
          * @return {Boolean} true if the RegExp test passed, and false if not.
          */
-        'alpha' : function(v){
-            return alpha.test(v);
+        'alpha' : function(value){
+            return alpha.test(value);
         },
         //<locale>
         /**
@@ -187,8 +187,8 @@ Ext.define('Ext.form.field.VTypes', (function(){
          * @param {String} value The value
          * @return {Boolean} true if the RegExp test passed, and false if not.
          */
-        'alphanum' : function(v){
-            return alphanum.test(v);
+        'alphanum' : function(value){
+            return alphanum.test(value);
         },
         //<locale>
         /**

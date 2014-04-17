@@ -252,7 +252,7 @@ Ext.define('Ext.grid.locking.View', {
         // If we have already achieved our first layout, refresh immediately.
         // If we have bound to the Store before the first layout, then onBoxReady will
         // call doFirstRefresh
-        if (me.componentLayoutCounter) {
+        if (me.normalView.componentLayoutCounter) {
             Ext.suspendLayouts();
             me.normalView.doFirstRefresh(store);
             me.lockedView.doFirstRefresh(store);

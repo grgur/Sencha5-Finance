@@ -717,15 +717,14 @@ Ext.define('Ext.dd.DragDropManager', {
         overDragEl = !(dragCurrent.deltaX < 0 || dragCurrent.deltaY < 0);
         if (isTouch || (!me.notifyOccluded && (!Ext.supports.CSSPointerEvents || Ext.isIE10m || Ext.isOpera) && overDragEl)) {
             dragEl = dragCurrent.getDragEl();
-            oldDragElTop = dragEl.style.top;
-
-            // Only shift the drag el out of the way if it is directly underneath the mouse (or touchpoint)
+            // Temporarily hide the dragEl instead of moving it off the page. Moving the el off the page can cause
+            // problems when in an iframe with IE8 standards. See EXTJSIV-11728.
             if (overDragEl) {
-                dragEl.style.top = '-10000px';
+                dragEl.style.visibility = 'hidden';
             }
             e.target = document.elementFromPoint(currentX / zoom, currentY/ zoom);
             if (overDragEl) {
-                dragEl.style.top = oldDragElTop;
+                dragEl.style.visibility = 'visible';
             }
         }
 

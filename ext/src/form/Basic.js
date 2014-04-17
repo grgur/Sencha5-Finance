@@ -309,7 +309,7 @@ Ext.define('Ext.form.Basic', {
      */
 
     /**
-     * @cfg {String/HTMLElement/Ext.Element} waitMsgTarget
+     * @cfg {String/HTMLElement/Ext.dom.Element} waitMsgTarget
      * By default wait messages are displayed with Ext.MessageBox.wait. You can target a specific
      * element by passing it or its id or mask the form itself by passing in true.
      */
@@ -730,7 +730,7 @@ Ext.define('Ext.form.Basic', {
 
     /**
      * Loads an {@link Ext.data.Model} into this form by calling {@link #setValues} with the
-     * {@link Ext.data.Model#raw record data}. The fields in the model are mapped to 
+     * {@link Ext.data.Model#getData record data}. The fields in the model are mapped to 
      * fields in the form by matching either the {@link Ext.form.field.Base#name} or {@link Ext.Component#itemId}.  
      * See also {@link #trackResetOnLoad}. 
      * @param {Ext.data.Model} record The record to load
@@ -912,7 +912,7 @@ Ext.define('Ext.form.Basic', {
      */
     setValues: function(values) {
         var me = this,
-            v, vLen, val, field;
+            v, vLen, val;
 
         function setVal(fieldId, val) {
             var field = me.findField(fieldId);

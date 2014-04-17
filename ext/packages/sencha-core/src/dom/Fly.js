@@ -1,6 +1,6 @@
 /**
  * A flyweight Ext.dom.Element that can be dynamically attached to a DOM node.
- * In general this class should not be instantiated directly.  Use {@link Ext.fly}
+ * In general this class should not be instantiated directly.  Use {@link Ext#fly}
  * to create and retrieve Fly instances.
  */
 Ext.define('Ext.dom.Fly', {
@@ -71,7 +71,6 @@ Ext.define('Ext.dom.Fly', {
      * @property {Object} cache
      * Stores `Fly` instances keyed by their assigned or generated name.
      * @readonly
-     * @static
      * @private
      * @since 5.0.0
      */
@@ -99,10 +98,10 @@ Ext.define('Ext.dom.Fly', {
      * conflicts (e.g. internally Ext uses "_global").
      * @return {Ext.dom.Element} The shared Element object (or `null` if no matching
      * element was found).
-     * @static
      */
     Ext.fly = function(dom, named) {
-        var fly = null;
+        var fly = null,
+            nodeType;
 
         // name the flyweight after the calling method name if possible.
         named = named || Ext.fly.caller.$name || '_global';
@@ -110,20 +109,19 @@ Ext.define('Ext.dom.Fly', {
         dom = Ext.getDom(dom);
 
         if (dom) {
-            //<debug>
-            // only ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE 
-            // node types are allowed to be wrapped here
-            if (dom != window && dom.nodeType !== 1 && dom.nodeType !== 9 && dom.nodeType !== 11) {
-                Ext.log.error("Invalid nodeType for fly :" + dom.nodeType);
-            }
-            //</debug>
-            fly = Ext.cache[dom.id];
-            
-            // If there's no Element cached, or the element cached is for another DOM node, return a Fly
-            if (!fly || fly.dom !== dom) {
-                fly = flyweights[named] || (flyweights[named] = new Fly());
-                fly.dom = dom;
-                fly.isSynchronized = false;
+            nodeType = dom.nodeType;
+            // check if we have a valid node type or if the el is a window object before
+            // proceeding. This allows elements, document fragments, and document/window
+            // objects (even those inside iframes) to be wrapped.
+            if (Ext.Element.validNodeTypes[nodeType] || (!nodeType && (dom.window === dom))) {
+                fly = Ext.cache[dom.id];
+
+                // If there's no Element cached, or the element cached is for another DOM node, return a Fly
+                if (!fly || fly.dom !== dom) {
+                    fly = flyweights[named] || (flyweights[named] = new Fly());
+                    fly.dom = dom;
+                    fly.isSynchronized = false;
+                }
             }
         }
         return fly;

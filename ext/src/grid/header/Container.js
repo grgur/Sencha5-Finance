@@ -822,7 +822,7 @@ Ext.define('Ext.grid.header.Container', {
      * Shows the column menu under the target element passed. This method is used when the trigger element on the column
      * header is clicked on and rarely should be used otherwise.
      *
-     * @param {HTMLElement/Ext.Element} t The target to show the menu by
+     * @param {HTMLElement/Ext.dom.Element} t The target to show the menu by
      * @param {Ext.grid.header.Container} header The header container that the trigger was clicked on.
      */
     showMenuBy: function(t, header) {

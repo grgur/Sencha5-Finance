@@ -10,8 +10,7 @@
  *
  * - **{@link Ext.data.reader.Json JsonReader}**
  *
- *   - **{@link Ext.data.reader.Json#cfg-root root}**
- *   - **{@link Ext.data.reader.Json#idProperty idProperty}**
+ *   - **{@link Ext.data.reader.Json#cfg-rootProperty rootProperty}**
  *   - **{@link Ext.data.reader.Json#totalProperty totalProperty}**
  *
  * - **{@link Ext.data.proxy.Direct DirectProxy}**

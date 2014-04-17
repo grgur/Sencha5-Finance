@@ -183,7 +183,6 @@ Ext.define('Ext.data.identifier.Generator', {
      * @return {Number/String} The next id.
      * @method generate
      * @abstract
-     * @method generate
      */
 
     privates: {

@@ -85,14 +85,16 @@ Ext.define('Ext.app.bind.LinkStub', {
         linkData[me.name] = me.getValue();
         me.callParent();
     },
+    
+    privates: {
+        sort: function () {
+            var binding = this.binding;
 
-    sort: function () {
-        var binding = this.binding;
-
-        if (binding) {
-            // We want to make sure our binding reacts before we do so that it can provide
-            // whatever value we might need first.
-            this.scheduler.sortItem(binding);
+            if (binding) {
+                // We want to make sure our binding reacts before we do so that it can provide
+                // whatever value we might need first.
+                this.scheduler.sortItem(binding);
+            }
         }
     }
 });

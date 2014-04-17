@@ -48,7 +48,7 @@ Ext.define('Ext.dd.DragSource', {
 
     /**
      * Creates new drag-source.
-     * @param {String/HTMLElement/Ext.Element} el The container element or ID of it.
+     * @param {String/HTMLElement/Ext.dom.Element} el The container element or ID of it.
      * @param {Object} config (optional) Config object.
      */
     constructor: function(el, config) {

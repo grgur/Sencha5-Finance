@@ -24,6 +24,7 @@ Ext.define('Ext.app.domain.Global', {
      *      });
      *
      * @param {Object} listeners Config object containing listeners.
+     * @param {Object} controller A controller to force execution scope on
      *
      * @private
      */              

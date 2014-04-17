@@ -132,6 +132,7 @@ Ext.define('Ext.dashboard.Dashboard', {
             count = items.getCount(),
             index = columnIndex || 0,
             view = instance.id ? instance : me.createView(instance),
+            columnWidths = me.columnWidths,
             column;
 
         if (index >= count) {
@@ -150,6 +151,9 @@ Ext.define('Ext.dashboard.Dashboard', {
         }
 
         column = me.createColumn();
+        if (columnWidths) {
+            column.columnWidth = columnWidths[index];
+        }
         if (!column.items) {
             column.items = [];
         }

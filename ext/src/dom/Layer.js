@@ -1,5 +1,5 @@
 /**
- * An extended {@link Ext.Element} object that supports a shadow, constrain to viewport
+ * An extended {@link Ext.dom.Element} object that supports a shadow, constrain to viewport
  * and automatic maintaining of shadow position.
  */
 Ext.define('Ext.dom.Layer', {

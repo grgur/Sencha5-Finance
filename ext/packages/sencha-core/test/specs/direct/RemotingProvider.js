@@ -10,6 +10,10 @@ describe("Ext.direct.RemotingProvider", function() {
                 },{
                     len:  1,
                     name: "directFail"
+                }, {
+                    len: 0,
+                    name: 'directForm',
+                    formHandler: true
                 }],
                 
                 "TestAction.Foo": [{
@@ -50,6 +54,13 @@ describe("Ext.direct.RemotingProvider", function() {
                 };
             },
             
+            directForm: function(form) {
+                return {
+                    success: true,
+                    data: form
+                };
+            },
+            
             foo: function() {
                 return 'foo';
             },
@@ -72,13 +83,33 @@ describe("Ext.direct.RemotingProvider", function() {
         var callback = options.callback,
             scope = options.scope,
             transaction = options.transaction,
-            jsonData = options.jsonData,
-            tid = jsonData.tid,
-            action = jsonData.action,
-            method = jsonData.method,
-            arg = jsonData.data || [],
-            fn = directMethods[method],
-            success, result, response, xhr, opt;
+            isForm = options.form !== undefined,
+            isUpload = options.isUpload,
+            arg = {},
+            data, tid, action, method, arg, fn, success,
+            result, response, xhr, opt;
+        
+        if (isForm) {
+            data   = options.params;
+            tid    = data.extTID;
+            action = data.extAction;
+            method = data.extMethod;
+            
+            // Collect the input field values
+            Ext.fly(options.form).select('input').each(function(el, c, idx) { 
+                this[el.dom.name] = el.dom.value;
+            }, arg);
+            arg = [arg];
+        }
+        else {
+            data   = options.jsonData;
+            tid    = data.tid;
+            action = data.action;
+            method = data.method;
+            arg    = data.data || [];
+        }
+        
+        fn = directMethods[method];
         
         if (options.timeout === 666) {
             response = {
@@ -248,6 +279,10 @@ describe("Ext.direct.RemotingProvider", function() {
             if (event.status) {
                 this.echo = result;
             }
+        }
+        
+        function echoFormResult(request, result) {
+            this.echo = result.result;
         }
         
         function echoResultAndOptions(result, event, success, options) {
@@ -633,8 +668,122 @@ describe("Ext.direct.RemotingProvider", function() {
             });
         });
         
-        // @TODO
-        xdescribe("form calls:", function() {
+        describe("form calls:", function() {
+            var form;
+            
+            function createForm(config) {
+                config = Ext.apply({
+                    xtype: 'form',
+                    renderTo: document.body,
+                    width: 300,
+                    height: 200,
+                    layout: 'form',
+                    
+                    api: {
+                        // TODO The fn name should be TestAction.directForm
+                        // but Direct manager is not aware of the Providers'
+                        // namespaces. We gotta fix this.
+                        submit: 'Direct.foo.bar.TestAction.directForm'
+                    },
+                    
+                    items: [{
+                        xtype: 'hiddenfield',
+                        name: 'hidden_foo',
+                        value: 'hide the sacred foo from infoodels!'
+                    }, {
+                        xtype: 'textfield',
+                        name: 'overt_foo',
+                        value: 'behold the false, deceitful overt foo'
+                    }]
+                }, config);
+                
+                form = Ext.widget(config);
+            }
+            
+            beforeEach(function() {
+                createForm();
+            });
+            
+            afterEach(function() {
+                if (form) {
+                    form.destroy();
+                }
+            });
+            
+            describe("submit", function() {
+                it("should pass field values to direct fn", function() {
+                    runs(function() {
+                        form.submit({
+                            success: echoFormResult,
+                            scope: this
+                        });
+                    });
+                    
+                    // Callbacks are a bit slow but 2 sec is enough
+                    waitsFor(checkEcho, 'callback that never fired', 2000);
+                    
+                    runs(function() {
+                        expect(this.echo).toEqual({
+                            success: true,
+                            data: {
+                                hidden_foo: 'hide the sacred foo from infoodels!',
+                                overt_foo: 'behold the false, deceitful overt foo'
+                            }
+                        });
+                    });
+                });
+                
+                it("should pass extra params to direct fn", function() {
+                    runs(function() {
+                        form.submit({
+                            params: {
+                                simple_foo: 'barf!'
+                            },
+                            success: echoFormResult,
+                            scope: this
+                        });
+                    });
+                    
+                    waitsFor(checkEcho, 'callback that never fired', 2000);
+                    
+                    runs(function() {
+                        expect(this.echo).toEqual({
+                            success: true,
+                            data: {
+                                hidden_foo: 'hide the sacred foo from infoodels!',
+                                overt_foo: 'behold the false, deceitful overt foo',
+                                simple_foo: 'barf!'
+                            }
+                        });
+                    });
+                });
+                
+                it("should pass form baseParams to direct fn", function() {
+                    runs(function() {
+                        form.getForm().baseParams = {
+                            MEGA_FOO: 'ALL YOUR FOO ARE BELONG TO US!'
+                        };
+                        
+                        form.submit({
+                            success: echoFormResult,
+                            scope: this
+                        });
+                    });
+                    
+                    waitsFor(checkEcho, 'callback that never fired', 2000);
+                    
+                    runs(function() {
+                        expect(this.echo).toEqual({
+                            success: true,
+                            data: {
+                                hidden_foo: 'hide the sacred foo from infoodels!',
+                                overt_foo: 'behold the false, deceitful overt foo',
+                                MEGA_FOO: 'ALL YOUR FOO ARE BELONG TO US!'
+                            }
+                        });
+                    });
+                });
+            });
         });
     });
 });

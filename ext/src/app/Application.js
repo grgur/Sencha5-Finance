@@ -385,9 +385,8 @@ Ext.define('Ext.app.Application', {
     onBeforeLaunch: function() {
         var me = this,
             History = Ext.util.History,
-            token = History.getToken(),
             defaultToken = me.getDefaultToken(),
-            controllers, c, cLen, controller;
+            controllers, c, cLen, controller, token;
 
         if (me.getEnableQuickTips()) {
             me.initQuickTips();
@@ -409,14 +408,14 @@ Ext.define('Ext.app.Application', {
             controller.onLaunch(me);
         }
 
+        if (!History.ready) {
+            History.init();
+        }
+        token = History.getToken();
         if (token) {
             me.redirectTo(token, true);
         } else if (defaultToken) {
             History.add(defaultToken);
-        }
-
-        if (!History.ready) {
-            History.init();
         }
     },
 

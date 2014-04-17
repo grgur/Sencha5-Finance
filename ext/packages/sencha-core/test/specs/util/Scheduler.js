@@ -22,8 +22,10 @@ describe('Ext.util.Scheduler', function () {
                 log.push(this.name);
             },
 
-            sort: function () {
-                this.scheduler.sortItems(this.depends);
+            privates: {
+                sort: function () {
+                    this.scheduler.sortItems(this.depends);
+                }
             }
         });
     }

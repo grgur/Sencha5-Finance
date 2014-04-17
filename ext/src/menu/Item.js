@@ -358,7 +358,7 @@ Ext.define('Ext.menu.Item', {
 
         if (me.activated && (!menu.rendered || !menu.isVisible())) {
             me.parentMenu.activeChild = menu;
-            menu.parentItem = me;
+            menu.ownerItem = me;
             menu.parentMenu = me.parentMenu;
             menu.constrainTo = document.body;
             menu.showBy(me, me.menuAlign);
@@ -410,15 +410,17 @@ Ext.define('Ext.menu.Item', {
         me.callParent(arguments);
     },
 
-    onClick: function(e) {
+    onClick: function (e) {
         var me = this,
-            clickHideDelay = me.clickHideDelay;
+            clickHideDelay = me.clickHideDelay,
+            browserEvent = e.browserEvent,
+            preventDefault;
 
         if (!me.href || me.disabled) {
             e.stopEvent();
         }
 
-        if (me.disabled) {
+        if (me.disabled || me.handlingClick) {
             return;
         }
 
@@ -440,6 +442,27 @@ Ext.define('Ext.menu.Item', {
 
         Ext.callback(me.handler, me.scope, [me, e], 0, me);
         me.fireEvent('click', me, e);
+
+        // If there's an href, invoke dom.click() after we've fired the click event in case a click
+        // listener wants to handle it.
+        //
+        // Note that we're having to do this because the key navigation code will blindly call stopEvent()
+        // on all key events that it handles!
+        //
+        // But, we need to check the browser event object that was passed to the listeners to determine if
+        // the default action has been prevented.  If so, we don't want to honor the .href config.
+        if (Ext.isIE9m) {
+            // Here we need to invert the value since it's meaning is the opposite of defaultPrevented.
+            preventDefault = (browserEvent.returnValue === false) ? true : false;
+        } else {
+            preventDefault = !!browserEvent.defaultPrevented;
+        }
+
+        if (me.href && !preventDefault) {
+            me.handlingClick = true;
+            me.itemEl.dom.click();
+            delete me.handlingClick;
+        }
 
         if (!me.hideOnClick) {
             me.focus();
@@ -571,7 +594,6 @@ Ext.define('Ext.menu.Item', {
             arrowEl = me.arrowEl;
             
         if (oldMenu) {
-            delete oldMenu.parentItem;
             delete oldMenu.parentMenu;
             delete oldMenu.ownerItem;
             

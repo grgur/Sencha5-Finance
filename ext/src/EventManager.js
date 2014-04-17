@@ -22,19 +22,19 @@ Ext.define('Ext.EventManager', {
 
     /**
      * Appends an event handler to an element.  The shorthand version {@link #on} is equivalent.
-     * Typically you will use {@link Ext.Element#addListener} directly on an Element in favor of
+     * Typically you will use {@link Ext.dom.Element#addListener} directly on an Element in favor of
      * calling this version.
      *
      * {@link Ext.EventManager#on} is an alias for {@link Ext.EventManager#addListener}.
      *
-     * @param {String/Ext.Element/HTMLElement/Window} el The html element or id to assign the event handler to.
+     * @param {String/Ext.dom.Element/HTMLElement/Window} el The html element or id to assign the event handler to.
      *
      * @param {String} eventName The name of the event to listen for.
      * May also be an object who's property names are event names.
      *
      * @param {Function/String} [handler] The handler function the event invokes. A String parameter
      * is assumed to be method name in `scope` object, or Element object if no scope is provided.
-     * @param {Ext.EventObject} handler.event The {@link Ext.EventObject EventObject} describing the event.
+     * @param {Ext.event.Event} handler.event The {@link Ext.event.Event EventObject} describing the event.
      * @param {Ext.dom.Element} handler.target The Element which was the target of the event.
      * Note that this may be filtered by using the `delegate` option.
      * @param {Object} handler.options The options object from the addListener call.
@@ -43,7 +43,7 @@ Ext.define('Ext.EventManager', {
      * Defaults to the Element.
      *
      * @param {Object} [options] An object containing handler configuration properties.
-     * This may contain any of the following properties (See {@link Ext.Element#addListener}
+     * This may contain any of the following properties (See {@link Ext.dom.Element#addListener}
      * for examples of how to use these options.):
      * @param {Object} options.scope The scope (`this` reference) in which the handler function is executed. Defaults to the Element.
      * @param {String} options.delegate A simple selector to filter the target or look for a descendant of the target. See {@link Ext.dom.Query} for
@@ -51,7 +51,7 @@ Ext.define('Ext.EventManager', {
      * @param {Boolean} options.stopEvent True to stop the event. That is stop propagation, and prevent the default action.
      * @param {Boolean} options.preventDefault True to prevent the default action
      * @param {Boolean} options.stopPropagation True to prevent event propagation
-     * @param {Boolean} options.normalized False to pass a browser event to the handler function instead of an Ext.EventObject
+     * @param {Boolean} options.normalized False to pass a browser event to the handler function instead of an Ext.event.Event
      * @param {Number} options.delay The number of milliseconds to delay the invocation of the handler after te event fires.
      * @param {Boolean} options.single True to add a handler to handle just the next firing of the event, and then remove itself.
      * @param {Number} options.buffer Causes the handler to be scheduled to run in an {@link Ext.util.DelayedTask} delayed
@@ -66,7 +66,7 @@ Ext.define('Ext.EventManager', {
     addListener: function(element, eventName, fn, scope, options) {
         //<debug>
         Ext.log.warn("Ext.EventManager is deprecated. " +
-            "Use Ext.Element#addListener to attach an event listener.");
+            "Use Ext.dom.Element#addListener to attach an event listener.");
         //</debug>
         Ext.get(element).addListener(eventName, fn, scope, options);
     },
@@ -76,7 +76,7 @@ Ext.define('Ext.EventManager', {
      * passes new viewport width and height to handlers.
      * @param {Function} fn      The handler function the window resize event invokes.
      * @param {Object}   scope   The scope (<code>this</code> reference) in which the handler function executes. Defaults to the browser window.
-     * @param {Boolean}  [options] Options object as passed to {@link Ext.Element#addListener}
+     * @param {Boolean}  [options] Options object as passed to {@link Ext.dom.Element#addListener}
      * @deprecated 5.0.0
      */
     onWindowResize: function(fn, scope, options) {
@@ -91,7 +91,7 @@ Ext.define('Ext.EventManager', {
      * Adds a listener to be notified when the browser window is unloaded.
      * @param {Function} fn      The handler function the window unload event invokes.
      * @param {Object}   scope   The scope (<code>this</code> reference) in which the handler function executes. Defaults to the browser window.
-     * @param {Boolean}  options Options object as passed to {@link Ext.Element#addListener}
+     * @param {Boolean}  options Options object as passed to {@link Ext.dom.Element#addListener}
      * @deprecated 5.0.0
      */
     onWindowUnload: function(fn, scope, options) {
@@ -104,9 +104,9 @@ Ext.define('Ext.EventManager', {
 
     /**
      * Recursively removes all previous added listeners from an element and its children.
-     * Typically you will use {@link Ext.Element#clearListener} directly on an Element
+     * Typically you will use {@link Ext.dom.Element#clearListeners} directly on an Element
      * in favor of calling this method.
-     * @param {String/Ext.Element/HTMLElement/Window} el The id or html element from which
+     * @param {String/Ext.dom.Element/HTMLElement/Window} el The id or html element from which
      * to remove all event handlers.
      * @param {String} eventName (optional) The name of the event.
      * @deprecated 5.0.0
@@ -121,8 +121,8 @@ Ext.define('Ext.EventManager', {
 
     /**
      * Removes all event handers from an element.  Typically you will use {@link
-     * Ext.Element#clearListeners} directly on an Element in favor of calling this method.
-     * @param {String/Ext.Element/HTMLElement/Window} el The id or html element from which
+     * Ext.dom.Element#clearListeners} directly on an Element in favor of calling this method.
+     * @param {String/Ext.dom.Element/HTMLElement/Window} el The id or html element from which
      * to remove all event handlers.
      * @deprecated 5.0.0
      */
@@ -136,11 +136,11 @@ Ext.define('Ext.EventManager', {
 
     /**
      * Removes an event handler from an element.  The shorthand version {@link #un} is equivalent.  Typically
-     * you will use {@link Ext.Element#removeListener} directly on an Element in favor of calling this version.
+     * you will use {@link Ext.dom.Element#removeListener} directly on an Element in favor of calling this version.
      *
      * {@link Ext.EventManager#on} is an alias for {@link Ext.EventManager#addListener}.
      *
-     * @param {String/Ext.Element/HTMLElement/Window} el The id or html element from which to remove the listener.
+     * @param {String/Ext.dom.Element/HTMLElement/Window} el The id or html element from which to remove the listener.
      * @param {String} eventName The name of the event.
      * @param {Function} fn The handler function to remove. **This must be a reference to the function passed
      * into the {@link #addListener} call.**
@@ -150,7 +150,7 @@ Ext.define('Ext.EventManager', {
     removeListener: function(element, eventName, fn, scope, options) {
         //<debug>
         Ext.log.warn("Ext.EventManager is deprecated. " +
-            "Use Ext.Element#removeListener to remove an event listener.");
+            "Use Ext.dom.Element#removeListener to remove an event listener.");
         //</debug>
         Ext.get(element).removeListener(eventName, fn, scope, options);
     },
@@ -244,7 +244,7 @@ Ext.define('Ext.EventManager', {
 
     /**
      * Get the id of the element. If one has not been assigned, automatically assign it.
-     * @param {HTMLElement/Ext.Element} element The element to get the id for.
+     * @param {HTMLElement/Ext.dom.Element} element The element to get the id for.
      * @return {String} id
      * @deprecated 5.0.0
      */

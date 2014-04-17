@@ -6,12 +6,6 @@
  */
 Ext.define('Ext.slider.Thumb', {
     requires: ['Ext.dd.DragTracker', 'Ext.util.Format'],
-    /**
-     * @private
-     * @property {Number} topThumbZIndex
-     * The number used internally to set the z index of the top thumb (see promoteThumb for details)
-     */
-    topZIndex: 10000,
 
     /**
      * @cfg {Ext.slider.MultiSlider} slider (required)
@@ -102,22 +96,6 @@ Ext.define('Ext.slider.Thumb', {
                 to: to
             });
         }
-    },
-
-    /**
-     * @private
-     * Bring thumb dom element to front.
-     */
-    bringToFront: function() {
-        this.el.setStyle('zIndex', this.topZIndex);
-    },
-
-    /**
-     * @private
-     * Send thumb dom element to back.
-     */
-    sendToBack: function() {
-        this.el.setStyle('zIndex', '');
     },
 
     /**

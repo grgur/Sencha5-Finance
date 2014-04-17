@@ -39,13 +39,13 @@ Ext.define('Ext.window.Window', {
     /**
      * @cfg {Number} x
      * The X position of the left edge of the window on initial showing. Defaults to centering the Window within the
-     * width of the Window's container {@link Ext.Element Element} (The Element that the Window is rendered to).
+     * width of the Window's container {@link Ext.dom.Element Element} (The Element that the Window is rendered to).
      */
 
     /**
      * @cfg {Number} y
      * The Y position of the top edge of the window on initial showing. Defaults to centering the Window within the
-     * height of the Window's container {@link Ext.Element Element} (The Element that the Window is rendered to).
+     * height of the Window's container {@link Ext.dom.Element Element} (The Element that the Window is rendered to).
      */
 
     /**
@@ -55,7 +55,7 @@ Ext.define('Ext.window.Window', {
      */
 
     /**
-     * @cfg {String/Ext.Element} [animateTarget=null]
+     * @cfg {String/Ext.dom.Element} [animateTarget=null]
      * Id or element from which the window should animate while opening.
      */
 
@@ -511,6 +511,7 @@ Ext.define('Ext.window.Window', {
     beforeDestroy: function() {
         var me = this;
         if (me.rendered) {
+            Ext.un('resize', me.onWindowResize, me);
             delete me.animateTarget;
             me.hide();
             Ext.destroy(
@@ -563,7 +564,7 @@ Ext.define('Ext.window.Window', {
     /**
      * @private
      * Returns the focus holder element associated with this Window. By default, this is the Window's element.
-     * @returns {Ext.Element/Ext.Component} the focus holding element or Component.
+     * @returns {Ext.dom.Element/Ext.Component} the focus holding element or Component.
      */
     getFocusEl: function() {
         return this.getDefaultFocus();

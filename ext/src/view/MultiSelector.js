@@ -2,6 +2,14 @@
  * This component provides a grid holding selected items from a second store of potential
  * members. The `store` of this component represents the selected items. The "search store"
  * represents the potentially selected items.
+ *
+ * While this component is a grid and so you can configure `columns`, it is best to leave
+ * that to this class in its `initComponent` method. That allows this class to create the
+ * extra column that allows the user to remove rows. Instead use `{@link #fieldName}` and
+ * `{@link #fieldTitle}` to configure the primary column's `dataIndex` and column `text`,
+ * respectively.
+ *
+ * @since 5.0.0
  */
 Ext.define('Ext.view.MultiSelector', {
     extend: 'Ext.grid.Panel',
@@ -9,8 +17,6 @@ Ext.define('Ext.view.MultiSelector', {
     xtype: 'multiselector',
 
     config: {
-        field: 'name',
-
         /**
          * @cfg {Object} search
          * This object configures the search popup component. By default this contains the
@@ -19,24 +25,58 @@ Ext.define('Ext.view.MultiSelector', {
          */
         search: {
             xtype: 'multiselector-search',
+            width: 200,
+            height: 200,
             store: {
                 autoLoad: true
             }
         }
     },
 
+    /**
+     * @cfg {String} [fieldName="name"]
+     * The name of the data field to display in the primary column of the grid.
+     * @since 5.0.0
+     */
+    fieldName: 'name',
+
+    /**
+     * @cfg {String} [fieldTitle]
+     * The text to display in the column header for the primary column of the grid.
+     * @since 5.0.0
+     */
+    fieldTitle: null,
+
+    /**
+     * @cfg {String} removeRowText
+     * The text to display in the "remove this row" column. By default this is a Unicode
+     * "X" looking glyph.
+     * @since 5.0.0
+     */
     removeRowText: '&#10006',
+
+    /**
+     * @cfg {String} removeRowTip
+     * The tooltip to display when the user hovers over the remove cell.
+     * @since 5.0.0
+     */
     removeRowTip: 'Remove this item',
+
     emptyText: 'Nothing selected',
+
+    /**
+     * @cfg {String} addToolText
+     * The tooltip to display when the user hovers over the "+" tool in the panel header.
+     * @since 5.0.0
+     */
     addToolText: 'Search for items to add',
-    searchWidth: 200,
-    searchHeight: 200,
 
     initComponent: function () {
         var me = this,
             emptyText = me.emptyText,
             store = me.getStore(),
             search = me.getSearch(),
+            fieldTitle = me.fieldTitle,
             searchStore, model;
 
         //<debug>
@@ -53,7 +93,7 @@ Ext.define('Ext.view.MultiSelector', {
         }
 
         if (!store) {
-            me.store = store = {
+            me.store = {
                 model: model
             };
         }
@@ -66,9 +106,9 @@ Ext.define('Ext.view.MultiSelector', {
         }
 
         if (!me.columns) {
-            me.hideHeaders = true;
+            me.hideHeaders = !fieldTitle;
             me.columns = [
-                { dataIndex: me.getField(), flex: 1 },
+                { text: fieldTitle, dataIndex: me.fieldName, flex: 1 },
                 me.makeRemoveRowColumn()
             ];
         }
@@ -94,6 +134,7 @@ Ext.define('Ext.view.MultiSelector', {
 
         return {
             width: 22,
+            menuDisabled: true,
             processEvent: me.processRowEvent.bind(me),
             renderer: me.renderRemoveRow,
             updater: Ext.emptyFn,
@@ -145,10 +186,8 @@ Ext.define('Ext.view.MultiSelector', {
             if (!searchPopup) {
                 searchPopup = Ext.merge({
                     owner: me,
-                    field: me.getField(),
-                    floating: true,
-                    width: me.searchWidth,
-                    height: me.searchHeight
+                    field: me.fieldName,
+                    floating: true
                 }, me.getSearch());
                 me.searchPopup = searchPopup = me.add(searchPopup);
             }

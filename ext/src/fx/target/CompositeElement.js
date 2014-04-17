@@ -2,7 +2,7 @@
  * @class Ext.fx.target.CompositeElement
  * 
  * This class represents a animation target for a {@link Ext.CompositeElement}. It allows
- * each {@link Ext.Element} in the group to be animated as a whole. In general this class will not be
+ * each {@link Ext.dom.Element} in the group to be animated as a whole. In general this class will not be
  * created directly, the {@link Ext.CompositeElement} will be passed to the animation and
  * and the appropriate target will be created.
  */

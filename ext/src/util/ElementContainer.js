@@ -1,6 +1,6 @@
 /**
  * This mixin enables classes to declare relationships to child elements and provides the
- * mechanics for acquiring the {@link Ext.Element elements} and storing them on an object
+ * mechanics for acquiring the {@link Ext.dom.Element elements} and storing them on an object
  * instance as properties.
  *
  * This class is used by {@link Ext.Component components} and {@link Ext.layout.container.Container container layouts} to
@@ -34,7 +34,7 @@
  *      - `id`: The full id of the child element.
  *      - `itemId`: The suffix part of the id to which "componentId-" is prepended.
  *      - `select`: A selector that will be passed to {@link Ext.dom.Element#select}.
- *      - `selectNode`: A selector that will be passed to {@link Ext.Element#static-method-selectNode}.
+ *      - `selectNode`: A selector that will be passed to {@link Ext.dom.Element#method-selectNode}.
  * 
  * The example above could have used this instead to achieve the same result:
  *
@@ -43,7 +43,7 @@
  *      ]
  *
  * When using `select`, the property will be an instance of {@link Ext.CompositeElement}. In
- * all other cases, the property will be an {@link Ext.Element} or `null` if not found.
+ * all other cases, the property will be an {@link Ext.dom.Element} or `null` if not found.
  *
  * Care should be taken when using `select` or `selectNode` to find child elements. The
  * following issues should be considered:

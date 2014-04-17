@@ -6,6 +6,7 @@
  */
 Ext.define('Ext.tip.Tip', {
     extend: 'Ext.panel.Panel',
+    alias: 'widget.tip',
 
     alternateClassName: 'Ext.Tip',
 

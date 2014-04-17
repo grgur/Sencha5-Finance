@@ -268,7 +268,7 @@ Ext.define('Ext.data.operation.Operation', {
      * 
      * @param {Ext.data.ResultSet} resultSet The result set
      * @param {Ext.data.Request} request The request
-     * @param {Ext.data.Response} response The response
+     * @param {Object} response The response
      * @protected
      */
     doProcess: function(resultSet, request, response) {

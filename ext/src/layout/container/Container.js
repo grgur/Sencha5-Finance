@@ -67,7 +67,7 @@ Ext.define('Ext.layout.container.Container', {
 
     childEls: [
         /**
-         * @property {Ext.Element} overflowPadderEl
+         * @property {Ext.dom.Element} overflowPadderEl
          * The element used to correct body padding during overflow.
          */
         'overflowPadderEl'
@@ -394,7 +394,7 @@ Ext.define('Ext.layout.container.Container', {
      *
      * May be overridden in layout managers which implement an inner element.
      *
-     * @return {Ext.Element}
+     * @return {Ext.dom.Element}
      */
     getRenderTarget: function() {
         return this.owner.getTargetEl();
@@ -405,7 +405,7 @@ Ext.define('Ext.layout.container.Container', {
      *
      * May be overridden in Component layout managers which implement a {@link #getRenderTarget component render target} which must only
      * contain child components.
-     * @return {Ext.Element}
+     * @return {Ext.dom.Element}
      */
     getElementTarget: function() {
         return this.getRenderTarget();
@@ -484,7 +484,7 @@ Ext.define('Ext.layout.container.Container', {
 
     /**
      * Returns the owner component's resize element.
-     * @return {Ext.Element}
+     * @return {Ext.dom.Element}
      */
     getTarget: function() {
         return this.owner.getTargetEl();

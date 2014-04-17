@@ -1,3 +1,7 @@
+/**
+ * @private
+ * @class Ext.app.bindinspector.Environment
+ */
 Ext.define('Ext.app.bindinspector.Environment', {
     requires: [
         'Ext.util.Collection'

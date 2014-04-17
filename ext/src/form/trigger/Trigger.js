@@ -1,4 +1,5 @@
 /**
+ * @class Ext.form.trigger.Trigger
  * Base class for {@link Ext.form.field.Text Text Field} triggers
  */
 Ext.define('Ext.form.trigger.Trigger', {
@@ -45,8 +46,7 @@ Ext.define('Ext.form.trigger.Trigger', {
 
     /**
      * @cfg {Boolean} hidden
-     * `true` to initially render the trigger hidden.  Hidden triggers can be shown using
-     * {@link Ext.form.field.Text#setTriggerVisible setTriggerVisible}.
+     * `true` to initially render the trigger hidden.
      */
     hidden: false,
 
@@ -71,7 +71,7 @@ Ext.define('Ext.form.trigger.Trigger', {
     /**
      * @cfg {Number} width The trigger's width, in pixels. Typically this is not needed
      * as the trigger width is normally determined by the stylesheet, (see {@link
-     * Ext.form.field.Text#extjs-text-field extjs-text-field}).
+     * Ext.form.field.Text#$form-trigger-width extjs-text-field} or {@link or Ext.form.field.Text#$extjs-text-field-ui}).
      */
 
     /**
@@ -279,6 +279,11 @@ Ext.define('Ext.form.trigger.Trigger', {
         }
     },
 
+    // "this" refers to our owning input field.
+    resolveListenerScope: function(scope) {
+        return this.field.resolveListenerScope(scope);
+    },
+
     onMouseUp: function() {
         if (this.focusFieldOnClick) {
             this.field.inputEl.focus();
@@ -361,6 +366,16 @@ Ext.define('Ext.form.trigger.Trigger', {
             extraCls: me.extraCls,
             baseCls: me.baseCls
         });
+    },
+
+    setHidden: function (hidden) {
+        if (hidden !== this.hidden) {
+            this[hidden ? 'hide' : 'show']();
+        }
+    },
+
+    setVisible: function (visible) {
+        this.setHidden(!visible);
     },
 
     /**

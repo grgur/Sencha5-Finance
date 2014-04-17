@@ -215,8 +215,11 @@ Ext.define('Ext.data.ProxyStore', {
 
 
         /**
-         * Temporary cache in which removed model instances are kept until successfully synchronised with a Proxy,
-         * at which point this is cleared.
+         * Temporary cache in which removed model instances are kept until successfully
+         * synchronised with a Proxy, at which point this is cleared.
+         *
+         * This cache is maintained unless you set `trackRemoved` to `false`.
+         *
          * @protected
          * @property {Ext.data.Model[]} removed
          */
@@ -227,7 +230,7 @@ Ext.define('Ext.data.ProxyStore', {
         me.unblockLoad();
 
         // <debug>
-        if (!me.getModel() && me.useModelWarning !== false) {
+        if (!me.getModel() && me.useModelWarning !== false && me.getStoreId() !== 'ext-empty-store') {
             // There are a number of ways things could have gone wrong, try to give as much information as possible
             var logMsg = [
                 Ext.getClassName(me) || 'Store',
@@ -331,19 +334,14 @@ Ext.define('Ext.data.ProxyStore', {
             proxy = Ext.createByAlias('proxy.memory');
         }
         
+        if (!me.disableMetaChangeEvent) {
+             proxy.on('metachange', me.onMetaChange, me); 
+        }
+
         return proxy;
     },
 
     updateTrackRemoved: function (track) {
-        /**
-         * Temporary cache in which removed model instances are kept until successfully
-         * synchronised with a Proxy, at which point this is cleared.
-         *
-         * This cache is maintained unless you set `trackRemoved` to `false`.
-         *
-         * @protected
-         * @property {Ext.data.Model[]} removed
-         */
         this.removed = track ? [] : null;
     },
 
@@ -521,7 +519,7 @@ Ext.define('Ext.data.ProxyStore', {
     },
 
     /**
-     * Returns all Model instances that have been updated in the Store but not yet synchronized with the Proxy
+     * Returns all valid, non-phantom Model instances that have been updated in the Store but not yet synchronized with the Proxy.
      * @return {Ext.data.Model[]} The updated Model instances
      */
     getUpdatedRecords: function() {

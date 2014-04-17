@@ -23,7 +23,7 @@ Ext.define('Ext.fx.target.Target', {
 
     /**
      * Creates new Target.
-     * @param {Ext.Component/Ext.Element/Ext.draw.Sprite} target The object to be animated
+     * @param {Ext.Component/Ext.dom.Element/Ext.draw.sprite.Sprite} target The object to be animated
      */
     constructor: function(target) {
         this.target = target;

@@ -113,7 +113,7 @@ Ext.define('Ext.util.Sorter', {
          * content of the collection or array, and not based on the content at the time of
          * this call.
          *
-         * @param {Ext,util.Sorter[]/Ext.util.Collection} sorters The `Sorter` instances.
+         * @param {Ext.util.Sorter[]/Ext.util.Collection} sorters The `Sorter` instances.
          * @param [nextFn] The next comparator function to call if all the `sorters` end
          * with equality.
          * @return {Function} The comparator function.

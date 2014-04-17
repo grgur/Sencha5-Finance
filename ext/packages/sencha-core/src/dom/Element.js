@@ -1,4 +1,9 @@
 /**
+ * @class Ext.dom.Element
+ * @alternateClassName Ext.Element
+ * @mixins Ext.util.Positionable
+ * @mixins Ext.mixin.Observable
+ *
  * Encapsulates a DOM element, adding simple DOM manipulation facilities, normalizing for browser differences.
  *
  * ## Usage
@@ -60,7 +65,7 @@
  * The query selection methods can be used even if you don't have a Ext.dom.Element to
  * start with For example to select an array of all HTMLElements in the document that match the
  * selector '.foo', simply wrap the document object in an Ext.dom.Element instance using
- * {@link Ext.fly}:
+ * {@link Ext#fly}:
  * 
  *     Ext.fly(document).query('.foo');
  */
@@ -228,14 +233,14 @@ Ext.define('Ext.dom.Element', function(Element) {
         /**
          * @constructor
          * Creates new Element directly by passing an id or the HTMLElement.  This
-         * constructor should not be called directly.  Always use {@link Ext.get Ext.get()}
-         * or {@link Ext.get Ext.fly()} instead.
+         * constructor should not be called directly.  Always use {@link Ext#get Ext.get()}
+         * or {@link Ext#fly Ext#fly()} instead.
          * 
          * In older versions of Ext JS and Sencha Touch this constructor checked to see if
          * there was already an instance of this element in the cache and if so, returned
          * the same instance. As of version 5 this behavior has been removed in order to
          * avoid a redundant cache lookup since the most common path is for the Element
-         * constructor to be called from {@link Ext.get Ext.get()}, which has already
+         * constructor to be called from {@link Ext#get Ext.get()}, which has already
          * checked for a cache entry.
          * 
          * Correct way of creating a new Ext.dom.Element (or retrieving it from the cache):
@@ -256,7 +261,7 @@ Ext.define('Ext.dom.Element', function(Element) {
          * instance to avoid allocating an extra Ext.dom.Element instance.  If, however,
          * the Element instance has already been cached by a previous call to Ext.get(),
          * then Ext.fly() will return the cached Element instance.  For more info see
-         * {@link Ext.fly}.
+         * {@link Ext#fly}.
          *     
          * @param {String/HTMLElement} element
          * @private
@@ -276,13 +281,6 @@ Ext.define('Ext.dom.Element', function(Element) {
                 return null;
             }
             //<debug>
-            else {
-                // only ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE 
-                // node types are allowed to be wrapped here
-                if (dom != WIN && dom.nodeType !== 1 && dom.nodeType !== 9 && dom.nodeType !== 11) {
-                    Ext.log.error("Invalid nodeType for element : " + dom.nodeType);
-                }
-            }
             if (Ext.cache[dom.id]) {
                 Ext.Error.raise("Element cache already contains an entry for id '" +
                     dom.id + "'.  Use Ext.get() to create or retrieve Element instances.");
@@ -358,6 +356,7 @@ Ext.define('Ext.dom.Element', function(Element) {
             /**
              * @property {Boolean}
              * @private
+             * @static
              * True to globally disable the delegated event system.  The results of
              * setting this to false are unpredictable since the Gesture publisher relies
              * on delegated events in order to work correctly.  Disabling delegated events
@@ -365,6 +364,18 @@ Ext.define('Ext.dom.Element', function(Element) {
              * Use at your own risk!
              */
             useDelegatedEvents: true,
+
+            /**
+             * @property {Object}
+             * @private
+             * @static
+             * The list of valid nodeTypes that are allowed to be wrapped
+             */
+            validNodeTypes: {
+                1: 1, // ELEMENT_NODE
+                9: 1, // DOCUMENT_NODE
+                11: 1 // DOCUMENT_FRAGMENT_NODE
+            },
 
             /**
              * Test if size has a unit, otherwise appends the passed unit string, or the default for this Element.
@@ -564,7 +575,7 @@ Ext.define('Ext.dom.Element', function(Element) {
             get: function(el) {
                 var me = this,
                     cache = Ext.cache,
-                    dom, id, entry, data, docEl, winEl;
+                    nodeType, dom, id, entry, data, docEl, winEl;
 
                 if (!el) {
                     return null;
@@ -645,8 +656,12 @@ Ext.define('Ext.dom.Element', function(Element) {
                     return me.winEl;
                 }
 
-                // Implements a DOM listener interface
-                if (el.addEventListener || el.attachEvent) {
+                nodeType = el.nodeType;
+
+                // check if we have a valid node type or if the el is a window object before
+                // proceeding. This allows elements, document fragments, and document/window
+                // objects (even those inside iframes) to be wrapped.
+                if (me.validNodeTypes[nodeType] || (!nodeType && (el.window === el))) {
                     id = el.id;
 
                     if (cache.hasOwnProperty(id)) {
@@ -3604,7 +3619,7 @@ Ext.define('Ext.dom.Element', function(Element) {
 
     /**
      * Generates unique ids. If the element already has an id, it is unchanged
-     * @param {Object/HTMLElement/Ext.Element} [obj] The element to generate an id for
+     * @param {Object/HTMLElement/Ext.dom.Element} [obj] The element to generate an id for
      * @param {String} prefix (optional) Id prefix (defaults "ext-gen")
      * @return {String} The generated Id.
      */
@@ -3780,7 +3795,7 @@ Ext.define('Ext.dom.Element', function(Element) {
          * __Note:__ the dom node to be found actually needs to exist (be rendered, etc)
          * when this method is called to be successful.
          * 
-         * @param {String/HTMLElement/Ext.Element} el
+         * @param {String/HTMLElement/Ext.dom.Element} el
          * @return {HTMLElement}
          */
         getDom: function(el) {

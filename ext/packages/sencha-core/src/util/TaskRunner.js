@@ -78,7 +78,7 @@ Ext.define('Ext.util.TaskRunner', {
     /**
      * @cfg {Boolean} [fireIdleEvent=true]
      * This may be configured `false` to inhibit firing of the {@link
-     * Ext.GlobalEvents#idleEvent idle event} after task invocation.
+     * Ext.GlobalEvents#idle idle event} after task invocation.
      */
 
     /**

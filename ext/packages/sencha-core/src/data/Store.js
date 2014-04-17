@@ -142,8 +142,7 @@
  *
  * Filtering and sorting after the Store has been instantiated is also easy. Calling {@link #filter} adds another filter
  * to the Store and automatically filters the dataset (calling {@link #filter} with no arguments simply re-applies all
- * existing filters). Note that by default {@link #sortOnFilter} is set to true, which means that your sorters are
- * automatically reapplied if using local sorting.
+ * existing filters).
  *
  *     store.filter('eyeColor', 'Brown');
  *

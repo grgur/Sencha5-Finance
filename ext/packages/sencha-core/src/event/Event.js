@@ -120,7 +120,7 @@ Ext.define('Ext.event.Event', {
      */
 
     /**
-     * @property {DomEvent} browserEvent
+     * @property {Event} browserEvent
      * The raw browser event which this object wraps.
      */
 
@@ -521,7 +521,7 @@ Ext.define('Ext.event.Event', {
      *         }
      *     });
      * 
-     * @param {String/HTMLElement/Ext.Element} el The id, DOM element or Ext.Element to check
+     * @param {String/HTMLElement/Ext.dom.Element} el The id, DOM element or Ext.Element to check
      * @param {Boolean} [related] `true` to test if the related target is within el instead
      * of the target
      * @param {Boolean} [allowEl] `true` to also check if the passed element is the target

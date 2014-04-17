@@ -56,7 +56,7 @@ Ext.define('Ext.grid.plugin.Editing', {
     /**
      * @cfg {String} default UI for editor fields
      */
-    defaultFieldUI: 'grid',
+    defaultFieldUI: 'default',
 
     // @private
     defaultFieldXType: 'textfield',
@@ -438,7 +438,7 @@ Ext.define('Ext.grid.plugin.Editing', {
             columnHeader = view.ownerCt.getColumnManager().getHeaderAtIndex(colIdx),
             editor = columnHeader.getEditor(record);
 
-        if (editor && !expanderSelector || !e.getTarget(expanderSelector)) {
+        if (this.shouldStartEdit(editor) && (!expanderSelector || !e.getTarget(expanderSelector))) {
             this.startEdit(record, columnHeader);
         }
     },
@@ -450,12 +450,9 @@ Ext.define('Ext.grid.plugin.Editing', {
         me.mon(headerCt, {
             scope: me,
             add: me.onColumnAdd,
-            columnmove: me.onColumnMove
+            columnmove: me.onColumnMove,
+            beforedestroy: me.beforeGridHeaderDestroy
         });
-
-        // Use an interceptor on the header container's beforeDestroy method because the event is vetoable.
-        // Before the header container is destroyed, we must clean up the column editors.
-        headerCt.beforeDestroy = Ext.Function.createInterceptor(headerCt.beforeDestroy, me.beforeGridHeaderDestroy, me);
     },
 
     initKeyNavHeaderEvents: function() {
@@ -516,6 +513,10 @@ Ext.define('Ext.grid.plugin.Editing', {
      * @return {Boolean} Return false to cancel the editing process
      */
     beforeEdit: Ext.emptyFn,
+
+    shouldStartEdit: function(editor) {
+        return !!editor;
+    },
 
     /**
      * Starts editing the specified record, using the specified Column definition to define which field is being edited.

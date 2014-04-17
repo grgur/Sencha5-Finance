@@ -246,11 +246,28 @@ Ext.define('Ext.data.reader.Reader', {
         * the error string returned in the response.
         */
        messageProperty: '',
-       
-       // TODO: better description
+
        /**
         * @cfg {String} [typeProperty]
-        * Indicates the type of the model to be read inside the data node itself. Useful for heterogenous trees.
+        * The name of the property in a node raw data block which indicates the type of the model to be created from that raw data. Useful for heterogenous trees.
+        *
+        * For example, hierarchical geographical data may look like this:
+        *
+        *     {
+        *         nodeType: 'Territory',
+        *         name: 'EMEA',
+        *         children: [{
+        *             nodeType: 'Country',
+        *             name: 'United Kingdon',
+        *             children: [{
+        *                 nodeType: 'City',
+        *                 name: 'London'
+        *             }]
+        *         }]
+        *     }
+        *
+        * You would configure the typeProperty in this case to be `"nodeType"` which would cause the models named "Territory", "Country" and "City" to
+        * be used.
         */
        typeProperty: '',
     
@@ -310,7 +327,7 @@ Ext.define('Ext.data.reader.Reader', {
     isReader: true,
     
     /**
-     * @event
+     * @event exception
      * Fires when the reader receives improperly encoded data from the server
      * @param {Ext.data.reader.Reader} reader A reference to this reader
      * @param {XMLHttpRequest} response The XMLHttpRequest response object

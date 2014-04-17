@@ -33,7 +33,7 @@ Ext.define('Ext.layout.Layout', {
      * items into its layout calculations.  Layouts that handle the size of their children
      * as a group (autocontainer, form) can set this to false for an additional performance
      * optimization.  When `false` the layout system will not recurse into the child
-     * items if {@link #activeItemCount} is `0`, which will be the case if all child items
+     * items if {@link Ext.layout.container.Container#activeItemCount} is `0`, which will be the case if all child items
      * use "liquid" CSS layout, e.g. form fields.  (See Ext.Component#liquidLayout)
      */
     needsItemSize: true,

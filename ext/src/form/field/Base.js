@@ -169,7 +169,7 @@ Ext.define('Ext.form.field.Base', {
     /**
      * @cfg {String} fieldStyle
      * Optional CSS style(s) to be applied to the {@link #inputEl field input element}. Should be a valid argument to
-     * {@link Ext.Element#applyStyles}. Defaults to undefined. See also the {@link #setFieldStyle} method for changing
+     * {@link Ext.dom.Element#applyStyles}. Defaults to undefined. See also the {@link #setFieldStyle} method for changing
      * the style after initialization.
      */
 
@@ -205,11 +205,10 @@ Ext.define('Ext.form.field.Base', {
      * a {@link Ext.form.Panel}, you can use the FormPanel's {@link Ext.form.Panel#pollForChanges} configuration to set up
      * such a task automatically.
      */
-
-     // While input is supported in IE9, we use attachEvent for events, so we need to fall back here
     checkChangeEvents: Ext.isIE && (!document.documentMode || document.documentMode <= 9) ?
                         ['change', 'propertychange', 'keyup'] :
                         ['change', 'input', 'textInput', 'keyup', 'dragdrop'],
+     // While input is supported in IE9, we use attachEvent for events, so we need to fall back here
                         
     ignoreChangeRe: /data\-errorqtip|style\.|className/,   
 
@@ -411,7 +410,7 @@ Ext.define('Ext.form.field.Base', {
         me.addChildEls('inputEl');
 
         /**
-         * @property {Ext.Element} inputEl
+         * @property {Ext.dom.Element} inputEl
          * The input Element for this Field. Only available after the field has been rendered.
          */
         me.inputEl = me.el.getById(me.getInputId());
@@ -456,7 +455,7 @@ Ext.define('Ext.form.field.Base', {
     /**
      * Set the {@link #fieldStyle CSS style} of the {@link #inputEl field input element}.
      * @param {String/Object/Function} style The style(s) to apply. Should be a valid argument to {@link
-     * Ext.Element#applyStyles}.
+     * Ext.dom.Element#applyStyles}.
      */
     setFieldStyle: function(style) {
         var me = this,
@@ -536,8 +535,7 @@ Ext.define('Ext.form.field.Base', {
      */
     setRawValue: function(value) {
         var me = this,
-            rawValue = me.rawValue,
-            publishes;
+            rawValue = me.rawValue;
 
         if (!me.transformRawValue.$nullFn) {
             value = me.transformRawValue(value);
@@ -872,7 +870,7 @@ Ext.define('Ext.form.field.Base', {
      * @private
      * @param {String} error The error message to set
      */
-    setError: function(active){
+    setError: function(error){
         var me = this,
             msgTarget = me.msgTarget,
             prop;
@@ -880,7 +878,7 @@ Ext.define('Ext.form.field.Base', {
         if (me.rendered) {
             if (msgTarget == 'title' || msgTarget == 'qtip') {
                 prop = msgTarget == 'qtip' ? 'data-errorqtip' : 'title';
-                me.getActionEl().dom.setAttribute(prop, active || '');
+                me.getActionEl().dom.setAttribute(prop, error || '');
             } else {
                 me.updateLayout();
             }

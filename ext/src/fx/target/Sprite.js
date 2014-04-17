@@ -1,8 +1,8 @@
 /**
  * @class Ext.fx.target.Sprite
 
- This class represents an animation target for a {@link Ext.draw.Sprite}. In general this class will not be
- created directly, the {@link Ext.draw.Sprite} will be passed to the animation and
+ This class represents an animation target for a {@link Ext.draw.sprite.Sprite}. In general this class will not be
+ created directly, the {@link Ext.draw.sprite.Sprite} will be passed to the animation and
  and the appropriate target will be created.
 
  * @markdown

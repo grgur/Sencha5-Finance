@@ -63,18 +63,4 @@ Ext.define('Ext.PluginManager', {
         }
         return result;
     }
-
-    //<deprecated since=5.0>
-}, function() {
-    /**
-     * Shorthand for {@link Ext.PluginManager#registerType}
-     * @param {String} ptype The ptype mnemonic string by which the Plugin class
-     * may be looked up.
-     * @param {Function} cls The new Plugin class.
-     * @member Ext
-     * @method preg
-     * @deprecated 5.0
-     */
-    Ext.preg = Ext.emptyFn;
-    //</deprecated since=5.0>
 });

@@ -6,6 +6,8 @@ Ext.define('Ext.overrides.app.Application', {
 });
 
 /**
+ * @method application
+ * @member Ext
  * Loads Ext.app.Application class and starts it up with given configuration after the
  * page is ready.
  *

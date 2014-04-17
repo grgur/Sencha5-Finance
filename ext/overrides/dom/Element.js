@@ -749,7 +749,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          *     });
          *
          * @param {Object} options (optional) Object literal with any of the {@link Ext.fx.Anim} config options
-         * @return {Ext.Element} The Element
+         * @return {Ext.dom.Element} The Element
          */
         fadeIn: function(o) {
             var me = this,
@@ -794,7 +794,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          *     });
          *
          * @param {Object} options (optional) Object literal with any of the {@link Ext.fx.Anim} config options
-         * @return {Ext.Element} The Element
+         * @return {Ext.dom.Element} The Element
          */
         fadeOut: function(o) {
             var me = this,
@@ -1198,6 +1198,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         },
 
         /**
+         * @override
          * Hide this element - Uses display mode to determine whether to use "display",
          * "visibility", or "offsets". See {@link #setVisible}.
          * @param {Boolean/Object} [animate] true for the default animation or a standard
@@ -1424,10 +1425,9 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         },
 
         /**
-         * Direct access to the Ext.ElementLoader {@link Ext.ElementLoader#load} method.
-         * The method takes the same object parameter as {@link Ext.ElementLoader#load}
-         * @param {Object} options a options object for 
-         * Ext.ElementLoader {@link Ext.ElementLoader#load}
+         * Direct access to the Ext.ElementLoader {@link Ext.ElementLoader#method-load} method.
+         * The method takes the same object parameter as {@link Ext.ElementLoader#method-load}
+         * @param {Object} options a options object for Ext.ElementLoader {@link Ext.ElementLoader#method-load}
          * @return {Ext.dom.Element} this
          */
         load: function(options) {
@@ -1741,7 +1741,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          * an object with "x" and "y" properties.
          * @param {Number/Boolean/Object} deltaY Either the y delta, or an animate flag or config object.
          * @param {Boolean/Object} animate Animate flag/config object if the delta values were passed separately.
-         * @return {Ext.Element} this
+         * @return {Ext.dom.Element} this
          */
         scrollBy: function(deltaX, deltaY, animate) {
             var me = this,
@@ -1804,7 +1804,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
          * @param {Number} value The new scroll value
          * @param {Boolean/Object} [animate] true for the default animation or a standard Element
          * animation config object
-         * @return {Ext.Element} this
+         * @return {Ext.dom.Element} this
          */
         scrollTo: function(side, value, animate) {
             //check if we're scrolling top or left
@@ -1835,7 +1835,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
 
         /**
          * Enable text selection for this element (normalized across browsers)
-         * @return {Ext.Element} this
+         * @return {Ext.dom.Element} this
          */
         selectable: function() {
             var me = this;
@@ -2962,7 +2962,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                      *
                      * @deprecated 4.0 Use the `delay` config to {@link #animate} instead.
                      * @param {Number} seconds The length of time to pause (in seconds)
-                     * @return {Ext.Element} The Element
+                     * @return {Ext.dom.Element} The Element
                      */
                     pause: function(ms) {
                         var me = this;
@@ -2993,7 +2993,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                      * @param {Number} width The new width (pass undefined to keep the original width)
                      * @param {Number} height The new height (pass undefined to keep the original height)
                      * @param {Object} options (optional) Object literal with any of the {@link Ext.fx.Anim} config options
-                     * @return {Ext.Element} The Element
+                     * @return {Ext.dom.Element} The Element
                      */
                     scale: function(w, h, o) {
                         this.animate(Ext.apply({}, o, {
@@ -3025,7 +3025,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
                      *
                      * @deprecated 4.0 Just use {@link #animate} instead.
                      * @param {Object} options Object literal with any of the {@link Ext.fx.Anim} config options
-                     * @return {Ext.Element} The Element
+                     * @return {Ext.dom.Element} The Element
                      */
                     shift: function(config) {
                         this.animate(config);
@@ -3541,6 +3541,13 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         // suppport border-box, but it is hard coded to true for backward compatibility
         isBorderBox: true,
 
+        /**
+         * @private
+         * Returns an HTML div element into which {@link Ext.container.Container#method-remove removed} components
+         * are placed so that their DOM elements are not garbage collected as detached Dom trees.
+         * @returns {Ext.dom.Element}
+         * @member Ext.
+         */
         getDetachedBody: function () {
             var detachedEl = Ext.detachedBodyEl;
 
@@ -3710,7 +3717,7 @@ Ext.define('Ext.overrides.dom.Element', (function() {
         var transparentRe = /^(?:transparent|(?:rgba[(](?:\s*\d+\s*[,]){3}\s*0\s*[)]))$/i,
             bodyCls = [],
             //htmlCls = [],
-            colorStyles, i, name, camel;
+            colorStyles, i, name, camel, origSetWidth, origSetSize;
 
         if (supports.MinWidthTableCellBug) {
             // EXTJSIV-12665

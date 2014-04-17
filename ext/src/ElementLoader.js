@@ -9,7 +9,7 @@
  *         }
  *     });
  *
- * In general this class will not be instanced directly, rather the {@link Ext.Element#method-load} method
+ * In general this class will not be instanced directly, rather the {@link Ext.dom.Element#method-load} method
  * will be used.
  */
 Ext.define('Ext.ElementLoader', {
@@ -63,8 +63,8 @@ Ext.define('Ext.ElementLoader', {
     autoLoad: false,
 
     /**
-     * @cfg {HTMLElement/Ext.Element/String} target
-     * The target element for the loader. It can be the DOM element, the id or an {@link Ext.Element}.
+     * @cfg {HTMLElement/Ext.dom.Element/String} target
+     * The target element for the loader. It can be the DOM element, the id or an {@link Ext.dom.Element}.
      */
     target: null,
 
@@ -187,9 +187,9 @@ Ext.define('Ext.ElementLoader', {
     },
 
     /**
-     * Sets an {@link Ext.Element} as the target of this loader.
+     * Sets an {@link Ext.dom.Element} as the target of this loader.
      * Note that if the target is changed, any active requests will be aborted.
-     * @param {String/HTMLElement/Ext.Element} target The element or its ID.
+     * @param {String/HTMLElement/Ext.dom.Element} target The element or its ID.
      */
     setTarget: function(target){
         var me = this;

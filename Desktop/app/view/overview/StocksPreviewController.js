@@ -12,8 +12,15 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
     refreshInterval: null,
 
     init: function () {
-    	var store = this.getView().getStore();
-    	this.refreshInterval = this.refreshInterval || setInterval(store.load.bind(store), 1000);
+    	var store = this.getView().getStore(),
+    		cb = Ext.Function.createBuffered(this.refreshStore, 300, this, store);
+    	this.refreshInterval = this.refreshInterval || setInterval(cb, 5000);
+    	debugger;
+    },
+
+    refreshStore: function (store) {
+    	store = store || this.getView().getStore();
+    	store.reload();
     },
 
     /**

@@ -9,6 +9,13 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
 
     historyCache: [],
 
+    refreshInterval: null,
+
+    init: function () {
+    	var store = this.getView().getStore();
+    	this.refreshInterval = this.refreshInterval || setInterval(store.load.bind(store), 1000);
+    },
+
     /**
      * Load historical data from cache if exists. Otherwise load from YQL
      * @param  {[type]} store [description]
@@ -115,6 +122,21 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
         var msg = (Ext.isObject(error) && Ext.isFunction(error.getError)) ? error.getError() : error;
         
         Ext.Msg.alert('Oops', msg);
+    },
+
+    onDataChanged: function () {
+    	console.log('data changed', arguments);
+
+    },
+
+    cached: [],
+
+    cacheAll: function (store) {
+
+    },
+
+    compareWithCache: function () {
+
     }
 
 

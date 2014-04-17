@@ -32,7 +32,8 @@ Ext.define('Finance.view.overview.StocksPreviewModel', {
 		    }],
 
 		    listeners: {
-		    	load: 'loadHistoryCache'
+		    	load: 'loadHistoryCache',
+		    	datachanged: 'onDataChanged'
 		    }
         }
     }

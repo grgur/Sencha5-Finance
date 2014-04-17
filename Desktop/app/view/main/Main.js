@@ -25,7 +25,7 @@ Ext.define('Finance.view.main.Main', {
         xtype: 'tabpanel',
         items:[{
             title: 'Tab 1',
-            xtype: 'stockspreviewgrid'
+            xtype: 'component'
         }]
     }]
 });

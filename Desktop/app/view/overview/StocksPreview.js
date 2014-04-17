@@ -12,9 +12,9 @@ Ext.define('Finance.view.overview.StocksPreview', {
     xtype : 'stockspreviewgrid',
 
     controller : 'stockspreview',
-    viewModel  : 'stocksprview',
+    viewModel  : 'stockspreview',
     
-    store            : 'Stocks',
+    bind             : '{stocks}',
     collapsible      : true,
     title            : 'Stocks',
     trackMouseOver   : false,
@@ -57,6 +57,5 @@ Ext.define('Finance.view.overview.StocksPreview', {
         }];
 
         me.callParent();
-        window.store = this.store;
     }
 });

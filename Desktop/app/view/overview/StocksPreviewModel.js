@@ -5,15 +5,35 @@ Ext.define('Finance.view.overview.StocksPreviewModel', {
     extend: 'Ext.app.ViewModel',
     alias: 'viewmodel.stockspreview',
 
+    requires: [
+    	'Finance.model.Stock'
+    ],
+
     stores: {
         stocks: {
             model: 'Stock',
 
             autoLoad: true,
 
-            // Associate this store with the data session (an Ext.data.session.Session).
-            // This ensures the Organization records are cached and distinct going forward.
-            isolated: false
+            sorters  : 'Symbol',
+
+            data: [{
+		        Name: 'Apple',
+		        Symbol: 'AAPL'
+		    }, {
+		        Name: 'Google',
+		        Symbol: 'GOOG'
+		    }, {
+		        Name: 'Microsoft',
+		        Symbol: 'MSFT'
+		    }, {
+		        Name: 'Yahoo',
+		        Symbol: 'YHOO'
+		    }],
+
+		    listeners: {
+		    	load: 'loadHistoryCache'
+		    }
         }
     }
 });

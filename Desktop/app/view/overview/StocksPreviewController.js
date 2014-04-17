@@ -49,16 +49,28 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
      * @return {[type]} [description]
      */
     loadHistory: function (store) {
-        var me = this,
-            proxy = store.getProxy(),
-            params = Ext.clone(proxy.getExtraParams()),
-            symbols = [];
+        var me        = this,
+            proxy     = store.getProxy(),
+            params    = Ext.clone(proxy.getExtraParams()),
+            symbols   = [],
+            now       = Date.now(),
+            endDate   = Ext.Date.format(new Date(now), 'Y-m-d'),
+            startDate = Ext.Date.format(new Date(now - 1000*60*60*24*10), 'Y-m-d'); // 10 days ago
 
         store.each(function (rec) {
             symbols.push('"' + rec.get('Symbol') + '"');
         });
 
-        params.q = 'select Close, Symbol from yahoo.finance.historicaldata where symbol in (' + symbols.join(',') + ')  and startDate = "2014-04-05" and endDate = "2014-04-15"';
+        params.q = [
+        	'select Close, Symbol from yahoo.finance.historicaldata ',
+        		'where symbol in (',
+        			symbols.join(','),
+        		')  and startDate = "',
+        		startDate,
+        		'" and endDate = "',
+        		endDate,
+        		'"'
+        	].join('');
 
         Ext.data.JsonP.request({
             url : proxy.getUrl(),

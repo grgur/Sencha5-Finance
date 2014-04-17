@@ -10,8 +10,7 @@ Ext.define('Finance.model.Stock', {
         'Name',
         'StockExchange',
         {
-            name: 'History',
-            defaultValue: 'AAAAAAA'
+            name: 'History'
         },
         {
             name: 'Change',

@@ -9,16 +9,22 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
 
     historyCache: [],
 
-    refreshInterval: null,
+    refreshInterval: 2000,
 
     init: function () {
-    	var store = this.getView().getStore(),
-    		cb = Ext.Function.createBuffered(this.refreshStore, 300, this, store);
-    	this.refreshInterval = this.refreshInterval || setInterval(cb, 5000);
-    	debugger;
+    	var store = this.getView().getStore();
+
+    	this.refreshStore = this.refreshStore || Ext.Function.createBuffered(this.doRefreshStore, 200, this, store);
+    	setInterval(this.refreshStore, this.refreshInterval);
     },
 
-    refreshStore: function (store) {
+	/**
+	 * Dynamically updated to a buffered function
+	 * @type {Function}
+	 */
+    refreshStore: null,
+
+    doRefreshStore: function (store) {
     	store = store || this.getView().getStore();
     	store.reload();
     },

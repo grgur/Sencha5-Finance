@@ -15,6 +15,10 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
     	component: {
     		stockspreviewgrid: {
     			//select: 'onCustomEvent',
+    		},
+
+    		'button#smybolclicker' : {
+    			tap: 'onSymbolClick'
     		}
     	}
     },
@@ -210,7 +214,7 @@ Ext.define('Finance.view.overview.StocksPreviewController', {
     	selModel.deselectAll();
     },
 
-    onCustomEvent: function () {
+    onSymbolClick: function () {
     	alert('yeah')
-    }
+    }    
 });

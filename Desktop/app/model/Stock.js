@@ -17,11 +17,15 @@ Ext.define('Finance.model.Stock', {
             type    : 'float'
         },
         {
+            name    : 'Price',
+            mapping : 'LastTradePriceOnly',
+            type    : 'float'
+        },
+        {
             name    : 'Symbol',
             type    : 'string',
             sortDir : 'ASC'
-        },
-
+        }
     ],
 
     proxy: {
@@ -30,7 +34,7 @@ Ext.define('Finance.model.Stock', {
         extraParams: {
             format       : 'json',
             diagonostics : false,
-            q            : 'select Symbol, Name, Change from yahoo.finance.quote where symbol in ("YHOO","AAPL","GOOG","MSFT")',
+            q            : 'select Symbol, Name, Change, LastTradePriceOnly from yahoo.finance.quote where symbol in ("YHOO","AAPL","GOOG","MSFT")',
             env          : 'store://datatables.org/alltableswithkeys'
         },
         reader: {

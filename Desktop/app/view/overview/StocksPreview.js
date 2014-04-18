@@ -30,11 +30,10 @@ Ext.define('Finance.view.overview.StocksPreview', {
 
     columns : [{
         text      : 'Button',
-        width     : 105,
+        width     : 80,
         xtype     : 'widgetcolumn',
         dataIndex : 'Symbol',
         widget    : {
-            width   : 90,
             xtype   : 'button',
             itemId  : 'smybolclicker',
             ui      : 'cell',
@@ -51,12 +50,18 @@ Ext.define('Finance.view.overview.StocksPreview', {
             // }
         }
     }, {
-        text      : 'Change',
-        width     : 100,
+        text      : 'Price',
+        width     : 80,
+        align     : 'right',
+        dataIndex : 'Price'
+    }, {
+        text      : '&#916;',
+        width     : 60,
+        align     : 'right',
         dataIndex : 'Change'
     }, {
         text      : 'Trend',
-        width     : 100,
+        width     : 90,
         dataIndex : 'History',
         xtype     : 'widgetcolumn',
         widget    : {
